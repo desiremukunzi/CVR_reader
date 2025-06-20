@@ -1,3 +1,5 @@
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 venv\Scripts\activate
+
+=IF(OR(B2="✔", C2="✔",D2="✔"), "✔", "✘")

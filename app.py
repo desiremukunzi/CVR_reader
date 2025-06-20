@@ -14,9 +14,10 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 EXCEL_FILE = "WORKBENCH_CARE.xlsm"
 #SHEET_NAME = "Checklist"
 CHECKED_COLUMN = "B"
+TRANSCRIPT_FOLDER = "transcripts"
 
-
-
+# Ensure trascript folder exists
+os.makedirs(TRANSCRIPT_FOLDER, exist_ok=True)
 # Ensure upload folder exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -28,7 +29,7 @@ def load_checklist(sheet_name):
 # Check compliance with fuzzy matching
 from statistics import mean
 
-def check_compliance(transcript, checklist, threshold=55):
+def check_compliance(transcript, checklist, threshold=50):
     transcript_lower = transcript.lower()
     sentences = [s.strip() for s in transcript_lower.split('.') if s.strip()]
     results = []
@@ -89,8 +90,18 @@ def update_excel(results, sheet_name):
 # Transcribe audio file
 def transcribe_audio(audio_path):
     model = whisper.load_model("medium")
-    result = model.transcribe(audio_path,language="en")
-    return result["text"]
+    result = model.transcribe(audio_path, language="en")
+    transcript_text = result["text"]
+
+    # Save transcript to file
+    base_filename = os.path.splitext(os.path.basename(audio_path))[0]
+    transcript_filename = f"{base_filename}.txt"
+    transcript_path = os.path.join(TRANSCRIPT_FOLDER, transcript_filename)
+    
+    with open(transcript_path, "w", encoding="utf-8") as f:
+        f.write(transcript_text)
+
+    return transcript_text
 
 # Routes
 @app.route("/", methods=["GET", "POST"])
@@ -100,7 +111,7 @@ def index():
             return redirect(request.url)
 
         file = request.files["file"]
-        threshold = int(request.form.get("threshold", 55))  # default is 55
+        threshold = int(request.form.get("threshold", 50))  # default is 50
         sheet_name = request.form.get("sheet_name")
 
         if file.filename == "":
@@ -115,8 +126,8 @@ def index():
             df, checklist = load_checklist(sheet_name)
             transcript = transcribe_audio(file_path)
 
-            print("\n--- Transcript ---")
-            print(transcript)
+            #print("\n--- Transcript ---")
+            #print(transcript)
 
             results = check_compliance(transcript, checklist, threshold)
 

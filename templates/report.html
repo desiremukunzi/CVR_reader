@@ -59,5 +59,28 @@
             </table>
         </div>
     </div>
+
+    <script>
+    // Play a short beep sound using Web Audio API when page loads
+    window.onload = function () {
+        try {
+            const context = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = context.createOscillator();
+            const gainNode = context.createGain();
+
+            oscillator.type = "square"; // You can use "square", "sawtooth", "triangle"
+            oscillator.frequency.setValueAtTime(880, context.currentTime); // Frequency in Hz
+            oscillator.connect(gainNode);
+            gainNode.connect(context.destination);
+
+            oscillator.start();
+            gainNode.gain.exponentialRampToValueAtTime(0.00001, context.currentTime + 30); // 30 second duration
+            oscillator.stop(context.currentTime + 30);
+        } catch (e) {
+            console.warn("Could not play system beep:", e);
+        }
+    };
+</script>
+
 </body>
 </html>
