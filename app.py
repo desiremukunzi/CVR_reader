@@ -11,7 +11,7 @@ from openpyxl.styles import Font
 app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-EXCEL_FILE = "WORKBENCH_CARE.xlsm"
+EXCEL_FILE = "workbench/WORKBENCH_CARE.xlsm"
 #SHEET_NAME = "Checklist"
 CHECKED_COLUMN = "B"
 TRANSCRIPT_FOLDER = "transcripts"
