@@ -1,5 +1,56 @@
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 venv\Scripts\activate
+venv-py311\Scripts\activate   
 
 =IF(OR(B2="✔", C2="✔",D2="✔"), "✔", "✘")
+
+A:\whisper.cpp\build\bin\whisper-cli.exe ^
+  --model A:\whisper.cpp\models\ggml-medium.en.bin ^
+  --file A:\CVR_RAF-61504\JUNE\RAF-61504_UNO-561P_19_06_25\000101_0200.wav ^
+  --output-txt ^
+  --output-dir A:\CVR_reader\transcripts ^
+  --output-file all_checklist ^
+  --threads 4 ^
+  --gpu
+
+ /a/whisper.cpp/build/bin/whisper-cli.exe \
+  --model /a/whisper.cpp/models/ggml-medium.en.bin \
+  --file A:\CVR_RAF-61504\JUNE\RAF-61504_UNO-561P_19_06_25\000101_0200.wav \
+  --output-txt \
+  --output-dir /a/CVR_reader/transcripts \
+  --output-file 000101_0200 \
+  --threads 4 \
+  --gpu \
+  --verbose
+
+ /a/whisper.cpp/build/bin/whisper-cli.exe \
+ --model /a/whisper.cpp/models/ggml-medium.en.bin \
+  --file /a/CVR_reader/uploads/all_checklist.wav \
+  --output-txt \
+  --output-dir /a/CVR_reader/transcripts \
+  --output-file all_checklist \
+  --threads 4 \
+  --gpu \
+  --verbose
+
+  A:\whisper.cpp\build\bin\whisper-cli.exe `
+  --model A:\whisper.cpp\models\ggml-medium.en.bin `
+  --file A:\CVR_RAF-61504\JUNE\RAF-61504_UNO-561P_19_06_25\000101_0200.wav `
+  --output-txt `
+  --output-dir A:\CVR_reader\transcripts `
+  --output-file 000101_0200 `
+  --threads 4 `
+  --gpu \
+  --verbose
+
+  A:\whisper.cpp\build\bin\whisper-cli.exe `
+  --model A:\whisper.cpp\models\ggml-medium.en.bin `
+  --file A:\CVR_RAF-61504\JUNE\RAF-61504_UNO-561P_19_06_25\000101_0200.wav `
+  --output-txt `
+  --output-file 000101_0200 `
+  --threads 4 `
+  
+  
+
+

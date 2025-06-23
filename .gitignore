@@ -3,6 +3,8 @@ uploads/
 transcripts/
 workbench/
 venv/
+venv-py311/
+whisper.cpp
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

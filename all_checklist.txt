@@ -1,0 +1,179 @@
+ Starting with AC GPU
+ Pre-APU Start
+ Instruments and all switches as required
+ Virtual 1 and 2 check and on
+ GPU connected check and on
+ Rectifiers on
+ Circuit breakers on
+ FDR and CR on
+ Headset connected
+ Intercom readability check
+ RDF on
+ GPS on
+ Transponder on
+ ELT arming
+ Global satellite
+ Tracking system on
+ TCAS on
+ Aircraft records on board and field
+ Overhead hatch closed
+ Windscreens clean
+ Seat belts fastened
+ Nematic system check pressure
+ Pedals neutral
+ Cyclic stick neutral
+ Landing gear breaks applied
+ Collective pitch fully down
+ Throttle twist grip fully left
+ Friction clutch adjusted
+ Separate throttle lever middle and last
+ Main rotor brake fully down
+ Engine shutdown levers backward
+ Fuel quantity check
+ Running lights check
+ Fire extinction system check
+ Voice warning system check
+ EGT indicators test
+ Engine vibration system test
+ Fire extinction system on
+ All pumps on
+ Generators off
+ Fire fuel shut off valve check and open
+ Engine shutdown levers backward
+ Pre APU start checklist completed
+ APU start checklist
+ Startup clearance ATC request
+ Ground crew signal
+ APU start
+ APU parameters check as required
+ APU generator on
+ GPU off and disconnected
+ Startup checklist completed
+ Engine startup
+ Startup area clear
+ Anti-collision lights on
+ Engine selection as per wind direction
+ Ground crew signal
+ Engine start button press
+ HP cock open
+ Stopwatch set
+ Warm up engine 1 to 2 minutes
+ Engine parameters as required
+ Start second engine as above
+ Warm up second engine 1 to 2 minutes
+ Hide parameters check
+ DPD on
+ EGT air check
+ Functional check
+ hydraulic system check
+ Controls response check
+ EEG test
+ PASHAX relation check
+ Engine operational mode
+ throttle twist drip fully right
+ Generators test and on
+ APU generator off
+ Inverters auto position
+ APU off
+ Navigation lights on
+ Blade tips night and poor visibility on
+ Cabin lighting night and poor visibility on
+ Formation lights night and poor visibility on
+ Voice warning system on
+ Gyro horizon on
+ Campus system on and check
+ Radio altimeter on and check
+ Barrow altimeter set
+ Pitch limit system check
+ Autopilot on and check
+ Main rotor control speed check range
+ Main rotor RPM set 95%
+ Collective down
+ Engine startup checklist completed
+ Before taxi
+ Taxiing clearest ATC request
+ Area clear
+ Chocks removed and stored
+ Crew and passengers briefed
+ Doors and windows closed
+ Co-compartment secured
+ Autopilot off
+ Before taxiing checklist completed
+ Line up position
+ Area clear
+ Obstacles in take-off direction absent
+ Gyro same readings
+ Heading set
+ Autopilot on
+ Type of take-off decide
+ Request for take-off performed
+ Stopwatch press
+ Before take-off
+ Fuel selector service
+ Fuel pump lights check-off
+ Transponder altitude
+ Autopilot on
+ Engine and transmission checked
+ Before take-off checklist completed
+ After take-off
+ Main rotor 95 plus or minus 2%
+ DPDs above 50 meters off
+ Fuel consumption monitored
+ Monitor every 15 to 20 minutes
+ After take-off checklist completed
+ In-flight checks
+ Power setting as per graph
+ Fuel quantity checked
+ Other parameters normal operation
+ Flight following call
+ Pre-landing checks
+ Landing clearance request
+ Runway condition known
+ Autopilot hard channel off
+ Cargo secured
+ Landing lights on
+ Fuel quantity checked
+ Campus matched
+ DPDs on at 50 meters
+ Type of landing decide
+ Runway exit in parking as instructed
+ Parameters within limit
+ Main rotor 95 plus or minus 2%
+ Landing gear breaks released
+ DPDs on
+ Cargo compartments secured
+ Crew briefed
+ Before landing checklist completed
+ After landing
+ Collective fully down
+ Autopilot off
+ Parking as required
+ After landing checklist completed
+ Engine shut down
+ Landing gear break applied
+ Consumers off
+ Rectifiers off
+ Inverters neutral
+ Generators off
+ Throttle fully left
+ Left and right fuel pumps off
+ Engine cooling 1 to 2 minutes
+ Engine shut down levels backward
+ Stopwatch pressed
+ LGG equals 0 at 35 seconds minimum
+ Main rotor stop
+ At less or equal to 15
+ Main rotor slowly apply main rotor blank
+ At main rotor stop controls
+ Move back and forth
+ Fire extinguisher switch off
+ Fire shuttle valves leave open position
+ Service tank pump off
+ Batteries on 1 and 2 off
+ FDR and CVR auto position
+ Circuit breakers off
+ Aircraft securing
+ Shocks placed
+ Ground cable ground
+ Covers installed
+ Mooring performed in gusty condition

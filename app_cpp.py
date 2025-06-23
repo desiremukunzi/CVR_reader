@@ -1,5 +1,5 @@
 import os
-#import whisper
+import whisper
 import pandas as pd
 from flask import Flask, render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
@@ -11,7 +11,7 @@ from openpyxl.styles import Font
 app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-EXCEL_FILE = "workbench/WORKBENCH_CARE.xlsm"
+EXCEL_FILE = "workbench/WORKBENCH_BUR.xlsm"
 #SHEET_NAME = "Checklist"
 CHECKED_COLUMN = "B"
 TRANSCRIPT_FOLDER = "transcripts"
@@ -86,28 +86,59 @@ def update_excel(results, sheet_name):
         row += 1
 
     wb.save(EXCEL_FILE)
+import subprocess
+import os
+import shutil
 
-    
+TRANSCRIPT_FOLDER = "transcripts"
+WHISPER_CPP_DIR = os.path.abspath("../whisper.cpp")
+WHISPER_MODEL_PATH = os.path.join(WHISPER_CPP_DIR, "models", "ggml-medium.en.bin")
+WHISPER_EXECUTABLE = os.path.join(WHISPER_CPP_DIR, "build", "bin", "main.exe")
 
-from faster_whisper import WhisperModel
-
-# Initialize once globally (to avoid reloading for every request)
-model = WhisperModel("medium", device="cuda", compute_type="float16")  # OR "medium" if GPU RAM is low
+import subprocess
+import os
 
 def transcribe_audio(audio_path):
-    segments, info = model.transcribe(audio_path, language="en")
+    WHISPER_CLI_PATH = r"A:\whisper.cpp\build\bin\whisper-cli.exe"
+    MODEL_PATH = r"A:\whisper.cpp\models\ggml-medium.en.bin"
+    THREADS = "4"
+    TRANSCRIPTS_DIR = "transcripts"
 
-    transcript_text = " ".join([segment.text for segment in segments])
+    # Ensure the transcripts folder exists
+    os.makedirs(TRANSCRIPTS_DIR, exist_ok=True)
 
-    # Save transcript
+    # Generate output filename and full output path
     base_filename = os.path.splitext(os.path.basename(audio_path))[0]
-    transcript_filename = f"{base_filename}.txt"
-    transcript_path = os.path.join(TRANSCRIPT_FOLDER, transcript_filename)
+    output_file_path = os.path.join(TRANSCRIPTS_DIR, base_filename)
 
-    with open(transcript_path, "w", encoding="utf-8") as f:
-        f.write(transcript_text)
+    # Whisper CLI command with full output path
+    command = [
+        WHISPER_CLI_PATH,
+        "--model", MODEL_PATH,
+        "--file", audio_path,
+        "--output-txt",
+        "--output-file", output_file_path,
+        "--threads", THREADS
+    ]
 
-    return transcript_text
+    try:
+        subprocess.run(command, check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Whisper CLI failed: {e}")
+        return ""
+
+    transcript_path = output_file_path + ".txt"
+
+    # Read the generated transcript
+    try:
+        with open(transcript_path, "r", encoding="utf-8") as f:
+            transcript = f.read()
+    except FileNotFoundError:
+        print("❌ Transcription file not found at:", transcript_path)
+        return ""
+
+    return transcript
+
 
 
 # Routes
@@ -140,12 +171,8 @@ def index():
 
             # Update Excel
             update_excel(results, sheet_name)
-            
-            passed_count = sum(1 for r in results if r[0] == "PASS")
-            compliance_percent = round((passed_count / len(results)) * 100, 1)
-            return render_template("report.html", results=results, transcript=transcript, compliance=compliance_percent)
 
-           # return render_template("report.html", results=results, transcript=transcript)
+            return render_template("report.html", results=results, transcript=transcript)
 
     return render_template("index.html")
 
