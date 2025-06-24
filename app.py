@@ -21,6 +21,37 @@ os.makedirs(TRANSCRIPT_FOLDER, exist_ok=True)
 # Ensure upload folder exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+import subprocess
+
+def preprocess_audio(input_path, output_folder="uploads", filename_prefix="cleaned_"):
+    """
+    Converts, trims silence, normalizes volume, and prepares audio for transcription.
+    Returns path to the cleaned WAV file.
+    """
+    os.makedirs(output_folder, exist_ok=True)
+
+    base = os.path.basename(input_path)
+    name, _ = os.path.splitext(base)
+    output_path = os.path.join(output_folder, f"{filename_prefix}{name}.wav")
+
+    command = [
+        "ffmpeg", "-y",
+        "-i", input_path,
+        "-ac", "1",
+        "-ar", "16000",
+        "-af", "silenceremove=1:0:-50dB,loudnorm",
+        "-c:a", "pcm_s16le",
+        output_path
+    ]
+
+    try:
+        subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+        return output_path
+    except subprocess.CalledProcessError as e:
+        print(f"FFmpeg failed: {e}")
+        return None
+
+
 # Load checklist from Excel
 def load_checklist(sheet_name):
     df = pd.read_excel(EXCEL_FILE, sheet_name=sheet_name, engine="openpyxl")
@@ -129,9 +160,16 @@ def index():
             file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
             file.save(file_path)
 
-             # Process audio
+            # 🔧 Preprocess the audio file
+            cleaned_path = preprocess_audio(file_path)
+
+            if not cleaned_path:
+                return "Audio preprocessing failed", 500
+
+            # 🎧 Transcribe cleaned audio
             df, checklist = load_checklist(sheet_name)
-            transcript = transcribe_audio(file_path)
+            transcript = transcribe_audio(cleaned_path)
+
 
             #print("\n--- Transcript ---")
             #print(transcript)
