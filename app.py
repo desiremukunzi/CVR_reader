@@ -60,40 +60,52 @@ def load_checklist(sheet_name):
 # Check compliance with fuzzy matching
 from statistics import mean
 
+def clean_text(text):
+    import re
+    text = text.lower()
+    text = re.sub(r"[^a-zA-Z0-9\s]", "", text)
+    text = re.sub(r"\b(?:roger|copy|standby|okay|affirmative|negative|check)\b", "", text)
+    return text.strip()
+
 def check_compliance(transcript, checklist, threshold=50):
     transcript_lower = transcript.lower()
     sentences = [s.strip() for s in transcript_lower.split('.') if s.strip()]
+
+    # Focus only on first and last 20% of the transcript
+    percent = 20
+    n = len(sentences)
+    scoped_sentences = sentences[:int(n * percent / 100)] + sentences[-int(n * percent / 100):]
+
     results = []
 
     for step in checklist:
-        step_lower = step.lower()
+        step_clean = clean_text(step)
         best_score = 0
         best_chunk = ""
 
-        for i in range(len(sentences)):
-            for window in range(1, 4):  # Window size: 1 to 3 sentences
-                chunk = ' '.join(sentences[i:i + window])
-                if not chunk:
+        for i in range(len(scoped_sentences)):
+            for window in range(1, 4):
+                chunk_raw = ' '.join(scoped_sentences[i:i + window])
+                chunk_clean = clean_text(chunk_raw)
+
+                if not chunk_clean:
                     continue
 
-                # Calculate blended fuzzy score
-                pr = fuzz.partial_ratio(step_lower, chunk)
-                tsr = fuzz.token_set_ratio(step_lower, chunk)
-                ratio = fuzz.ratio(step_lower, chunk)
-                score = mean([pr, tsr, ratio])
+                pr = fuzz.partial_ratio(step_clean, chunk_clean)
+                tsr = fuzz.token_set_ratio(step_clean, chunk_clean)
+                ratio = fuzz.ratio(step_clean, chunk_clean)
+                score = max(pr, tsr, ratio) * 0.6 + mean([pr, tsr, ratio]) * 0.4
 
                 if score > best_score:
                     best_score = score
-                    best_chunk = chunk
+                    best_chunk = chunk_raw
 
-        # Optional: avoid false 100% if not exact match
-        if best_score == 100.0 and step_lower not in transcript_lower:
+        if best_score == 100.0 and step_clean not in clean_text(transcript):
             best_score = 99.0
 
-        # Logging match info to console
         print(f"\n✅ Checklist Item: {step}")
-        print(f"   🔍 Matched Transcript Chunk: \"{best_chunk}\"")
-        print(f"   🎯 Accuracy Score: {best_score:.1f}%")
+        print(f"   🔍 Matched: \"{best_chunk}\"")
+        print(f"   🎯 Score: {best_score:.1f}%")
 
         results.append(("PASS" if best_score >= threshold else "FAIL", step, best_score))
 
