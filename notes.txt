@@ -52,5 +52,5 @@ A:\whisper.cpp\build\bin\whisper-cli.exe ^
   --threads 4 `
   
   
-
+94.1
 
