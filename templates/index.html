@@ -3,43 +3,383 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload CVR File</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <title>Audio Compliance Checker</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        .card {
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            padding: 20px;
+        body {
+            font-family: 'Inter', sans-serif;
         }
     </style>
 </head>
-<body class="bg-light">
-    <div class="container d-flex justify-content-center align-items-center min-vh-100">
-        <div class="card w-50 bg-white">
-            <h2 class="text-center">Upload CVR File</h2>
-            <form action="/" method="post" enctype="multipart/form-data" class="mt-4">
-                <div class="mb-3">
-                    <label for="file" class="form-label">Select an audio file:</label>
-                    <input type="file" class="form-control" name="file" id="file" required>
+<body>
+    <div id="root"></div>
+    <!-- Load React and ReactDOM UMD builds directly, making them globally available -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Load Babel Standalone for JSX transformation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel">
+        // Main App component - now directly embedded
+        const App = () => {
+            // State variables for selected files (array), output file name, sheet name, threshold, loading, errors, and report
+            const [selectedFiles, setSelectedFiles] = React.useState([]);
+            const [outputFileName, setOutputFileName] = React.useState('');
+            // Updated sheetName default to the first option in the dropdown
+            const [sheetName, setSheetName] = React.useState('STARTING WITH AC-GPU CHECKLIST');
+            const [threshold, setThreshold] = React.useState(90); // Default compliance threshold
+            const [loading, setLoading] = React.useState(false); // Loading indicator for processing
+            const [error, setError] = React.useState(null); // Stores any error messages
+            const [report, setReport] = React.useState(null); // Stores the entire compliance report
+
+            // Function to play a short sound notification
+            const playSoundNotification = () => {
+                try {
+                    const context = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = context.createOscillator();
+                    const gainNode = context.createGain();
+
+                    oscillator.type = "square";
+                    oscillator.frequency.setValueAtTime(880, context.currentTime);
+                    oscillator.connect(gainNode);
+                    gainNode.connect(context.destination);
+
+                    oscillator.start();
+                    // Fade out over a very short duration
+                    gainNode.gain.exponentialRampToValueAtTime(0.00001, context.currentTime + 0.5); // 0.5 second duration
+                    oscillator.stop(context.currentTime + 0.5);
+                } catch (e) {
+                    console.warn("Could not play system beep:", e);
+                }
+            };
+
+
+            // Handlers for drag-and-drop functionality
+            const handleDragOver = (event) => {
+                event.preventDefault(); // Prevent default to allow drop
+                event.currentTarget.classList.add('border-indigo-500', 'bg-indigo-50');
+            };
+
+            const handleDragLeave = (event) => {
+                event.currentTarget.classList.remove('border-indigo-500', 'bg-indigo-50');
+            };
+
+            const handleDrop = (event) => {
+                event.preventDefault(); // Prevent default to allow drop
+                event.currentTarget.classList.remove('border-indigo-500', 'bg-indigo-50');
+                const files = Array.from(event.dataTransfer.files); // Get files from drop event
+                setSelectedFiles((prevFiles) => [...prevFiles, ...files]); // Add new files to existing
+                setError(null); // Clear previous errors
+            };
+
+            // Function to handle file selection from input
+            const handleFileChange = (event) => {
+                const files = Array.from(event.target.files);
+                setSelectedFiles((prevFiles) => [...prevFiles, ...files]); // Add new files to existing
+                setError(null); // Clear previous errors
+            };
+
+            // Function to remove a selected file
+            const removeFile = (fileName) => {
+                setSelectedFiles((prevFiles) => prevFiles.filter(file => file.name !== fileName));
+            };
+
+            // Function to handle form submission
+            const handleSubmit = async (event) => {
+                event.preventDefault(); // Prevent default form submission behavior
+
+                if (selectedFiles.length === 0) {
+                    setError('Please select at least one audio file.');
+                    return;
+                }
+
+                if (!sheetName.trim()) {
+                    setError('Please select an Excel sheet name.');
+                    return;
+                }
+
+                if (!outputFileName.trim()) {
+                    setError('Please enter a name for the resultant audio file.');
+                    return;
+                }
+
+                setLoading(true); // Start loading
+                setError(null); // Clear previous errors
+                setReport(null); // Clear previous report
+
+                // Create FormData object to send files and other data
+                const formData = new FormData();
+                selectedFiles.forEach((file) => {
+                    formData.append('files[]', file); // Append each file with 'files[]' key
+                });
+                formData.append('output_file_name', outputFileName); // Append the desired output file name
+                formData.append('sheet_name', sheetName);
+                formData.append('threshold', threshold);
+
+                try {
+                    // Make a POST request to the Flask backend
+                    const response = await fetch('/', {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    // Check if the response is successful
+                    if (!response.ok) {
+                        // If not OK, try to read error message from response
+                        const errorText = await response.text();
+                        throw new Error(`Server error: ${response.status} - ${errorText}`);
+                    }
+
+                    // Parse the JSON response from the Flask backend
+                    const data = await response.json();
+                    setReport(data); // Set the report data
+                    playSoundNotification(); // Play sound on successful report generation
+                    console.log('Report Data:', data);
+                } catch (err) {
+                    console.error('Error during file upload or processing:', err);
+                    setError(`Failed to process audio: ${err.message}. Please ensure the Excel file is accessible and the backend is running correctly. Also, check Flask logs for more details.`);
+                } finally {
+                    setLoading(false); // End loading
+                }
+            };
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 p-4 font-inter text-gray-800 antialiased flex flex-col items-center">
+                    <div className="w-full max-w-4xl bg-white shadow-xl rounded-2xl p-8 space-y-8 mt-8">
+                        <h1 className="text-4xl font-extrabold text-center text-indigo-700 mb-8 tracking-tight">
+                            Audio Compliance Checker
+                        </h1>
+
+                        {/* Upload Form Section */}
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            {/* Drag and Drop Area */}
+                            <div
+                                onDragOver={handleDragOver}
+                                onDragLeave={handleDragLeave}
+                                onDrop={handleDrop}
+                                className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center transition-all duration-200 ease-in-out hover:border-indigo-500 hover:bg-indigo-50"
+                            >
+                                <span className="mx-auto block text-5xl text-gray-400 mb-3">⬆️</span> {/* Replaced Upload icon */}
+                                <p className="text-lg text-gray-600 font-semibold">Drag & drop your audio files here, or</p>
+                                <label htmlFor="audioFile" className="cursor-pointer inline-flex items-center px-4 py-2 mt-3 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    Select Files
+                                </label>
+                                <input
+                                    type="file"
+                                    id="audioFile"
+                                    accept="audio/*"
+                                    multiple // Allow multiple file selection
+                                    onChange={handleFileChange}
+                                    className="sr-only" // Hide the actual input visually
+                                />
+                            </div>
+
+                            {/* Display Selected Files */}
+                            {selectedFiles.length > 0 && (
+                                <div className="bg-gray-50 p-4 rounded-lg shadow-inner border border-gray-200">
+                                    <h3 className="text-lg font-medium text-gray-700 mb-2">Selected Audio Files:</h3>
+                                    <ul className="list-disc pl-5 space-y-1">
+                                        {selectedFiles.map((file, index) => (
+                                            <li key={index} className="flex justify-between items-center text-sm text-gray-800">
+                                                <span className="truncate">{file.name}</span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeFile(file.name)}
+                                                    className="ml-4 text-red-500 hover:text-red-700 transition-colors duration-150 ease-in-out focus:outline-none"
+                                                    title="Remove file"
+                                                >
+                                                    ❌ {/* Replaced XCircle icon */}
+                                                </button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
+                            <div className="flex flex-col sm:flex-row sm:items-end sm:space-x-6 space-y-6 sm:space-y-0">
+                                {/* Resultant Audio File Name Input */}
+                                <div className="flex-1">
+                                    <label htmlFor="outputFileName" className="block text-sm font-medium text-gray-700 mb-2">
+                                        🎵 Resultant Audio File Name {/* Replaced FileAudio icon */}
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="outputFileName"
+                                        value={outputFileName}
+                                        onChange={(e) => setOutputFileName(e.target.value)}
+                                        placeholder="e.g., combined_audio.wav"
+                                        className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-150 ease-in-out"
+                                    />
+                                </div>
+
+                                {/* Excel Sheet Name Dropdown */}
+                                <div>
+                                    <label htmlFor="sheetName" className="block text-sm font-medium text-gray-700 mb-2">
+                                        📄 Excel Sheet Name {/* Replaced FileText icon */}
+                                    </label>
+                                    <select
+                                        id="sheetName"
+                                        value={sheetName}
+                                        onChange={(e) => setSheetName(e.target.value)}
+                                        className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-150 ease-in-out bg-white"
+                                    >
+                                        <option value="STARTING WITH AC-GPU CHECKLIST">STARTING WITH AC-GPU CHECKLIST</option>
+                                        <option value="STARTING WITH DC-GPU CHECKLIST">STARTING WITH DC-GPU CHECKLIST</option>
+                                        <option value="STARTING WITHOUT GPU CHECKLIST">STARTING WITHOUT GPU CHECKLIST</option>
+                                    </select>
+                                </div>
+
+                                {/* Threshold Input */}
+                                <div>
+                                    <label htmlFor="threshold" className="block text-sm font-medium text-gray-700 mb-2">
+                                        % Match Threshold (%) {/* Replaced Percent icon */}
+                                    </label>
+                                    <input
+                                        type="number"
+                                        id="threshold"
+                                        value={threshold}
+                                        onChange={(e) => setThreshold(Number(e.target.value))}
+                                        min="0"
+                                        max="100"
+                                        className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-150 ease-in-out"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Submit Button */}
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className={`w-full py-3 px-6 border border-transparent rounded-lg shadow-sm text-lg font-semibold text-white transition duration-300 ease-in-out ${
+                                    loading
+                                        ? 'bg-indigo-400 cursor-not-allowed'
+                                        : 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+                                }`}
+                            >
+                                {loading ? 'Processing Audio...' : 'Generate Compliance Report'}
+                            </button>
+                        </form>
+
+                        {/* Error Message Display */}
+                        {error && (
+                            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
+                                <strong className="font-bold mr-2">Error!</strong>
+                                <span className="block sm:inline">{error}</span>
+                            </div>
+                        )}
+
+                        {/* Loading Indicator */}
+                        {loading && (
+                            <div className="flex items-center justify-center p-6 bg-blue-50 rounded-lg shadow-inner">
+                                <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mr-4"></div>
+                                <span className="text-xl text-blue-700 font-medium">Analyzing audio and generating report...</span>
+                            </div>
+                        )}
+
+                        {/* Report Display Section */}
+                        {report && (
+                            <div className="space-y-6 mt-10">
+                                <h2 className="text-3xl font-bold text-center text-indigo-600 flex items-center justify-center">
+                                    ℹ️ Compliance Report {/* Replaced Info icon */}
+                                </h2>
+
+                                {/* Overall Compliance Summary as a professional report */}
+                                <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                                    <h3 className="text-2xl font-semibold text-gray-800 mb-4 text-center">Summary</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="bg-indigo-50 p-4 rounded-lg shadow-inner text-center">
+                                            <p className="text-lg font-medium text-indigo-800">
+                                                Overall Compliance:
+                                            </p>
+                                            <p className="text-indigo-700 text-3xl font-bold mt-1">
+                                                {report.compliance_percent}%
+                                            </p>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-lg shadow-inner text-center">
+                                            <p className="text-lg font-medium text-red-800">
+                                                Checks Not Complied:
+                                            </p>
+                                            <p className="text-red-700 text-3xl font-bold mt-1">
+                                                {report.not_complied_count}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Compliance Results Table */}
+                                <div className="bg-gray-50 p-6 rounded-lg shadow-md border border-gray-200">
+                                    <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+                                        ✅ Checklist Compliance {/* Replaced CheckCircle icon */}
+                                    </h3>
+                                    <div className="overflow-x-auto">
+                                        <table className="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden shadow-sm">
+                                            <thead className="bg-indigo-100">
+                                                <tr>
+                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider rounded-tl-lg">
+                                                        Status
+                                                    </th>
+                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider">
+                                                        Checklist Item
+                                                    </th>
+                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider rounded-tr-lg">
+                                                        Match Score (%)
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="bg-white divide-y divide-gray-200">
+                                                {report.results.map((item, index) => (
+                                                    <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                            {item[0] === 'PASS' ? (
+                                                                <span className="text-green-600 flex items-center">
+                                                                    ✅ PASS {/* Replaced CheckCircle icon */}
+                                                                </span>
+                                                            ) : (
+                                                                <span className="text-red-600 flex items-center">
+                                                                    ❌ FAIL {/* Replaced XCircle icon */}
+                                                                </span>
+                                                            )}
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-normal text-sm text-gray-900">
+                                                            {item[1]}
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                                            {item[2].toFixed(1)}%
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    {/* Tailwind CSS spinner for loading animation */}
+                    <style jsx>{`
+                        .loader {
+                            border-top-color: #3498db;
+                            animation: spin 1s linear infinite;
+                        }
+
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    `}</style>
                 </div>
+            );
+        };
 
-                <div class="mb-3">
-                    <label for="sheet" class="form-label">Select Checklist Type</label>
-                    <select name="sheet_name" id="sheet" class="form-control">
-                      <option value="STARTING WITH AC-GPU CHECKLIST" selected>STARTING WITH AC-GPU CHECKLIST</option>
-                      <option value="STARTING WITH DC-GPU CHECKLIST">STARTING WITH DC-GPU CHECKLIST</option>
-                      <option value="STARTING WITHOUT GPU CHECKLIST">STARTING WITHOUT GPU CHECKLIST</option>
-                    </select>
-                  </div>
-                  
-                <!-- <div class="mb-3">
-                    <label for="threshold" class="form-label">Accuracy Threshold (%):</label>
-                </div> -->
-                <input type="hidden" class="form-control" name="threshold" id="threshold" value="90" min="50" max="100" required>
 
-                <button type="submit" class="btn btn-primary w-100">Analyze</button>
-            </form>
-        </div>
-    </div>
+        // Mount the React App component to the 'root' div
+        ReactDOM.createRoot(document.getElementById('root')).render(
+            <React.StrictMode>
+                <App />
+            </React.StrictMode>
+        );
+    </script>
 </body>
 </html>
