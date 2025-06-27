@@ -1,6 +1,6 @@
 #my inputs
 uploads/
-transcripts/
+#transcripts/
 workbench/
 venv/
 venv-py311/
