@@ -7,3 +7,15 @@ venv-py311\Scripts\activate
 Need for amplification
 
 partial acceleration
+----------------------------
+AUDIO
+IN RAF1510
+12-06-25 First leg no checklist
+
+IN RAF61504
+02 AND 03 JUNE 25 NOT FOUND
+------------------------------
+AI Model
+consider using the _time column to measure rate of change, T1 and T2 and Pitch
+------------------------------
+

@@ -1,0 +1,849 @@
+Compliance Report for: RAF-61504_02-05-25_1
+Generated On: 2025-07-04 09:52:48
+--------------------------------------------------
+
+Status: PASS
+Checklist Item: MI-17V-5 HELICOPTER START UP WITH AC GPU & INFLIGHT CHECKLIST
+Matched Text: "helicopter."
+Score: 90.6%
+--------------------
+Status: PASS
+Checklist Item:           PRE APU START
+Matched Text: "apu start,"
+Score: 97.6%
+--------------------
+Status: PASS
+Checklist Item: Instruments and all switches As required
+Matched Text: "switches. okay. as required."
+Score: 95.1%
+--------------------
+Status: PASS
+Checklist Item: Battery 1 and 2 Check and On
+Matched Text: "okay, battery 1 and 2,"
+Score: 97.2%
+--------------------
+Status: PASS
+Checklist Item: GPU Connected check and On
+Matched Text: "connected."
+Score: 94.7%
+--------------------
+Status: PASS
+Checklist Item: Rectifiers On
+Matched Text: "on."
+Score: 90.2%
+--------------------
+Status: FAIL
+Checklist Item: Circuit Breakers On
+Matched Text: "on."
+Score: 89.2%
+--------------------
+Status: PASS
+Checklist Item: FDR and CVR On
+Matched Text: "and"
+Score: 91.4%
+--------------------
+Status: PASS
+Checklist Item: Headsets Connected
+Matched Text: "headset connected."
+Score: 96.7%
+--------------------
+Status: FAIL
+Checklist Item: Intercom Readability Check
+Matched Text: "in"
+Score: 78.2%
+--------------------
+Status: PASS
+Checklist Item: ADF On
+Matched Text: "adf on."
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: GPS On
+Matched Text: "gps on."
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: Transponder On
+Matched Text: "on. on."
+Score: 90.4%
+--------------------
+Status: FAIL
+Checklist Item: ELT Arming
+Matched Text: "in"
+Score: 82.2%
+--------------------
+Status: PASS
+Checklist Item: Global satellite tracking system On
+Matched Text: "system on"
+Score: 92.1%
+--------------------
+Status: PASS
+Checklist Item: TCAS On
+Matched Text: "on."
+Score: 92.6%
+--------------------
+Status: PASS
+Checklist Item: Aircraft records on board and filled
+Matched Text: "aircraft record on board and field."
+Score: 95.2%
+--------------------
+Status: PASS
+Checklist Item: Overhead hatch closed
+Matched Text: "overhead hatch closed."
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: Windscreens Clean
+Matched Text: "windscreen clean,"
+Score: 96.5%
+--------------------
+Status: PASS
+Checklist Item: Seatbelts Fastened
+Matched Text: "fastened"
+Score: 94.9%
+--------------------
+Status: PASS
+Checklist Item: Pneumatic System Check Pressure
+Matched Text: "system, check pressure"
+Score: 96.8%
+--------------------
+Status: PASS
+Checklist Item: Pedals Neutral
+Matched Text: "pedals neutral"
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: Cyclic Stick Neutral           
+Matched Text: "cyclic stick, neutral"
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: Landing gear brakes applied
+Matched Text: "landing gear brake, applied"
+Score: 97.9%
+--------------------
+Status: PASS
+Checklist Item: Collective pitch fully down
+Matched Text: "colective pitch, fully down"
+Score: 97.9%
+--------------------
+Status: PASS
+Checklist Item: Throttle Twist Grip Fully Left
+Matched Text: "throttle twist"
+Score: 95.2%
+--------------------
+Status: PASS
+Checklist Item: Friction Clutch Adjusted
+Matched Text: "friction"
+Score: 93.3%
+--------------------
+Status: PASS
+Checklist Item: Separate Throttle Lever Middle and Latched
+Matched Text: "separate throttle levers, middle and"
+Score: 95.9%
+--------------------
+Status: PASS
+Checklist Item: Main Rotor Brake Fully Down
+Matched Text: "main rotor brake, fully down"
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: Engine Shut Down Levers Backward
+Matched Text: "down engine shutdown levers, backward"
+Score: 96.9%
+--------------------
+Status: PASS
+Checklist Item: Fuel Quantity Check
+Matched Text: "fuel quantity"
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: Warning Lights Check 
+Matched Text: "warning"
+Score: 95.6%
+--------------------
+Status: PASS
+Checklist Item: Fire extinguishing System Check 
+Matched Text: "okay fire extinguishing system,"
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: Voice Warning System Check 
+Matched Text: "warning system,"
+Score: 97.6%
+--------------------
+Status: PASS
+Checklist Item: EGT Indicators Test
+Matched Text: "egt, indicators test"
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: Engine vibration system test
+Matched Text: "engine vibration system, test"
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: Fire extinguishing System On
+Matched Text: "fire extinguishing system on"
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: All pumps On
+Matched Text: "all pumps on"
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: Generators Off
+Matched Text: "generators off"
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: Fire Fuel shut off valve Check and  Open
+Matched Text: "off fire fuel shut valves open and check open"
+Score: 94.7%
+--------------------
+Status: PASS
+Checklist Item: Engine Shut Down Levers Backward
+Matched Text: "down engine shutdown levers, backward"
+Score: 96.9%
+--------------------
+Status: PASS
+Checklist Item: Pre APU Start Checklist Completed
+Matched Text: "apu start, checklist complete"
+Score: 97.8%
+--------------------
+Status: PASS
+Checklist Item: APU START CHECKLIST 
+Matched Text: "apu start, checklist"
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: Startup clearance ATC Request
+Matched Text: "request"
+Score: 91.9%
+--------------------
+Status: PASS
+Checklist Item: Ground crew Signal               
+Matched Text: "ground crew signal,"
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: APU Start               
+Matched Text: "apu start,"
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: APU Parameters Check as Required     
+Matched Text: "parameters as required."
+Score: 98.0%
+--------------------
+Status: PASS
+Checklist Item: APU Generator On
+Matched Text: "apu generator on"
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: GPU Off and disconnected
+Matched Text: "gpu disconnected."
+Score: 96.0%
+--------------------
+Status: PASS
+Checklist Item: Startup checklist Completed            
+Matched Text: "startup checklist completed."
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: ENGINE START UP
+Matched Text: "okay. engine startup."
+Score: 96.1%
+--------------------
+Status: PASS
+Checklist Item:  Start up Area Clear
+Matched Text: "okay, start up area"
+Score: 97.5%
+--------------------
+Status: PASS
+Checklist Item: Anti collision light  On
+Matched Text: "collision"
+Score: 93.9%
+--------------------
+Status: PASS
+Checklist Item: Engine selection   as per wind direction    
+Matched Text: "engine selection."
+Score: 94.3%
+--------------------
+Status: PASS
+Checklist Item: Ground crew  Signal
+Matched Text: "ground crew signal,"
+Score: 98.9%
+--------------------
+Status: PASS
+Checklist Item: Engine  Start button    press
+Matched Text: "engine"
+Score: 91.2%
+--------------------
+Status: PASS
+Checklist Item: HP cock open
+Matched Text: "open"
+Score: 93.3%
+--------------------
+Status: PASS
+Checklist Item: Stop watch Set
+Matched Text: "top watch"
+Score: 94.2%
+--------------------
+Status: PASS
+Checklist Item: Warm up engine 1 to 2 minutes
+Matched Text: "warm up. engine"
+Score: 95.3%
+--------------------
+Status: PASS
+Checklist Item: Engine Parameters as required
+Matched Text: "engine parameters as required."
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: Start second engine as above
+Matched Text: "second"
+Score: 91.4%
+--------------------
+Status: PASS
+Checklist Item: Warm up second engine 1 to 2 minutes
+Matched Text: "minutes"
+Score: 91.0%
+--------------------
+Status: PASS
+Checklist Item: Idle parameters Check
+Matched Text: "idle. parameters"
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: DPD On
+Matched Text: "on."
+Score: 93.3%
+--------------------
+Status: PASS
+Checklist Item: EGT Air Check
+Matched Text: "egt,"
+Score: 94.7%
+--------------------
+Status: PASS
+Checklist Item: FUNCTIONAL CHECK
+Matched Text: "okay. okay. function"
+Score: 97.0%
+--------------------
+Status: PASS
+Checklist Item: Hydraulic system Check
+Matched Text: "hydraulic system"
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: Controls Response Check
+Matched Text: "check. control response"
+Score: 96.5%
+--------------------
+Status: PASS
+Checklist Item: EEG Test
+Matched Text: "test"
+Score: 95.6%
+--------------------
+Status: PASS
+Checklist Item: Partial acceleration Check
+Matched Text: "acceleration"
+Score: 96.7%
+--------------------
+Status: PASS
+Checklist Item: ENGINE OPERATIONAL MODE
+Matched Text: "engine"
+Score: 92.2%
+--------------------
+Status: PASS
+Checklist Item: Throttle Twist Grip Fully Right 
+Matched Text: "throttle twist"
+Score: 95.0%
+--------------------
+Status: PASS
+Checklist Item: Generators Test and On
+Matched Text: "generators"
+Score: 95.0%
+--------------------
+Status: PASS
+Checklist Item: APU Generator Off
+Matched Text: "apu generator"
+Score: 98.2%
+--------------------
+Status: PASS
+Checklist Item: Inverters Auto position                                    
+Matched Text: "auto position."
+Score: 96.3%
+--------------------
+Status: PASS
+Checklist Item: APU Off
+Matched Text: "apu off."
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: Navigation Lights On
+Matched Text: "lights on."
+Score: 94.9%
+--------------------
+Status: FAIL
+Checklist Item: Blade tip lights Night and Poor visibility On
+Matched Text: "lights,"
+Score: 89.8%
+--------------------
+Status: FAIL
+Checklist Item: Cabin Lighting Night and Poor visibility On
+Matched Text: "and"
+Score: 88.4%
+--------------------
+Status: PASS
+Checklist Item: Formation lights Night and Poor visibility On
+Matched Text: "formation,"
+Score: 91.1%
+--------------------
+Status: PASS
+Checklist Item: Voice Warning System On
+Matched Text: "warning system on."
+Score: 98.0%
+--------------------
+Status: PASS
+Checklist Item: Gyro Horizons On
+Matched Text: "on. on. on."
+Score: 90.6%
+--------------------
+Status: PASS
+Checklist Item: Compass System On and Check
+Matched Text: "system on"
+Score: 94.7%
+--------------------
+Status: PASS
+Checklist Item: Radio Altimeter On and Check
+Matched Text: "radio altimeter on."
+Score: 98.7%
+--------------------
+Status: PASS
+Checklist Item: Baro Altimeter Set
+Matched Text: "altimeter"
+Score: 95.6%
+--------------------
+Status: PASS
+Checklist Item: Pitch Limit System Check
+Matched Text: "system,"
+Score: 93.3%
+--------------------
+Status: PASS
+Checklist Item: Auto Pilot On and Check
+Matched Text: "on and"
+Score: 93.6%
+--------------------
+Status: PASS
+Checklist Item: Main Rotor Control speed Check range
+Matched Text: "main rotor"
+Score: 93.2%
+--------------------
+Status: PASS
+Checklist Item: Main Rotor RPM Set 95 %
+Matched Text: "main rotor"
+Score: 95.3%
+--------------------
+Status: PASS
+Checklist Item: Collective Down
+Matched Text: "down"
+Score: 92.3%
+--------------------
+Status: PASS
+Checklist Item: Engine Startup checklist Completed
+Matched Text: "startup checklist completed."
+Score: 98.5%
+--------------------
+Status: PASS
+Checklist Item: BEFORE TAXI
+Matched Text: "taxi"
+Score: 93.8%
+--------------------
+Status: PASS
+Checklist Item: Taxing clearance ATC Request
+Matched Text: "request"
+Score: 92.0%
+--------------------
+Status: PASS
+Checklist Item: Area Clear         
+Matched Text: "clear"
+Score: 95.6%
+--------------------
+Status: FAIL
+Checklist Item: Chocks   Removed and Stowed                     
+Matched Text: "and"
+Score: 89.3%
+--------------------
+Status: PASS
+Checklist Item: Crew And Pax  Briefed          
+Matched Text: "crew"
+Score: 90.9%
+--------------------
+Status: PASS
+Checklist Item: Doors and Windows Closed
+Matched Text: "closed."
+Score: 92.0%
+--------------------
+Status: FAIL
+Checklist Item: Cargo Compartment  Secured  
+Matched Text: "go."
+Score: 77.2%
+--------------------
+Status: PASS
+Checklist Item: Autopilot Off
+Matched Text: "off"
+Score: 91.7%
+--------------------
+Status: PASS
+Checklist Item: Before Taxing Checklist  Completed                        
+Matched Text: "checklist completed."
+Score: 95.5%
+--------------------
+Status: PASS
+Checklist Item: LINEUP POSITION
+Matched Text: "position,"
+Score: 95.9%
+--------------------
+Status: PASS
+Checklist Item: Area Clear                 
+Matched Text: "clear"
+Score: 95.6%
+--------------------
+Status: PASS
+Checklist Item: Obstacles in TakeOff Direction Absent                    
+Matched Text: "takeoff"
+Score: 90.9%
+--------------------
+Status: FAIL
+Checklist Item: Gyro Same readings     
+Matched Text: "am"
+Score: 78.7%
+--------------------
+Status: PASS
+Checklist Item: Heading Set
+Matched Text: "set."
+Score: 92.4%
+--------------------
+Status: PASS
+Checklist Item: Autopilot ON                         
+Matched Text: "on."
+Score: 90.5%
+--------------------
+Status: PASS
+Checklist Item: Type of TakeOFF Decide                   
+Matched Text: "takeoff"
+Score: 93.1%
+--------------------
+Status: PASS
+Checklist Item: Request for TakeOFF Performed               
+Matched Text: "for takeoff"
+Score: 94.0%
+--------------------
+Status: PASS
+Checklist Item: Stop watch Press                      
+Matched Text: "watch"
+Score: 93.0%
+--------------------
+Status: PASS
+Checklist Item: BEFORE TAKE OFF 
+Matched Text: "take off"
+Score: 95.9%
+--------------------
+Status: PASS
+Checklist Item: Fuel Selector    Service                  
+Matched Text: "fuel"
+Score: 90.5%
+--------------------
+Status: PASS
+Checklist Item: Fuel Pump Lights  Check Off              
+Matched Text: "fuel pump off."
+Score: 94.8%
+--------------------
+Status: FAIL
+Checklist Item: Transponder Alt                          
+Matched Text: "on."
+Score: 79.6%
+--------------------
+Status: PASS
+Checklist Item: Autopilot On                              
+Matched Text: "on."
+Score: 90.5%
+--------------------
+Status: PASS
+Checklist Item: Engine And Transmission Checked           
+Matched Text: "checked."
+Score: 91.6%
+--------------------
+Status: PASS
+Checklist Item: Before Takeoff Checklist Completed
+Matched Text: "checklist completed."
+Score: 96.2%
+--------------------
+Status: PASS
+Checklist Item: AFTER TAKE OFF  
+Matched Text: "take off"
+Score: 96.4%
+--------------------
+Status: PASS
+Checklist Item: Main rotor 95 plus or minus 2 percent                
+Matched Text: "main rotor"
+Score: 92.3%
+--------------------
+Status: FAIL
+Checklist Item: DPDS Above 50 meters OFF                            
+Matched Text: "off"
+Score: 89.6%
+--------------------
+Status: PASS
+Checklist Item: Fuel consumption Monitored                       
+Matched Text: "fuel"
+Score: 90.2%
+--------------------
+Status: FAIL
+Checklist Item: Monitor every 15 to 20 meters                                        
+Matched Text: "to"
+Score: 88.4%
+--------------------
+Status: PASS
+Checklist Item: After takeoff checklist     Completed   
+Matched Text: "checklist completed."
+Score: 92.9%
+--------------------
+Status: PASS
+Checklist Item: IN FLIGHT CHECKS
+Matched Text: "checks,"
+Score: 93.9%
+--------------------
+Status: PASS
+Checklist Item: Power setting As  per graph            
+Matched Text: "setting"
+Score: 92.2%
+--------------------
+Status: PASS
+Checklist Item: Fuel quantity Check                       
+Matched Text: "fuel quantity"
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: Other Parameters Normal operation
+Matched Text: "parameters"
+Score: 92.9%
+--------------------
+Status: PASS
+Checklist Item:  Flight Following Call                       
+Matched Text: "flight,"
+Score: 92.6%
+--------------------
+Status: PASS
+Checklist Item: PRE LANDING CHECKS
+Matched Text: "landing"
+Score: 94.1%
+--------------------
+Status: PASS
+Checklist Item: Landing clearance Request
+Matched Text: "request"
+Score: 92.5%
+--------------------
+Status: PASS
+Checklist Item: Runway Condition Known
+Matched Text: "runway"
+Score: 92.4%
+--------------------
+Status: FAIL
+Checklist Item: Autopilot Alt channel Off
+Matched Text: "off"
+Score: 89.5%
+--------------------
+Status: FAIL
+Checklist Item: Cargo Secured
+Matched Text: "go."
+Score: 80.4%
+--------------------
+Status: PASS
+Checklist Item: Landing lights On
+Matched Text: "lights on."
+Score: 95.9%
+--------------------
+Status: PASS
+Checklist Item: Fuel quantity Check
+Matched Text: "fuel quantity"
+Score: 100.0%
+--------------------
+Status: FAIL
+Checklist Item: Compass Matched
+Matched Text: "pass"
+Score: 84.6%
+--------------------
+Status: PASS
+Checklist Item: dpds On At 50m
+Matched Text: "on."
+Score: 90.0%
+--------------------
+Status: PASS
+Checklist Item: Type of Landing Decide
+Matched Text: "landing"
+Score: 93.1%
+--------------------
+Status: PASS
+Checklist Item: Runway Exit and Parking As instructed
+Matched Text: "parking"
+Score: 90.9%
+--------------------
+Status: PASS
+Checklist Item: Parameters Within Limit
+Matched Text: "parameters"
+Score: 94.7%
+--------------------
+Status: PASS
+Checklist Item: Main rotor 95 plus or minus 2 percent                
+Matched Text: "main rotor"
+Score: 92.3%
+--------------------
+Status: PASS
+Checklist Item: Landing Gear Brakes Released
+Matched Text: "landing gear"
+Score: 94.7%
+--------------------
+Status: PASS
+Checklist Item: dpds On 
+Matched Text: "on."
+Score: 92.6%
+--------------------
+Status: FAIL
+Checklist Item: Cargo compartment Secured
+Matched Text: "go."
+Score: 77.3%
+--------------------
+Status: PASS
+Checklist Item: Crew Briefed
+Matched Text: "crew"
+Score: 93.3%
+--------------------
+Status: PASS
+Checklist Item: Before landing checklist Completed
+Matched Text: "checklist completed."
+Score: 96.2%
+--------------------
+Status: PASS
+Checklist Item: AFTER LANDING
+Matched Text: "landing"
+Score: 96.0%
+--------------------
+Status: PASS
+Checklist Item: Collective fully down                           
+Matched Text: "fully down"
+Score: 95.3%
+--------------------
+Status: PASS
+Checklist Item: Auto pilot      Off                                             
+Matched Text: "pilot"
+Score: 92.2%
+--------------------
+Status: PASS
+Checklist Item: Parking as required                          
+Matched Text: "okay. as required."
+Score: 96.4%
+--------------------
+Status: PASS
+Checklist Item: After landing checklist completed
+Matched Text: "checklist completed."
+Score: 96.4%
+--------------------
+Status: PASS
+Checklist Item: ENGINE SHUT DOWN  
+Matched Text: "engine shut down"
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: Landing gear Brake Apply                               
+Matched Text: "landing gear brake,"
+Score: 98.1%
+--------------------
+Status: PASS
+Checklist Item: Consumers Off                                          
+Matched Text: "consumers off."
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: Rectifiers Off                                           
+Matched Text: "off"
+Score: 91.4%
+--------------------
+Status: PASS
+Checklist Item: Inverters Neutral                                      
+Matched Text: "inverters"
+Score: 95.9%
+--------------------
+Status: PASS
+Checklist Item: Generators Off                                    
+Matched Text: "generators off"
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: Throttle Fully Left
+Matched Text: "left fully left"
+Score: 95.9%
+--------------------
+Status: PASS
+Checklist Item: Left and Right Fuel Pumps Off
+Matched Text: "left and right, fuel pump off."
+Score: 98.0%
+--------------------
+Status: PASS
+Checklist Item: Engines Cooling 1 to 2 Minutes
+Matched Text: "engines"
+Score: 91.7%
+--------------------
+Status: PASS
+Checklist Item: Eng  Shutdown Levers Backward
+Matched Text: "shutdown levers, backward"
+Score: 98.7%
+--------------------
+Status: PASS
+Checklist Item: Stopwatch Press
+Matched Text: "press."
+Score: 93.3%
+--------------------
+Status: PASS
+Checklist Item: Ngg equal 0 at 35 Second Minimum
+Matched Text: "minimum,"
+Score: 91.5%
+--------------------
+Status: PASS
+Checklist Item: MAIN ROTOR STOP                 
+Matched Text: "main rotor"
+Score: 97.3%
+--------------------
+Status: PASS
+Checklist Item: At less or equal to 15% Main Rotor Slowly apply Main Rotor brake                
+Matched Text: "main rotor brake,"
+Score: 92.1%
+--------------------
+Status: PASS
+Checklist Item: At  Main Rotor stop  Controls move back and forth                                                 
+Matched Text: "main rotor"
+Score: 91.2%
+--------------------
+Status: PASS
+Checklist Item: Fire extinguisher  switch Off
+Matched Text: "switch off?"
+Score: 93.5%
+--------------------
+Status: PASS
+Checklist Item: Fuel shut off valves Leave open position                       
+Matched Text: "fuel shut valves open"
+Score: 93.3%
+--------------------
+Status: PASS
+Checklist Item: Service tank pump Off
+Matched Text: "pump off."
+Score: 94.0%
+--------------------
+Status: PASS
+Checklist Item: Batteries 1 and 2 Off
+Matched Text: "1 and 2,"
+Score: 93.3%
+--------------------
