@@ -4,8 +4,9 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 from werkzeug.utils import secure_filename
 from rapidfuzz import fuzz
 from openpyxl import load_workbook
-from openpyxl.styles import Font, PatternFill
+from openpyxl.styles import Font, PatternFill, Border, Side
 from openpyxl.styles import Alignment
+from openpyxl.utils import get_column_letter
 import subprocess
 from statistics import mean
 import re
@@ -18,7 +19,7 @@ from datetime import datetime
 app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-EXCEL_FILE = "workbench/WORKBENCH_CARE.xlsm"
+EXCEL_FILE = "workbench/WORKBENCH_BUR _2712.xlsm"
 CHECKED_COLUMN = "B"
 TRANSCRIPT_FOLDER = "transcripts"
 COMPLIANCE_FOLDER = "compliance" # New folder for compliance reports
@@ -37,42 +38,9 @@ os.makedirs(COMPLIANCE_FOLDER, exist_ok=True)
 model = WhisperModel("medium", device="cuda", compute_type="float16")
 
 def preprocess_audio(input_path):
-   # All files are .wav already, assume they’re good
-   print(f"Skipping preprocessing. Using original WAV: {input_path}")
-   return input_path
-
-# The below to be used if you want to preprocess audio files when the transcript generated is -------
-# def preprocess_audio(input_path, output_folder="uploads", filename_prefix="cleaned_"):
-#     """
-#     Converts, trims silence, normalizes volume, and prepares audio for transcription.
-#     Returns path to the cleaned WAV file.
-#     """
-#     os.makedirs(output_folder, exist_ok=True)
-
-#     base = os.path.basename(input_path)
-#     name, _ = os.path.splitext(base)
-#     output_path = os.path.join(output_folder, f"{filename_prefix}{name}.wav")
-
-#     command = [
-#         "ffmpeg", "-y",
-#         "-i", input_path,
-#         "-ac", "1",
-#         "-ar", "16000",
-#         "-af", "silenceremove=1:0:-50dB,loudnorm",
-#         "-c:a", "pcm_s16le",
-#         output_path
-#     ]
-
-#     try:
-#         # Capture stderr to see FFmpeg's error messages
-#         result = subprocess.run(command, capture_output=True, text=True, check=True)
-#         print(f"FFmpeg stdout (preprocessing): {result.stdout}")
-#         return output_path
-#     except subprocess.CalledProcessError as e:
-#         print(f"FFmpeg failed during preprocessing: {e}")
-#         print(f"FFmpeg stderr (preprocessing): {e.stderr}")
-#         return None
-
+    # All files are .wav already, assume they’re good
+    print(f"Skipping preprocessing. Using original WAV: {input_path}")
+    return input_path
 
 def concatenate_audio_files(input_paths, output_filename, upload_folder):
     """
@@ -162,6 +130,7 @@ def check_compliance(transcript, checklist, threshold=50):
                 tsr = fuzz.token_set_ratio(step_clean, current_chunk_clean)
                 ratio = fuzz.ratio(step_clean, current_chunk_clean)
 
+                #tested on 90 threshold less rigorous
                 score = max(pr, tsr, ratio) * 0.6 + mean([pr, tsr, ratio]) * 0.4
 
                 if score > best_score:
@@ -173,8 +142,8 @@ def check_compliance(transcript, checklist, threshold=50):
 
         # Print to console (for backend debugging/logging)
         print(f"\n✅ Checklist Item: {step}")
-        print(f"   🔍 Matched: \"{best_chunk_raw}\"")
-        print(f"   🎯 Score: {best_score:.1f}%")
+        print(f"   🔍 Matched: \"{best_chunk_raw}\"")
+        print(f"   🎯 Score: {best_score:.1f}%")
 
         results.append(("PASS" if best_score >= threshold else "FAIL", step, best_score, best_chunk_raw)) # Added best_chunk_raw
 
@@ -198,22 +167,68 @@ def update_excel(results, sheet_name, not_complied_count, compliance_percent):
         cell.font = Font(color="008000" if result[0] == "PASS" else "FF0000")
         row += 1
 
-    # Apply professional formatting for "Checks Not Complied"
-    ws['D1'].value = "Checks Not Complied:"
-    ws['D1'].font = Font(bold=True)
-    ws['E1'].value = not_complied_count    
-    ws['E1'].font = Font(bold=True, color="FF0000") # Red color for not complied count
-    ws['E1'].fill = PatternFill(start_color="FFF2CC", end_color="FFF2CC", fill_type="solid") # Light orange background
-    ws['E1'].alignment = Alignment(horizontal='center', vertical='center')
-    # Apply professional formatting for "Complied Percentage"
-    ws['D2'].value = "Complied Percentage:"
-    ws['D2'].font = Font(bold=True)
-    ws['E2'].value = f"{compliance_percent:.1f}%"
-    ws['E2'].font = Font(bold=True, color="008000") # Green color for complied percentage
-    ws['E2'].fill = PatternFill(start_color="D9EAD3", end_color="D9EAD3", fill_type="solid") # Light green background
-    ws['E2'].alignment = Alignment(horizontal='center', vertical='center')
+    # --- New and Modified Formatting for Checklist Compliance Summary ---
+
+    # Get or create the "Summary" sheet
+    if "Summary" not in wb.sheetnames:
+        summary_ws = wb.create_sheet("Summary")
+    else:
+        summary_ws = wb["Summary"]
+
+    # Define common styles
+    bold_font_white = Font(bold=True, color="FFFFFF") # White color for title
+    blue_background = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid") # RGB(68, 114, 196)
+    thin_border_side = Side(style='thick') # This defines the side style for the thick border
+
+    # 1. Add title "Checklist Compliance"
+    # The title will now start at E8
+    summary_ws['E8'].value = "Checklist Compliance"
+    summary_ws['E8'].font = bold_font_white
+    summary_ws['E8'].fill = blue_background
+    summary_ws['E8'].alignment = Alignment(horizontal='center', vertical='center')
+    summary_ws.merge_cells('E8:F8')
+
+    # Set row 8 height
+    summary_ws.row_dimensions[8].height = 24
+
+    # Set column E width (and F for balance)
+    summary_ws.column_dimensions['E'].width = 20
+    summary_ws.column_dimensions['F'].width = 10 # Give some width to F as well for values
+
+    # 2. Apply professional formatting for "Checks Not Complied"
+    # These will now start at row 9
+    summary_ws['E9'].value = "Checks Not Complied:"
+    summary_ws['E9'].font = Font(bold=True)
+    summary_ws['F9'].value = not_complied_count
+    summary_ws['F9'].font = Font(bold=True, color="FF0000") # Red color for not complied count
+    summary_ws['F9'].fill = PatternFill(start_color="FFF2CC", end_color="FFF2CC", fill_type="solid") # Light orange background
+    summary_ws['F9'].alignment = Alignment(horizontal='center', vertical='center')
+
+    # 3. Apply professional formatting for "Complied Percentage"
+    # These will now start at row 10
+    summary_ws['E10'].value = "Complied Percentage:"
+    summary_ws['E10'].font = Font(bold=True)
+    summary_ws['F10'].value = f"{compliance_percent:.1f}%"
+    summary_ws['F10'].font = Font(bold=True, color="008000") # Green color for complied percentage
+    summary_ws['F10'].fill = PatternFill(start_color="D9EAD3", end_color="D9EAD3", fill_type="solid") # Light green background
+    summary_ws['F10'].alignment = Alignment(horizontal='center', vertical='center')
+
+    # 4. Apply thick border around the compliance summary table (now E8:F10)
+    # The merged cell for the title is E8:F8.
+    # We want sides and bottom, but no top border for the entire block.
+    # So, E8 will get left and right, but NO top.
+    summary_ws['E8'].border = Border(left=thin_border_side, right=thin_border_side)
+
+    # Left and Right borders for row 9
+    summary_ws['E9'].border = Border(left=thin_border_side)
+    #summary_ws['F9'].border = Border(right=thin_border_side)
+
+    # Bottom and left/right borders for row 10 (the new bottom row)
+    summary_ws['E10'].border = Border(bottom=thin_border_side, left=thin_border_side)
+    summary_ws['F10'].border = Border(bottom=thin_border_side, right=thin_border_side)
 
     wb.save(EXCEL_FILE)
+
 
 def transcribe_audio(audio_path, custom_name=None):
     segments, info = model.transcribe(audio_path, language="en")
@@ -358,14 +373,6 @@ def index():
             if cleaned_path and os.path.exists(cleaned_path):
                 os.remove(cleaned_path)
 
-            # If concatenation occurred, you might want to keep the concatenated file
-            # or remove it based on your desired behavior. For now, it remains in 'uploads'.
-            # If you want to remove it:
-            # if concatenated_audio_path and os.path.exists(concatenated_audio_path) and len(saved_file_paths) > 1:
-            #     os.remove(concatenated_audio_path)
-
-
-    # For GET requests, render the React app's entry point
     return render_template("index.html")
 
 # Run Flask app

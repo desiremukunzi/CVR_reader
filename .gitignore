@@ -5,6 +5,7 @@ workbench/
 venv/
 venv-py311/
 whisper.cpp
+/test_audio
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

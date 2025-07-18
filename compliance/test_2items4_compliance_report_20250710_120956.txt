@@ -1,0 +1,859 @@
+Compliance Report for: test_2items4
+Generated On: 2025-07-10 12:09:56
+--------------------------------------------------
+
+Status: FAIL
+Checklist Item: MI-17-1V HELICOPTER START UP WITH AC GPU & INFLIGHT CHECKLIST 
+Matched Text: "and field, throttle twist grip fully left."
+Score: 41.1%
+--------------------
+Status: FAIL
+Checklist Item:           PRE APU START
+Matched Text: "board and field, throttle"
+Score: 38.8%
+--------------------
+Status: FAIL
+Checklist Item: Instruments and all switches As required
+Matched Text: "on board and field, throttle twist grip"
+Score: 43.9%
+--------------------
+Status: FAIL
+Checklist Item: Battery one and two Check and On
+Matched Text: "on board and"
+Score: 50.5%
+--------------------
+Status: FAIL
+Checklist Item: GPU Connected check and On
+Matched Text: "on board and"
+Score: 47.0%
+--------------------
+Status: FAIL
+Checklist Item: Rectifiers On
+Matched Text: "aircraft on"
+Score: 50.7%
+--------------------
+Status: FAIL
+Checklist Item: Circuit Breakers On
+Matched Text: "aircraft on"
+Score: 52.8%
+--------------------
+Status: FAIL
+Checklist Item: FDR and CVR On
+Matched Text: "and"
+Score: 52.5%
+--------------------
+Status: FAIL
+Checklist Item: Headsets Connected
+Matched Text: "and field,"
+Score: 37.4%
+--------------------
+Status: FAIL
+Checklist Item: Intercom Readability Check
+Matched Text: "aircraft"
+Score: 43.8%
+--------------------
+Status: FAIL
+Checklist Item: ADF On
+Matched Text: "on"
+Score: 63.3%
+--------------------
+Status: FAIL
+Checklist Item: GPS On
+Matched Text: "on"
+Score: 63.3%
+--------------------
+Status: FAIL
+Checklist Item: Transponder On
+Matched Text: "on"
+Score: 45.0%
+--------------------
+Status: FAIL
+Checklist Item: ELT Arming
+Matched Text: "twist grip"
+Score: 41.3%
+--------------------
+Status: FAIL
+Checklist Item: Global satellite tracking system On
+Matched Text: "on board and field, throttle twist"
+Score: 41.6%
+--------------------
+Status: FAIL
+Checklist Item: TCAS On
+Matched Text: "on"
+Score: 59.3%
+--------------------
+Status: PASS
+Checklist Item: Aircraft records on board and filled
+Matched Text: "aircraft on board and field,"
+Score: 79.7%
+--------------------
+Status: FAIL
+Checklist Item: Overhead hatch closed
+Matched Text: "field, throttle"
+Score: 40.4%
+--------------------
+Status: FAIL
+Checklist Item: Windscreens Clean
+Matched Text: "aircraft on board and"
+Score: 36.9%
+--------------------
+Status: FAIL
+Checklist Item: Seatbelts Fastened
+Matched Text: "and field,"
+Score: 39.8%
+--------------------
+Status: FAIL
+Checklist Item: Pneumatic System Check Pressure
+Matched Text: "throttle twist grip fully left."
+Score: 32.8%
+--------------------
+Status: FAIL
+Checklist Item: Pedals Neutral
+Matched Text: "and field, throttle"
+Score: 38.7%
+--------------------
+Status: FAIL
+Checklist Item: Cyclic Stick Neutral           
+Matched Text: "throttle twist grip fully"
+Score: 36.9%
+--------------------
+Status: FAIL
+Checklist Item: Landing gear brakes applied
+Matched Text: "on board and field,"
+Score: 45.0%
+--------------------
+Status: FAIL
+Checklist Item: Collective pitch fully down
+Matched Text: "throttle twist grip fully"
+Score: 50.7%
+--------------------
+Status: PASS
+Checklist Item: Throttle Twist Grip Fully Left
+Matched Text: "throttle twist grip fully left."
+Score: 100.0%
+--------------------
+Status: FAIL
+Checklist Item: Friction Clutch Adjusted
+Matched Text: "on board and field,"
+Score: 38.9%
+--------------------
+Status: FAIL
+Checklist Item: Separate Throttle Lever Middle and Latched
+Matched Text: "throttle"
+Score: 50.1%
+--------------------
+Status: FAIL
+Checklist Item: Main Rotor Brake Fully Down
+Matched Text: "fully"
+Score: 49.6%
+--------------------
+Status: FAIL
+Checklist Item: Engine Shut Down Levers Backward
+Matched Text: "on board"
+Score: 37.6%
+--------------------
+Status: FAIL
+Checklist Item: Fuel Quantity Check
+Matched Text: "fully"
+Score: 47.4%
+--------------------
+Status: FAIL
+Checklist Item: Warning Lights Check 
+Matched Text: "twist"
+Score: 35.0%
+--------------------
+Status: FAIL
+Checklist Item: Fire extinguishing System Check 
+Matched Text: "field, throttle twist"
+Score: 37.8%
+--------------------
+Status: FAIL
+Checklist Item: Voice Warning System Check 
+Matched Text: "throttle twist"
+Score: 37.1%
+--------------------
+Status: FAIL
+Checklist Item: EGT Indicators Test
+Matched Text: "and field, throttle twist"
+Score: 42.0%
+--------------------
+Status: FAIL
+Checklist Item: Engine vibration system test
+Matched Text: "and field, throttle twist"
+Score: 40.5%
+--------------------
+Status: FAIL
+Checklist Item: Inverter Off position
+Matched Text: "aircraft on"
+Score: 44.6%
+--------------------
+Status: FAIL
+Checklist Item: Fire extinguishing System On
+Matched Text: "on"
+Score: 36.4%
+--------------------
+Status: FAIL
+Checklist Item: All pumps On
+Matched Text: "on"
+Score: 47.6%
+--------------------
+Status: FAIL
+Checklist Item: Generators Off
+Matched Text: "aircraft on"
+Score: 41.0%
+--------------------
+Status: FAIL
+Checklist Item: Fire Fuel shut off valve Check and  Open
+Matched Text: "aircraft on board and field, throttle"
+Score: 46.2%
+--------------------
+Status: FAIL
+Checklist Item: Engine Shut Down Levers Backward
+Matched Text: "on board"
+Score: 37.6%
+--------------------
+Status: FAIL
+Checklist Item: Pre APU Start Checklist Completed
+Matched Text: "throttle twist grip fully left."
+Score: 39.4%
+--------------------
+Status: FAIL
+Checklist Item: APU START CHECKLIST 
+Matched Text: "and field, throttle twist"
+Score: 39.1%
+--------------------
+Status: FAIL
+Checklist Item: Startup clearance Request
+Matched Text: "aircraft on board"
+Score: 39.3%
+--------------------
+Status: FAIL
+Checklist Item: Ground crew  Signal               
+Matched Text: "aircraft on board and field,"
+Score: 37.1%
+--------------------
+Status: FAIL
+Checklist Item: APU Start               
+Matched Text: "and field, throttle"
+Score: 38.0%
+--------------------
+Status: FAIL
+Checklist Item: APU Parameters Check as Required     
+Matched Text: "board and field,"
+Score: 39.4%
+--------------------
+Status: FAIL
+Checklist Item: Startup checklist   Completed            
+Matched Text: "twist grip fully left."
+Score: 39.5%
+--------------------
+Status: FAIL
+Checklist Item: ENGINE START UP
+Matched Text: "and field, throttle"
+Score: 43.0%
+--------------------
+Status: FAIL
+Checklist Item:  Start up Area Clear
+Matched Text: "aircraft on board and"
+Score: 45.3%
+--------------------
+Status: FAIL
+Checklist Item: Anti collision light  On
+Matched Text: "aircraft on"
+Score: 41.8%
+--------------------
+Status: FAIL
+Checklist Item: Standby Genenerator and Equipment Test  Off
+Matched Text: "on board and field, throttle twist grip fully left."
+Score: 45.8%
+--------------------
+Status: FAIL
+Checklist Item: Engine selection   as per wind direction    
+Matched Text: "aircraft on board and field,"
+Score: 42.8%
+--------------------
+Status: FAIL
+Checklist Item: Ground crew  Signal
+Matched Text: "aircraft on board and field,"
+Score: 37.1%
+--------------------
+Status: FAIL
+Checklist Item: Engine  Start button    press
+Matched Text: "and field, throttle twist grip"
+Score: 41.3%
+--------------------
+Status: FAIL
+Checklist Item: HP cock    open
+Matched Text: "aircraft on"
+Score: 32.3%
+--------------------
+Status: FAIL
+Checklist Item: Stop watch Set
+Matched Text: "throttle twist"
+Score: 38.3%
+--------------------
+Status: FAIL
+Checklist Item: Warm up engines one to two minutes
+Matched Text: "on board and field, throttle twist"
+Score: 40.3%
+--------------------
+Status: FAIL
+Checklist Item: Engine Parameters as required
+Matched Text: "on board and field,"
+Score: 39.6%
+--------------------
+Status: FAIL
+Checklist Item: Start second engine as above
+Matched Text: "aircraft on board and field, throttle"
+Score: 43.8%
+--------------------
+Status: FAIL
+Checklist Item: Warm up second engine one to two minutes
+Matched Text: "aircraft on board and field, throttle twist"
+Score: 39.0%
+--------------------
+Status: FAIL
+Checklist Item: Standby Genenerator and Equipment Test  On
+Matched Text: "on board and field, throttle twist"
+Score: 45.7%
+--------------------
+Status: FAIL
+Checklist Item: Rectifiers Off
+Matched Text: "throttle twist grip"
+Score: 37.2%
+--------------------
+Status: FAIL
+Checklist Item: Inverter 115V Mannual Position
+Matched Text: "aircraft on"
+Score: 36.3%
+--------------------
+Status: FAIL
+Checklist Item: GPU Off and disconnected
+Matched Text: "on board and field,"
+Score: 48.2%
+--------------------
+Status: FAIL
+Checklist Item: Idle parameters Check
+Matched Text: "field, throttle"
+Score: 41.8%
+--------------------
+Status: FAIL
+Checklist Item: DPD On
+Matched Text: "on"
+Score: 63.3%
+--------------------
+Status: FAIL
+Checklist Item: EGT Air Check
+Matched Text: "aircraft"
+Score: 44.4%
+--------------------
+Status: FAIL
+Checklist Item: FUNCTIONAL CHECK
+Matched Text: "fully"
+Score: 42.3%
+--------------------
+Status: FAIL
+Checklist Item: Hydraulic system Check
+Matched Text: "throttle twist"
+Score: 40.4%
+--------------------
+Status: FAIL
+Checklist Item: Controls Response Check
+Matched Text: "throttle"
+Score: 43.0%
+--------------------
+Status: FAIL
+Checklist Item: EEG Test
+Matched Text: "twist"
+Score: 48.9%
+--------------------
+Status: FAIL
+Checklist Item: Partial acceleration Check
+Matched Text: "aircraft on"
+Score: 47.8%
+--------------------
+Status: FAIL
+Checklist Item: ENGINE OPERATIONAL MODE
+Matched Text: "on board and"
+Score: 41.3%
+--------------------
+Status: PASS
+Checklist Item: Throttle Twist Grip Fully Right 
+Matched Text: "throttle twist grip fully"
+Score: 92.1%
+--------------------
+Status: FAIL
+Checklist Item: Generators Test and On
+Matched Text: "on board and"
+Score: 46.1%
+--------------------
+Status: FAIL
+Checklist Item: Rectifiers On
+Matched Text: "aircraft on"
+Score: 50.7%
+--------------------
+Status: FAIL
+Checklist Item: Standby Generator and Equipment test Off
+Matched Text: "on board and field, throttle twist"
+Score: 46.3%
+--------------------
+Status: FAIL
+Checklist Item: Inverters Auto Position
+Matched Text: "aircraft on"
+Score: 43.1%
+--------------------
+Status: FAIL
+Checklist Item: APU Off
+Matched Text: "and field,"
+Score: 39.2%
+--------------------
+Status: FAIL
+Checklist Item: Navigation Lights On
+Matched Text: "aircraft on"
+Score: 46.8%
+--------------------
+Status: FAIL
+Checklist Item: Voice Warning System On
+Matched Text: "on"
+Score: 38.4%
+--------------------
+Status: FAIL
+Checklist Item: Gyro Horizons On
+Matched Text: "on board and"
+Score: 44.6%
+--------------------
+Status: FAIL
+Checklist Item: Compass System On and Check
+Matched Text: "on board and"
+Score: 48.9%
+--------------------
+Status: FAIL
+Checklist Item: Radio Altimeter On and Check
+Matched Text: "aircraft on board and"
+Score: 52.9%
+--------------------
+Status: FAIL
+Checklist Item: Baro Altimeter Set
+Matched Text: "and field, throttle twist"
+Score: 44.3%
+--------------------
+Status: FAIL
+Checklist Item: Pitch Limit System Check
+Matched Text: "field, throttle"
+Score: 37.6%
+--------------------
+Status: FAIL
+Checklist Item: Auto Pilot On and Check
+Matched Text: "aircraft on board and"
+Score: 54.4%
+--------------------
+Status: FAIL
+Checklist Item: Main Rotor Control speed Check range
+Matched Text: "aircraft on board and field,"
+Score: 42.6%
+--------------------
+Status: FAIL
+Checklist Item: Main Rotor RPM Set 95 percent
+Matched Text: "and field, throttle twist grip"
+Score: 39.0%
+--------------------
+Status: FAIL
+Checklist Item: Collective Down
+Matched Text: "aircraft on"
+Score: 39.7%
+--------------------
+Status: FAIL
+Checklist Item: Engine Startup checklist Completed
+Matched Text: "field, throttle twist grip"
+Score: 38.6%
+--------------------
+Status: FAIL
+Checklist Item: BEFORE TAXI
+Matched Text: "left."
+Score: 42.3%
+--------------------
+Status: FAIL
+Checklist Item: Taxing clearance Request
+Matched Text: "aircraft on board"
+Score: 40.1%
+--------------------
+Status: FAIL
+Checklist Item: Area Clear         
+Matched Text: "aircraft on board"
+Score: 45.6%
+--------------------
+Status: FAIL
+Checklist Item: Chocks  Removed and Stowed                     
+Matched Text: "board and field,"
+Score: 50.4%
+--------------------
+Status: FAIL
+Checklist Item: Crew And Passengers  Briefed          
+Matched Text: "on board and field,"
+Score: 44.6%
+--------------------
+Status: FAIL
+Checklist Item: Doors and Windows    Closed
+Matched Text: "on board and field,"
+Score: 49.8%
+--------------------
+Status: FAIL
+Checklist Item: Cargo Compartment  Secured  
+Matched Text: "aircraft on board"
+Score: 40.0%
+--------------------
+Status: FAIL
+Checklist Item: Autopilot Off
+Matched Text: "aircraft on"
+Score: 42.2%
+--------------------
+Status: FAIL
+Checklist Item: Before Taxing Checklist  Completed                        
+Matched Text: "board and field, throttle twist"
+Score: 42.1%
+--------------------
+Status: FAIL
+Checklist Item: LINEUP POSITION
+Matched Text: "throttle twist grip"
+Score: 36.3%
+--------------------
+Status: FAIL
+Checklist Item: Area Clear                 
+Matched Text: "aircraft on board"
+Score: 45.6%
+--------------------
+Status: FAIL
+Checklist Item: Obstacles in TakeOff Direction Absent                    
+Matched Text: "on board and field, throttle twist"
+Score: 40.5%
+--------------------
+Status: FAIL
+Checklist Item: Gyro Same readings     
+Matched Text: "throttle twist grip"
+Score: 38.1%
+--------------------
+Status: FAIL
+Checklist Item: Heading Set
+Matched Text: "and field,"
+Score: 40.6%
+--------------------
+Status: FAIL
+Checklist Item: Autopilot ON                         
+Matched Text: "aircraft on"
+Score: 52.6%
+--------------------
+Status: FAIL
+Checklist Item: Type of TakeOFF Decide                   
+Matched Text: "aircraft on board and field, throttle"
+Score: 35.3%
+--------------------
+Status: FAIL
+Checklist Item: Request for TakeOFF Performed               
+Matched Text: "aircraft on board and field, throttle"
+Score: 37.2%
+--------------------
+Status: FAIL
+Checklist Item: Stop watch Press                      
+Matched Text: "throttle twist grip"
+Score: 40.0%
+--------------------
+Status: FAIL
+Checklist Item: BEFORE TAKE OFF 
+Matched Text: "board and field,"
+Score: 42.7%
+--------------------
+Status: FAIL
+Checklist Item: Fuel Selector    Service                  
+Matched Text: "fully left."
+Score: 44.6%
+--------------------
+Status: FAIL
+Checklist Item: Fuel Pump Lights  Check Off              
+Matched Text: "fully left."
+Score: 39.9%
+--------------------
+Status: FAIL
+Checklist Item: Transponder     Altitude                             
+Matched Text: "and field, throttle"
+Score: 38.9%
+--------------------
+Status: FAIL
+Checklist Item: Autopilot On                              
+Matched Text: "aircraft on"
+Score: 52.6%
+--------------------
+Status: FAIL
+Checklist Item: Engine And Transmission Checked           
+Matched Text: "on board and field,"
+Score: 41.8%
+--------------------
+Status: FAIL
+Checklist Item: Before Takeoff Checklist Completed
+Matched Text: "board and field, throttle"
+Score: 39.0%
+--------------------
+Status: FAIL
+Checklist Item: AFTER TAKE OFF  
+Matched Text: "aircraft on"
+Score: 40.9%
+--------------------
+Status: FAIL
+Checklist Item: Main rotor ninenty five plus or minus two percent                
+Matched Text: "aircraft on board and field, throttle twist grip fully left."
+Score: 41.8%
+--------------------
+Status: FAIL
+Checklist Item: DPD’s OFF                            
+Matched Text: "board and field,"
+Score: 36.8%
+--------------------
+Status: FAIL
+Checklist Item: Fuel consumption Monitored                       
+Matched Text: "on board and field,"
+Score: 39.2%
+--------------------
+Status: FAIL
+Checklist Item: Monitor every fifteen to twenty minutes                                    
+Matched Text: "on board and field, throttle twist grip"
+Score: 45.3%
+--------------------
+Status: FAIL
+Checklist Item: After takeoff checklist Completed   
+Matched Text: "and field, throttle twist grip fully left."
+Score: 37.1%
+--------------------
+Status: FAIL
+Checklist Item: IN FLIGHT CHECKS
+Matched Text: "and field, throttle twist"
+Score: 36.8%
+--------------------
+Status: FAIL
+Checklist Item: Power setting As  per graph            
+Matched Text: "throttle twist grip"
+Score: 42.6%
+--------------------
+Status: FAIL
+Checklist Item: Fuel quantity Check                       
+Matched Text: "fully"
+Score: 47.4%
+--------------------
+Status: FAIL
+Checklist Item: Other Parameters Normal operation
+Matched Text: "aircraft on board and field, throttle twist"
+Score: 40.2%
+--------------------
+Status: FAIL
+Checklist Item:  Flight Following Call                       
+Matched Text: "and field, throttle twist grip fully"
+Score: 39.4%
+--------------------
+Status: FAIL
+Checklist Item: PRE-LANDING CHECKS
+Matched Text: "and"
+Score: 39.3%
+--------------------
+Status: FAIL
+Checklist Item: Landing clearance Request
+Matched Text: "and field, throttle twist"
+Score: 41.3%
+--------------------
+Status: FAIL
+Checklist Item: Runway Condition Known
+Matched Text: "on board and"
+Score: 37.3%
+--------------------
+Status: FAIL
+Checklist Item: Autopilot Alt channel Off
+Matched Text: "aircraft on board and field,"
+Score: 39.0%
+--------------------
+Status: FAIL
+Checklist Item: Cargo Secured
+Matched Text: "aircraft"
+Score: 38.3%
+--------------------
+Status: FAIL
+Checklist Item: Landing lights On
+Matched Text: "aircraft on"
+Score: 44.2%
+--------------------
+Status: FAIL
+Checklist Item: Fuel quantity Check
+Matched Text: "fully"
+Score: 47.4%
+--------------------
+Status: FAIL
+Checklist Item: Compass Matched
+Matched Text: "board and"
+Score: 35.9%
+--------------------
+Status: FAIL
+Checklist Item: DPD’s On At 50m
+Matched Text: "on"
+Score: 45.0%
+--------------------
+Status: FAIL
+Checklist Item: Type of Landing Decide
+Matched Text: "on board and field, throttle"
+Score: 41.7%
+--------------------
+Status: FAIL
+Checklist Item: Runway Exit and Parking As instructed
+Matched Text: "aircraft on board and field,"
+Score: 44.3%
+--------------------
+Status: FAIL
+Checklist Item: Parameters Within Limit
+Matched Text: "throttle twist grip"
+Score: 43.5%
+--------------------
+Status: FAIL
+Checklist Item: Main rotor ninenty five plus or minus two percent                
+Matched Text: "aircraft on board and field, throttle twist grip fully left."
+Score: 41.8%
+--------------------
+Status: FAIL
+Checklist Item: Landing Gear Brakes Released
+Matched Text: "on board and field,"
+Score: 41.2%
+--------------------
+Status: FAIL
+Checklist Item: DPD’s On 
+Matched Text: "on"
+Score: 59.3%
+--------------------
+Status: FAIL
+Checklist Item: Cargo compartment Secured
+Matched Text: "aircraft on board"
+Score: 40.1%
+--------------------
+Status: FAIL
+Checklist Item: Crew Briefed
+Matched Text: "on board"
+Score: 41.3%
+--------------------
+Status: FAIL
+Checklist Item: Before landing checklist Completed
+Matched Text: "board and field, throttle twist"
+Score: 40.7%
+--------------------
+Status: FAIL
+Checklist Item: AFTER LANDING
+Matched Text: "aircraft on board and"
+Score: 48.8%
+--------------------
+Status: FAIL
+Checklist Item: Collective fully down                         
+Matched Text: "fully"
+Score: 54.9%
+--------------------
+Status: FAIL
+Checklist Item: Auto pilot Off                                            
+Matched Text: "aircraft on board"
+Score: 39.7%
+--------------------
+Status: FAIL
+Checklist Item: Parking as required                          
+Matched Text: "board and field,"
+Score: 45.1%
+--------------------
+Status: FAIL
+Checklist Item: After landing checklist completed
+Matched Text: "aircraft on board and field,"
+Score: 38.5%
+--------------------
+Status: FAIL
+Checklist Item: ENGINE SHUT DOWN  
+Matched Text: "and field, throttle twist grip"
+Score: 37.2%
+--------------------
+Status: FAIL
+Checklist Item: Landing gear Brake Apply                               
+Matched Text: "on board and field,"
+Score: 39.6%
+--------------------
+Status: FAIL
+Checklist Item: Consumers Off                                          
+Matched Text: "on board"
+Score: 37.7%
+--------------------
+Status: FAIL
+Checklist Item: Rectifiers Off                                           
+Matched Text: "throttle twist grip"
+Score: 37.2%
+--------------------
+Status: FAIL
+Checklist Item: Inverters Neutral                                      
+Matched Text: "field, throttle"
+Score: 39.9%
+--------------------
+Status: FAIL
+Checklist Item: Generators Off                                    
+Matched Text: "aircraft on"
+Score: 41.0%
+--------------------
+Status: PASS
+Checklist Item: Throttle Fully Left
+Matched Text: "throttle twist grip fully left."
+Score: 77.5%
+--------------------
+Status: FAIL
+Checklist Item: Left and Right Fuel Pumps Off
+Matched Text: "left."
+Score: 44.4%
+--------------------
+Status: FAIL
+Checklist Item: Engines Cooling one to two Minutes
+Matched Text: "on board and field, throttle twist"
+Score: 42.8%
+--------------------
+Status: FAIL
+Checklist Item: Eng  Shutdown Levers Backward
+Matched Text: "on board"
+Score: 40.2%
+--------------------
+Status: FAIL
+Checklist Item: Stop Watch Press
+Matched Text: "throttle twist grip"
+Score: 40.0%
+--------------------
+Status: FAIL
+Checklist Item: Ngg equal zero  at thirty five Second Minimum
+Matched Text: "on board and field, throttle twist grip"
+Score: 39.8%
+--------------------
+Status: FAIL
+Checklist Item: MAIN ROTOR STOP                 
+Matched Text: "aircraft on"
+Score: 46.7%
+--------------------
+Status: FAIL
+Checklist Item: At less or equal to fifteen Main Rotor Slowly apply Main Rotor brake                
+Matched Text: "aircraft on board and field, throttle twist grip fully left."
+Score: 40.6%
+--------------------
+Status: FAIL
+Checklist Item: At  Main Rotor stop  Controls move back and forth                                                 
+Matched Text: "aircraft on board and field, throttle"
+Score: 45.5%
+--------------------
+Status: FAIL
+Checklist Item: Fire extinguisher  switch Off
+Matched Text: "and field, throttle twist"
+Score: 42.3%
+--------------------
+Status: FAIL
+Checklist Item: Fuel shut off valves Leave open position                       
+Matched Text: "field, throttle twist"
+Score: 38.0%
+--------------------
+Status: FAIL
+Checklist Item: Service tank pump            Off
+Matched Text: "throttle twist grip fully left."
+Score: 30.4%
+--------------------
+Status: FAIL
+Checklist Item: Batteries one and two Off
+Matched Text: "board and field,"
+Score: 45.9%
+--------------------

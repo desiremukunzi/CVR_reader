@@ -1,0 +1,859 @@
+Compliance Report for: 4items_only
+Generated On: 2025-07-10 13:26:19
+--------------------------------------------------
+
+Status: FAIL
+Checklist Item: MI-17-1V HELICOPTER START UP WITH AC GPU & INFLIGHT CHECKLIST 
+Matched Text: "headsets connected, windscreens clean, egt indicators test,"
+Score: 39.2%
+--------------------
+Status: FAIL
+Checklist Item:           PRE APU START
+Matched Text: "stopwatch set."
+Score: 40.3%
+--------------------
+Status: FAIL
+Checklist Item: Instruments and all switches As required
+Matched Text: "windscreens clean, egt indicators test,"
+Score: 47.3%
+--------------------
+Status: FAIL
+Checklist Item: Battery one and two Check and On
+Matched Text: "clean, egt indicators"
+Score: 39.5%
+--------------------
+Status: PASS
+Checklist Item: GPU Connected check and On
+Matched Text: "connected,"
+Score: 70.7%
+--------------------
+Status: FAIL
+Checklist Item: Rectifiers On
+Matched Text: "egt indicators"
+Score: 42.7%
+--------------------
+Status: FAIL
+Checklist Item: Circuit Breakers On
+Matched Text: "connected, windscreens clean,"
+Score: 37.4%
+--------------------
+Status: FAIL
+Checklist Item: FDR and CVR On
+Matched Text: "windscreens"
+Score: 41.3%
+--------------------
+Status: PASS
+Checklist Item: Headsets Connected
+Matched Text: "headsets connected,"
+Score: 100.0%
+--------------------
+Status: FAIL
+Checklist Item: Intercom Readability Check
+Matched Text: "indicators test,"
+Score: 40.8%
+--------------------
+Status: FAIL
+Checklist Item: ADF On
+Matched Text: "clean,"
+Score: 34.1%
+--------------------
+Status: FAIL
+Checklist Item: GPS On
+Matched Text: "egt indicators"
+Score: 32.7%
+--------------------
+Status: FAIL
+Checklist Item: Transponder On
+Matched Text: "headsets connected,"
+Score: 38.7%
+--------------------
+Status: FAIL
+Checklist Item: ELT Arming
+Matched Text: "clean, egt"
+Score: 43.8%
+--------------------
+Status: FAIL
+Checklist Item: Global satellite tracking system On
+Matched Text: "clean, egt indicators test, stopwatch set."
+Score: 38.4%
+--------------------
+Status: FAIL
+Checklist Item: TCAS On
+Matched Text: "headsets connected,"
+Score: 44.2%
+--------------------
+Status: FAIL
+Checklist Item: Aircraft records on board and filled
+Matched Text: "indicators test, stopwatch set."
+Score: 40.5%
+--------------------
+Status: FAIL
+Checklist Item: Overhead hatch closed
+Matched Text: "headsets connected,"
+Score: 48.3%
+--------------------
+Status: PASS
+Checklist Item: Windscreens Clean
+Matched Text: "windscreens clean,"
+Score: 100.0%
+--------------------
+Status: FAIL
+Checklist Item: Seatbelts Fastened
+Matched Text: "headsets connected,"
+Score: 50.2%
+--------------------
+Status: FAIL
+Checklist Item: Pneumatic System Check Pressure
+Matched Text: "connected, windscreens"
+Score: 39.0%
+--------------------
+Status: FAIL
+Checklist Item: Pedals Neutral
+Matched Text: "headsets connected,"
+Score: 44.3%
+--------------------
+Status: FAIL
+Checklist Item: Cyclic Stick Neutral           
+Matched Text: "clean, egt indicators"
+Score: 40.3%
+--------------------
+Status: FAIL
+Checklist Item: Landing gear brakes applied
+Matched Text: "windscreens clean, egt indicators"
+Score: 38.0%
+--------------------
+Status: FAIL
+Checklist Item: Collective pitch fully down
+Matched Text: "connected, windscreens"
+Score: 42.8%
+--------------------
+Status: FAIL
+Checklist Item: Throttle Twist Grip Fully Left
+Matched Text: "test, stopwatch set."
+Score: 38.9%
+--------------------
+Status: FAIL
+Checklist Item: Friction Clutch Adjusted
+Matched Text: "test, stopwatch set."
+Score: 38.9%
+--------------------
+Status: FAIL
+Checklist Item: Separate Throttle Lever Middle and Latched
+Matched Text: "headsets connected, windscreens clean, egt"
+Score: 40.0%
+--------------------
+Status: FAIL
+Checklist Item: Main Rotor Brake Fully Down
+Matched Text: "clean, egt indicators test,"
+Score: 32.4%
+--------------------
+Status: FAIL
+Checklist Item: Engine Shut Down Levers Backward
+Matched Text: "connected, windscreens clean, egt"
+Score: 41.5%
+--------------------
+Status: FAIL
+Checklist Item: Fuel Quantity Check
+Matched Text: "egt indicators"
+Score: 37.7%
+--------------------
+Status: FAIL
+Checklist Item: Warning Lights Check 
+Matched Text: "windscreens clean, egt"
+Score: 41.3%
+--------------------
+Status: FAIL
+Checklist Item: Fire extinguishing System Check 
+Matched Text: "egt indicators test,"
+Score: 42.4%
+--------------------
+Status: FAIL
+Checklist Item: Voice Warning System Check 
+Matched Text: "connected, windscreens clean,"
+Score: 40.1%
+--------------------
+Status: PASS
+Checklist Item: EGT Indicators Test
+Matched Text: "egt indicators test,"
+Score: 100.0%
+--------------------
+Status: FAIL
+Checklist Item: Engine vibration system test
+Matched Text: "egt indicators test,"
+Score: 55.0%
+--------------------
+Status: FAIL
+Checklist Item: Inverter Off position
+Matched Text: "indicators test, stopwatch"
+Score: 39.9%
+--------------------
+Status: FAIL
+Checklist Item: Fire extinguishing System On
+Matched Text: "egt indicators test,"
+Score: 40.1%
+--------------------
+Status: FAIL
+Checklist Item: All pumps On
+Matched Text: "headsets connected,"
+Score: 29.6%
+--------------------
+Status: FAIL
+Checklist Item: Generators Off
+Matched Text: "indicators"
+Score: 51.3%
+--------------------
+Status: FAIL
+Checklist Item: Fire Fuel shut off valve Check and  Open
+Matched Text: "windscreens clean, egt indicators test, stopwatch set."
+Score: 37.4%
+--------------------
+Status: FAIL
+Checklist Item: Engine Shut Down Levers Backward
+Matched Text: "connected, windscreens clean, egt"
+Score: 41.5%
+--------------------
+Status: FAIL
+Checklist Item: Pre APU Start Checklist Completed
+Matched Text: "headsets connected,"
+Score: 43.2%
+--------------------
+Status: FAIL
+Checklist Item: APU START CHECKLIST 
+Matched Text: "stopwatch set."
+Score: 45.9%
+--------------------
+Status: FAIL
+Checklist Item: Startup clearance Request
+Matched Text: "clean, egt"
+Score: 49.7%
+--------------------
+Status: FAIL
+Checklist Item: Ground crew  Signal               
+Matched Text: "windscreens clean, egt"
+Score: 40.5%
+--------------------
+Status: FAIL
+Checklist Item: APU Start               
+Matched Text: "stopwatch"
+Score: 46.1%
+--------------------
+Status: FAIL
+Checklist Item: APU Parameters Check as Required     
+Matched Text: "headsets connected, windscreens"
+Score: 35.4%
+--------------------
+Status: FAIL
+Checklist Item: Startup checklist   Completed            
+Matched Text: "headsets connected,"
+Score: 43.1%
+--------------------
+Status: FAIL
+Checklist Item: ENGINE START UP
+Matched Text: "egt indicators test, stopwatch set."
+Score: 45.9%
+--------------------
+Status: FAIL
+Checklist Item:  Start up Area Clear
+Matched Text: "windscreens clean,"
+Score: 41.6%
+--------------------
+Status: FAIL
+Checklist Item: Anti collision light  On
+Matched Text: "clean, egt indicators"
+Score: 41.6%
+--------------------
+Status: FAIL
+Checklist Item: Standby Genenerator and Equipment Test  Off
+Matched Text: "clean, egt indicators test,"
+Score: 48.4%
+--------------------
+Status: FAIL
+Checklist Item: Engine selection   as per wind direction    
+Matched Text: "connected, windscreens clean, egt indicators"
+Score: 46.3%
+--------------------
+Status: FAIL
+Checklist Item: Ground crew  Signal
+Matched Text: "windscreens clean, egt"
+Score: 40.5%
+--------------------
+Status: FAIL
+Checklist Item: Engine  Start button    press
+Matched Text: "egt indicators test,"
+Score: 42.0%
+--------------------
+Status: FAIL
+Checklist Item: HP cock    open
+Matched Text: "headsets connected,"
+Score: 37.3%
+--------------------
+Status: PASS
+Checklist Item: Stop watch Set
+Matched Text: "stopwatch set."
+Score: 93.4%
+--------------------
+Status: FAIL
+Checklist Item: Warm up engines one to two minutes
+Matched Text: "clean, egt indicators test, stopwatch set."
+Score: 42.2%
+--------------------
+Status: FAIL
+Checklist Item: Engine Parameters as required
+Matched Text: "egt indicators test,"
+Score: 42.8%
+--------------------
+Status: FAIL
+Checklist Item: Start second engine as above
+Matched Text: "clean, egt indicators test,"
+Score: 43.0%
+--------------------
+Status: FAIL
+Checklist Item: Warm up second engine one to two minutes
+Matched Text: "headsets connected, windscreens clean, egt indicators test,"
+Score: 42.7%
+--------------------
+Status: FAIL
+Checklist Item: Standby Genenerator and Equipment Test  On
+Matched Text: "clean, egt indicators test,"
+Score: 49.1%
+--------------------
+Status: FAIL
+Checklist Item: Rectifiers Off
+Matched Text: "egt indicators"
+Score: 43.8%
+--------------------
+Status: FAIL
+Checklist Item: Inverter 115V Mannual Position
+Matched Text: "windscreens clean, egt indicators test,"
+Score: 34.3%
+--------------------
+Status: PASS
+Checklist Item: GPU Off and disconnected
+Matched Text: "connected,"
+Score: 60.6%
+--------------------
+Status: FAIL
+Checklist Item: Idle parameters Check
+Matched Text: "indicators"
+Score: 47.3%
+--------------------
+Status: FAIL
+Checklist Item: DPD On
+Matched Text: "connected,"
+Score: 29.0%
+--------------------
+Status: PASS
+Checklist Item: EGT Air Check
+Matched Text: "egt"
+Score: 70.7%
+--------------------
+Status: FAIL
+Checklist Item: FUNCTIONAL CHECK
+Matched Text: "indicators"
+Score: 40.9%
+--------------------
+Status: FAIL
+Checklist Item: Hydraulic system Check
+Matched Text: "indicators test,"
+Score: 39.1%
+--------------------
+Status: FAIL
+Checklist Item: Controls Response Check
+Matched Text: "connected, windscreens"
+Score: 46.5%
+--------------------
+Status: PASS
+Checklist Item: EEG Test
+Matched Text: "test,"
+Score: 75.6%
+--------------------
+Status: FAIL
+Checklist Item: Partial acceleration Check
+Matched Text: "clean,"
+Score: 42.7%
+--------------------
+Status: FAIL
+Checklist Item: ENGINE OPERATIONAL MODE
+Matched Text: "clean, egt indicators"
+Score: 42.4%
+--------------------
+Status: FAIL
+Checklist Item: Throttle Twist Grip Fully Right 
+Matched Text: "headsets connected, windscreens clean, egt"
+Score: 35.8%
+--------------------
+Status: PASS
+Checklist Item: Generators Test and On
+Matched Text: "indicators test,"
+Score: 62.0%
+--------------------
+Status: FAIL
+Checklist Item: Rectifiers On
+Matched Text: "egt indicators"
+Score: 42.7%
+--------------------
+Status: FAIL
+Checklist Item: Standby Generator and Equipment test Off
+Matched Text: "clean, egt indicators test,"
+Score: 50.4%
+--------------------
+Status: FAIL
+Checklist Item: Inverters Auto Position
+Matched Text: "egt indicators test,"
+Score: 44.1%
+--------------------
+Status: FAIL
+Checklist Item: APU Off
+Matched Text: "clean, egt"
+Score: 25.8%
+--------------------
+Status: FAIL
+Checklist Item: Navigation Lights On
+Matched Text: "egt indicators"
+Score: 43.1%
+--------------------
+Status: FAIL
+Checklist Item: Voice Warning System On
+Matched Text: "connected, windscreens"
+Score: 42.4%
+--------------------
+Status: FAIL
+Checklist Item: Gyro Horizons On
+Matched Text: "egt indicators test,"
+Score: 34.9%
+--------------------
+Status: FAIL
+Checklist Item: Compass System On and Check
+Matched Text: "indicators test, stopwatch"
+Score: 40.2%
+--------------------
+Status: FAIL
+Checklist Item: Radio Altimeter On and Check
+Matched Text: "headsets connected, windscreens clean,"
+Score: 39.0%
+--------------------
+Status: FAIL
+Checklist Item: Baro Altimeter Set
+Matched Text: "set."
+Score: 47.6%
+--------------------
+Status: FAIL
+Checklist Item: Pitch Limit System Check
+Matched Text: "test, stopwatch set."
+Score: 41.9%
+--------------------
+Status: FAIL
+Checklist Item: Auto Pilot On and Check
+Matched Text: "indicators test, stopwatch"
+Score: 39.9%
+--------------------
+Status: FAIL
+Checklist Item: Main Rotor Control speed Check range
+Matched Text: "clean, egt indicators test,"
+Score: 40.6%
+--------------------
+Status: FAIL
+Checklist Item: Main Rotor RPM Set 95 percent
+Matched Text: "indicators test, stopwatch set."
+Score: 42.6%
+--------------------
+Status: FAIL
+Checklist Item: Collective Down
+Matched Text: "connected,"
+Score: 58.9%
+--------------------
+Status: FAIL
+Checklist Item: Engine Startup checklist Completed
+Matched Text: "headsets connected,"
+Score: 42.0%
+--------------------
+Status: FAIL
+Checklist Item: BEFORE TAXI
+Matched Text: "egt indicators test,"
+Score: 34.5%
+--------------------
+Status: FAIL
+Checklist Item: Taxing clearance Request
+Matched Text: "clean, egt"
+Score: 50.9%
+--------------------
+Status: FAIL
+Checklist Item: Area Clear         
+Matched Text: "clean,"
+Score: 56.9%
+--------------------
+Status: FAIL
+Checklist Item: Chocks  Removed and Stowed                     
+Matched Text: "connected, windscreens clean, egt"
+Score: 42.7%
+--------------------
+Status: FAIL
+Checklist Item: Crew And Passengers  Briefed          
+Matched Text: "headsets connected,"
+Score: 43.7%
+--------------------
+Status: FAIL
+Checklist Item: Doors and Windows    Closed
+Matched Text: "headsets connected, windscreens clean,"
+Score: 48.9%
+--------------------
+Status: FAIL
+Checklist Item: Cargo Compartment  Secured  
+Matched Text: "connected, windscreens"
+Score: 42.9%
+--------------------
+Status: FAIL
+Checklist Item: Autopilot Off
+Matched Text: "stopwatch"
+Score: 37.4%
+--------------------
+Status: FAIL
+Checklist Item: Before Taxing Checklist  Completed                        
+Matched Text: "connected, windscreens clean, egt"
+Score: 40.3%
+--------------------
+Status: FAIL
+Checklist Item: LINEUP POSITION
+Matched Text: "clean, egt indicators"
+Score: 40.6%
+--------------------
+Status: FAIL
+Checklist Item: Area Clear                 
+Matched Text: "clean,"
+Score: 56.9%
+--------------------
+Status: FAIL
+Checklist Item: Obstacles in TakeOff Direction Absent                    
+Matched Text: "clean, egt indicators test,"
+Score: 46.0%
+--------------------
+Status: FAIL
+Checklist Item: Gyro Same readings     
+Matched Text: "connected, windscreens"
+Score: 36.9%
+--------------------
+Status: PASS
+Checklist Item: Heading Set
+Matched Text: "headsets"
+Score: 68.5%
+--------------------
+Status: FAIL
+Checklist Item: Autopilot ON                         
+Matched Text: "stopwatch"
+Score: 38.9%
+--------------------
+Status: FAIL
+Checklist Item: Type of TakeOFF Decide                   
+Matched Text: "test, stopwatch set."
+Score: 36.3%
+--------------------
+Status: FAIL
+Checklist Item: Request for TakeOFF Performed               
+Matched Text: "headsets connected,"
+Score: 35.0%
+--------------------
+Status: PASS
+Checklist Item: Stop watch Press                      
+Matched Text: "stopwatch set."
+Score: 76.9%
+--------------------
+Status: FAIL
+Checklist Item: BEFORE TAKE OFF 
+Matched Text: "egt indicators test, stopwatch"
+Score: 37.7%
+--------------------
+Status: FAIL
+Checklist Item: Fuel Selector    Service                  
+Matched Text: "egt indicators test, stopwatch set."
+Score: 39.1%
+--------------------
+Status: FAIL
+Checklist Item: Fuel Pump Lights  Check Off              
+Matched Text: "egt indicators test, stopwatch"
+Score: 31.8%
+--------------------
+Status: FAIL
+Checklist Item: Transponder     Altitude                             
+Matched Text: "windscreens clean, egt indicators test,"
+Score: 33.6%
+--------------------
+Status: FAIL
+Checklist Item: Autopilot On                              
+Matched Text: "stopwatch"
+Score: 38.9%
+--------------------
+Status: FAIL
+Checklist Item: Engine And Transmission Checked           
+Matched Text: "connected, windscreens clean, egt"
+Score: 43.4%
+--------------------
+Status: FAIL
+Checklist Item: Before Takeoff Checklist Completed
+Matched Text: "egt indicators test, stopwatch set."
+Score: 39.2%
+--------------------
+Status: FAIL
+Checklist Item: AFTER TAKE OFF  
+Matched Text: "indicators test, stopwatch"
+Score: 43.2%
+--------------------
+Status: FAIL
+Checklist Item: Main rotor ninenty five plus or minus two percent                
+Matched Text: "clean, egt indicators test, stopwatch set."
+Score: 43.2%
+--------------------
+Status: FAIL
+Checklist Item: DPD’s OFF                            
+Matched Text: "headsets connected,"
+Score: 27.7%
+--------------------
+Status: FAIL
+Checklist Item: Fuel consumption Monitored                       
+Matched Text: "connected,"
+Score: 43.3%
+--------------------
+Status: FAIL
+Checklist Item: Monitor every fifteen to twenty minutes                                    
+Matched Text: "windscreens clean, egt indicators test,"
+Score: 42.6%
+--------------------
+Status: FAIL
+Checklist Item: After takeoff checklist Completed   
+Matched Text: "indicators test, stopwatch set."
+Score: 42.1%
+--------------------
+Status: FAIL
+Checklist Item: IN FLIGHT CHECKS
+Matched Text: "clean, egt indicators"
+Score: 40.3%
+--------------------
+Status: FAIL
+Checklist Item: Power setting As  per graph            
+Matched Text: "clean, egt indicators test, stopwatch"
+Score: 38.0%
+--------------------
+Status: FAIL
+Checklist Item: Fuel quantity Check                       
+Matched Text: "egt indicators"
+Score: 37.7%
+--------------------
+Status: FAIL
+Checklist Item: Other Parameters Normal operation
+Matched Text: "connected, windscreens clean,"
+Score: 43.5%
+--------------------
+Status: FAIL
+Checklist Item:  Flight Following Call                       
+Matched Text: "clean, egt indicators"
+Score: 39.3%
+--------------------
+Status: FAIL
+Checklist Item: PRE-LANDING CHECKS
+Matched Text: "headsets connected,"
+Score: 40.5%
+--------------------
+Status: FAIL
+Checklist Item: Landing clearance Request
+Matched Text: "windscreens clean, egt"
+Score: 53.0%
+--------------------
+Status: FAIL
+Checklist Item: Runway Condition Known
+Matched Text: "egt indicators test, stopwatch"
+Score: 36.0%
+--------------------
+Status: FAIL
+Checklist Item: Autopilot Alt channel Off
+Matched Text: "stopwatch set."
+Score: 42.6%
+--------------------
+Status: FAIL
+Checklist Item: Cargo Secured
+Matched Text: "connected,"
+Score: 54.7%
+--------------------
+Status: FAIL
+Checklist Item: Landing lights On
+Matched Text: "clean, egt"
+Score: 46.7%
+--------------------
+Status: FAIL
+Checklist Item: Fuel quantity Check
+Matched Text: "egt indicators"
+Score: 37.7%
+--------------------
+Status: FAIL
+Checklist Item: Compass Matched
+Matched Text: "stopwatch"
+Score: 50.7%
+--------------------
+Status: FAIL
+Checklist Item: DPD’s On At 50m
+Matched Text: "windscreens clean, egt"
+Score: 35.0%
+--------------------
+Status: FAIL
+Checklist Item: Type of Landing Decide
+Matched Text: "headsets connected,"
+Score: 36.9%
+--------------------
+Status: FAIL
+Checklist Item: Runway Exit and Parking As instructed
+Matched Text: "windscreens clean, egt indicators test,"
+Score: 41.8%
+--------------------
+Status: FAIL
+Checklist Item: Parameters Within Limit
+Matched Text: "test, stopwatch set."
+Score: 41.3%
+--------------------
+Status: FAIL
+Checklist Item: Main rotor ninenty five plus or minus two percent                
+Matched Text: "clean, egt indicators test, stopwatch set."
+Score: 43.2%
+--------------------
+Status: FAIL
+Checklist Item: Landing Gear Brakes Released
+Matched Text: "windscreens clean, egt"
+Score: 41.5%
+--------------------
+Status: FAIL
+Checklist Item: DPD’s On 
+Matched Text: "windscreens"
+Score: 34.6%
+--------------------
+Status: FAIL
+Checklist Item: Cargo compartment Secured
+Matched Text: "connected, windscreens"
+Score: 43.7%
+--------------------
+Status: FAIL
+Checklist Item: Crew Briefed
+Matched Text: "connected, windscreens"
+Score: 38.2%
+--------------------
+Status: FAIL
+Checklist Item: Before landing checklist Completed
+Matched Text: "headsets connected, windscreens clean, egt"
+Score: 41.3%
+--------------------
+Status: FAIL
+Checklist Item: AFTER LANDING
+Matched Text: "egt indicators"
+Score: 38.4%
+--------------------
+Status: FAIL
+Checklist Item: Collective fully down                         
+Matched Text: "connected,"
+Score: 48.8%
+--------------------
+Status: FAIL
+Checklist Item: Auto pilot Off                                            
+Matched Text: "indicators test, stopwatch"
+Score: 37.8%
+--------------------
+Status: FAIL
+Checklist Item: Parking as required                          
+Matched Text: "windscreens"
+Score: 35.8%
+--------------------
+Status: FAIL
+Checklist Item: After landing checklist completed
+Matched Text: "headsets connected, windscreens clean, egt"
+Score: 41.9%
+--------------------
+Status: FAIL
+Checklist Item: ENGINE SHUT DOWN  
+Matched Text: "test, stopwatch"
+Score: 41.1%
+--------------------
+Status: FAIL
+Checklist Item: Landing gear Brake Apply                               
+Matched Text: "windscreens clean, egt"
+Score: 36.3%
+--------------------
+Status: FAIL
+Checklist Item: Consumers Off                                          
+Matched Text: "connected,"
+Score: 38.2%
+--------------------
+Status: FAIL
+Checklist Item: Rectifiers Off                                           
+Matched Text: "egt indicators"
+Score: 43.8%
+--------------------
+Status: FAIL
+Checklist Item: Inverters Neutral                                      
+Matched Text: "indicators test,"
+Score: 50.7%
+--------------------
+Status: FAIL
+Checklist Item: Generators Off                                    
+Matched Text: "indicators"
+Score: 51.3%
+--------------------
+Status: FAIL
+Checklist Item: Throttle Fully Left
+Matched Text: "stopwatch set."
+Score: 38.1%
+--------------------
+Status: FAIL
+Checklist Item: Left and Right Fuel Pumps Off
+Matched Text: "clean, egt indicators test,"
+Score: 38.8%
+--------------------
+Status: FAIL
+Checklist Item: Engines Cooling one to two Minutes
+Matched Text: "windscreens clean, egt indicators test,"
+Score: 47.0%
+--------------------
+Status: FAIL
+Checklist Item: Eng  Shutdown Levers Backward
+Matched Text: "clean, egt indicators test, stopwatch"
+Score: 38.1%
+--------------------
+Status: PASS
+Checklist Item: Stop Watch Press
+Matched Text: "stopwatch set."
+Score: 76.9%
+--------------------
+Status: FAIL
+Checklist Item: Ngg equal zero  at thirty five Second Minimum
+Matched Text: "clean, egt indicators test, stopwatch set."
+Score: 34.8%
+--------------------
+Status: FAIL
+Checklist Item: MAIN ROTOR STOP                 
+Matched Text: "indicators test,"
+Score: 53.8%
+--------------------
+Status: FAIL
+Checklist Item: At less or equal to fifteen Main Rotor Slowly apply Main Rotor brake                
+Matched Text: "headsets connected, windscreens clean, egt indicators test, stopwatch set."
+Score: 38.4%
+--------------------
+Status: FAIL
+Checklist Item: At  Main Rotor stop  Controls move back and forth                                                 
+Matched Text: "clean, egt indicators test, stopwatch"
+Score: 41.8%
+--------------------
+Status: FAIL
+Checklist Item: Fire extinguisher  switch Off
+Matched Text: "egt indicators test, stopwatch set."
+Score: 45.0%
+--------------------
+Status: FAIL
+Checklist Item: Fuel shut off valves Leave open position                       
+Matched Text: "headsets connected, windscreens clean, egt"
+Score: 37.8%
+--------------------
+Status: FAIL
+Checklist Item: Service tank pump            Off
+Matched Text: "clean, egt"
+Score: 28.8%
+--------------------
+Status: FAIL
+Checklist Item: Batteries one and two Off
+Matched Text: "indicators test, stopwatch set."
+Score: 38.0%
+--------------------

@@ -11,11 +11,17 @@ partial acceleration
 AUDIO
 IN RAF1510
 12-06-25 First leg no checklist
-
+04-05-25 GER flight not found
+04-06-25 Audio not found
+-----------------------------
 IN RAF61504
-02 AND 03 JUNE 25 NOT FOUND
+08,29 May audio not found
+02 , 03 , JUNE 25 AUDIO NOT FOUND
+02 June Test flight no Test form found
 ------------------------------
 AI Model
 consider using the _time column to measure rate of change, T1 and T2 and Pitch
 ------------------------------
-
+N1/N2 Split
+-----------------------------
+Checklist compliance in the right cell started on 12th July 25
