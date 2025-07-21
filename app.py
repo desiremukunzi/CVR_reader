@@ -1,12 +1,10 @@
 import os
 import pandas as pd
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory, url_for
 from werkzeug.utils import secure_filename
 from rapidfuzz import fuzz
 from openpyxl import load_workbook
-from openpyxl.styles import Font, PatternFill, Border, Side
-from openpyxl.styles import Alignment
-from openpyxl.utils import get_column_letter
+from openpyxl.styles import Font, PatternFill, Border, Side, Alignment
 import subprocess
 from statistics import mean
 import re
@@ -17,22 +15,28 @@ from datetime import datetime
 
 # Flask setup
 app = Flask(__name__)
-UPLOAD_FOLDER = "uploads"
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-EXCEL_FILE = "workbench/WORKBENCH_BUR _2712.xlsm"
+
+# Define these variables FIRST
+UPLOAD_FOLDER = "uploads" # For concatenated audio
+COMPLIANCE_EXCEL_OUTPUT = "compliance_excel_output" # New folder for modified Excel files
 CHECKED_COLUMN = "B"
 TRANSCRIPT_FOLDER = "transcripts"
-COMPLIANCE_FOLDER = "compliance" # New folder for compliance reports
+COMPLIANCE_TEXT_REPORTS_FOLDER = "compliance_text_reports" # Renamed for clarity from COMPLIANCE_FOLDER
 
-# Ensure transcript folder exists
-os.makedirs(TRANSCRIPT_FOLDER, exist_ok=True)
-# Ensure upload folder exists
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-# Ensure workbench folder exists for the excel file
-os.makedirs("workbench", exist_ok=True)
-# Ensure compliance folder exists
-os.makedirs(COMPLIANCE_FOLDER, exist_ok=True)
+# THEN assign them to app.config
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER # Good practice to also add this one
+app.config['COMPLIANCE_EXCEL_OUTPUT'] = COMPLIANCE_EXCEL_OUTPUT
+app.config['TRANSCRIPT_FOLDER'] = TRANSCRIPT_FOLDER # And this one
+app.config['COMPLIANCE_TEXT_REPORTS_FOLDER'] = COMPLIANCE_TEXT_REPORTS_FOLDER # And this one too
 
+# Ensure necessary folders exist
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+os.makedirs(app.config['COMPLIANCE_EXCEL_OUTPUT'], exist_ok=True)
+os.makedirs("workbench", exist_ok=True) # Still optional if not used for other assets
+os.makedirs(app.config['TRANSCRIPT_FOLDER'], exist_ok=True)
+os.makedirs(app.config['COMPLIANCE_TEXT_REPORTS_FOLDER'], exist_ok=True)
+
+# ... (rest of your code)
 
 # Initialize Whisper model globally (to avoid reloading for every request)
 model = WhisperModel("medium", device="cuda", compute_type="float16")
@@ -81,13 +85,16 @@ def concatenate_audio_files(input_paths, output_filename, upload_folder):
         if os.path.exists(concat_list_path):
             os.remove(concat_list_path)
 
-def load_checklist(sheet_name):
+def load_checklist(excel_file_path, sheet_name):
     """
-    Loads the checklist items from the specified Excel sheet.
+    Loads the checklist items from the specified Excel sheet in the given file path.
     Assumes checklist items are in the first column.
     """
-    df = pd.read_excel(EXCEL_FILE, sheet_name=sheet_name, engine="openpyxl")
-    return df, df.iloc[:, 0].dropna().tolist()
+    try:
+        df = pd.read_excel(excel_file_path, sheet_name=sheet_name, engine="openpyxl")
+        return df, df.iloc[:, 0].dropna().tolist()
+    except Exception as e:
+        raise Exception(f"Failed to load checklist from Excel: {e}. Check sheet name or file integrity.")
 
 def clean_text(text):
     """
@@ -149,85 +156,98 @@ def check_compliance(transcript, checklist, threshold=50):
 
     return results
 
-def update_excel(results, sheet_name, not_complied_count, compliance_percent):
+def update_excel(excel_input_path, results, sheet_name, not_complied_count, compliance_percent):
     """
-    Updates the Excel file with compliance results.
-    Marks cells in CHECKED_COLUMN with a checkmark (✔) for PASS and cross (✘) for FAIL,
-    with corresponding green/red colors. Also adds non-complied count and complied percentage.
+    Updates the Excel file with compliance results and saves it to a new path
+    in COMPLIANCE_EXCEL_OUTPUT.
     """
-    wb = load_workbook(EXCEL_FILE, keep_vba=True)
-    ws = wb[sheet_name]
+    try:
+        # Load the workbook from the specified input path, keeping VBA macros
+        wb = load_workbook(excel_input_path, keep_vba=True)
+        
+        # Get the target sheet
+        if sheet_name not in wb.sheetnames:
+            raise ValueError(f"Sheet '{sheet_name}' not found in the uploaded Excel file.")
+        ws = wb[sheet_name]
 
-    # Update checklist results
-    row = 2
-    for result in results:
-        status_icon = "✔" if result[0] == "PASS" else "✘"
-        cell = ws[f"{CHECKED_COLUMN}{row}"]
-        cell.value = status_icon
-        cell.font = Font(color="008000" if result[0] == "PASS" else "FF0000")
-        row += 1
+        # Update checklist results
+        # Assuming the checklist items start from the second row (row index 2 in Excel)
+        row = 2
+        for result in results:
+            status_icon = "✔" if result[0] == "PASS" else "✘"
+            cell = ws[f"{CHECKED_COLUMN}{row}"]
+            cell.value = status_icon
+            cell.font = Font(color="008000" if result[0] == "PASS" else "FF0000")
+            row += 1
 
-    # --- New and Modified Formatting for Checklist Compliance Summary ---
+        # --- New and Modified Formatting for Checklist Compliance Summary ---
 
-    # Get or create the "Summary" sheet
-    if "Summary" not in wb.sheetnames:
-        summary_ws = wb.create_sheet("Summary")
-    else:
-        summary_ws = wb["Summary"]
+        # Get or create the "Summary" sheet
+        if "Summary" not in wb.sheetnames:
+            summary_ws = wb.create_sheet("Summary")
+        else:
+            summary_ws = wb["Summary"]
 
-    # Define common styles
-    bold_font_white = Font(bold=True, color="FFFFFF") # White color for title
-    blue_background = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid") # RGB(68, 114, 196)
-    thin_border_side = Side(style='thick') # This defines the side style for the thick border
+        # Define common styles
+        bold_font_white = Font(bold=True, color="FFFFFF") # White color for title
+        blue_background = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid") # RGB(68, 114, 196)
+        thin_border_side = Side(style='thick') # This defines the side style for the thick border
 
-    # 1. Add title "Checklist Compliance"
-    # The title will now start at E8
-    summary_ws['E8'].value = "Checklist Compliance"
-    summary_ws['E8'].font = bold_font_white
-    summary_ws['E8'].fill = blue_background
-    summary_ws['E8'].alignment = Alignment(horizontal='center', vertical='center')
-    summary_ws.merge_cells('E8:F8')
+        # 1. Add title "Checklist Compliance"
+        # The title will now start at E8
+        summary_ws['E8'].value = "Checklist Compliance"
+        summary_ws['E8'].font = bold_font_white
+        summary_ws['E8'].fill = blue_background
+        summary_ws['E8'].alignment = Alignment(horizontal='center', vertical='center')
+        summary_ws.merge_cells('E8:F8')
 
-    # Set row 8 height
-    summary_ws.row_dimensions[8].height = 24
+        # Set row 8 height
+        summary_ws.row_dimensions[8].height = 24
 
-    # Set column E width (and F for balance)
-    summary_ws.column_dimensions['E'].width = 20
-    summary_ws.column_dimensions['F'].width = 10 # Give some width to F as well for values
+        # Set column E width (and F for balance)
+        summary_ws.column_dimensions['E'].width = 20
+        summary_ws.column_dimensions['F'].width = 10 # Give some width to F as well for values
 
-    # 2. Apply professional formatting for "Checks Not Complied"
-    # These will now start at row 9
-    summary_ws['E9'].value = "Checks Not Complied:"
-    summary_ws['E9'].font = Font(bold=True)
-    summary_ws['F9'].value = not_complied_count
-    summary_ws['F9'].font = Font(bold=True, color="FF0000") # Red color for not complied count
-    summary_ws['F9'].fill = PatternFill(start_color="FFF2CC", end_color="FFF2CC", fill_type="solid") # Light orange background
-    summary_ws['F9'].alignment = Alignment(horizontal='center', vertical='center')
+        # 2. Apply professional formatting for "Checks Not Complied"
+        # These will now start at row 9
+        summary_ws['E9'].value = "Checks Not Complied:"
+        summary_ws['E9'].font = Font(bold=True)
+        summary_ws['F9'].value = not_complied_count
+        summary_ws['F9'].font = Font(bold=True, color="FF0000") # Red color for not complied count
+        summary_ws['F9'].fill = PatternFill(start_color="FFF2CC", end_color="FFF2CC", fill_type="solid") # Light orange background
+        summary_ws['F9'].alignment = Alignment(horizontal='center', vertical='center')
 
-    # 3. Apply professional formatting for "Complied Percentage"
-    # These will now start at row 10
-    summary_ws['E10'].value = "Complied Percentage:"
-    summary_ws['E10'].font = Font(bold=True)
-    summary_ws['F10'].value = f"{compliance_percent:.1f}%"
-    summary_ws['F10'].font = Font(bold=True, color="008000") # Green color for complied percentage
-    summary_ws['F10'].fill = PatternFill(start_color="D9EAD3", end_color="D9EAD3", fill_type="solid") # Light green background
-    summary_ws['F10'].alignment = Alignment(horizontal='center', vertical='center')
+        # 3. Apply professional formatting for "Complied Percentage"
+        # These will now start at row 10
+        summary_ws['E10'].value = "Complied Percentage:"
+        summary_ws['E10'].font = Font(bold=True)
+        summary_ws['F10'].value = f"{compliance_percent:.1f}%"
+        summary_ws['F10'].font = Font(bold=True, color="008000") # Green color for complied percentage
+        summary_ws['F10'].fill = PatternFill(start_color="D9EAD3", end_color="D9EAD3", fill_type="solid") # Light green background
+        summary_ws['F10'].alignment = Alignment(horizontal='center', vertical='center')
 
-    # 4. Apply thick border around the compliance summary table (now E8:F10)
-    # The merged cell for the title is E8:F8.
-    # We want sides and bottom, but no top border for the entire block.
-    # So, E8 will get left and right, but NO top.
-    summary_ws['E8'].border = Border(left=thin_border_side, right=thin_border_side)
+        # 4. Apply thick border around the compliance summary table (now E8:F10)
+        # The merged cell for the title is E8:F8.
+        summary_ws['E8'].border = Border(left=thin_border_side, right=thin_border_side)
+        summary_ws['E9'].border = Border(left=thin_border_side)
+        summary_ws['F9'].border = Border(right=thin_border_side)
+        summary_ws['E10'].border = Border(bottom=thin_border_side, left=thin_border_side)
+        summary_ws['F10'].border = Border(bottom=thin_border_side, right=thin_border_side)
 
-    # Left and Right borders for row 9
-    summary_ws['E9'].border = Border(left=thin_border_side)
-    #summary_ws['F9'].border = Border(right=thin_border_side)
+        # Generate a unique filename for the output Excel file
+        base_name = os.path.splitext(os.path.basename(excel_input_path))[0]
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_excel_filename = f"{base_name}.xlsm"
+        output_excel_path = os.path.join(COMPLIANCE_EXCEL_OUTPUT, output_excel_filename)
 
-    # Bottom and left/right borders for row 10 (the new bottom row)
-    summary_ws['E10'].border = Border(bottom=thin_border_side, left=thin_border_side)
-    summary_ws['F10'].border = Border(bottom=thin_border_side, right=thin_border_side)
+        # Save the workbook to the new, dedicated output folder
+        wb.save(output_excel_path)
+        print(f"Updated Excel file saved to: {output_excel_path}")
+        return output_excel_path # Return the path where the updated Excel is saved
 
-    wb.save(EXCEL_FILE)
+    except Exception as e:
+        print(f"Error updating Excel file: {e}")
+        raise Exception(f"Failed to update Excel file: {e}. Please ensure the Excel file is not open and accessible and has the correct sheet name.")
 
 
 def transcribe_audio(audio_path, custom_name=None):
@@ -258,7 +278,7 @@ def save_compliance_report(results, output_file_name):
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     report_filename = f"{base_name}_compliance_report_{timestamp}.txt"
-    report_path = os.path.join(COMPLIANCE_FOLDER, report_filename)
+    report_path = os.path.join(COMPLIANCE_TEXT_REPORTS_FOLDER, report_filename) # Use new folder name
 
     with open(report_path, "w", encoding="utf-8") as f:
         f.write(f"Compliance Report for: {output_file_name}\n")
@@ -274,7 +294,22 @@ def save_compliance_report(results, output_file_name):
     print(f"Compliance report saved to: {report_path}")
 
 
-# Routes
+# New route to serve the updated Excel file for download
+@app.route('/download_updated_excel/<filename>', methods=['GET'])
+def download_updated_excel(filename):
+    """
+    Allows users to download the modified Excel file.
+    """
+    # Ensure the filename is secure to prevent directory traversal attacks
+    secure_filename_download = secure_filename(filename)
+    return send_from_directory(
+        directory=app.config['COMPLIANCE_EXCEL_OUTPUT'], # Serve from the dedicated output folder
+        path=secure_filename_download,
+        as_attachment=True # Forces download instead of opening in browser
+    )
+
+
+# Main route
 @app.route("/", methods=["GET", "POST"])
 def index():
     """
@@ -282,96 +317,115 @@ def index():
     and returns the report as JSON.
     """
     if request.method == "POST":
-        if 'files[]' not in request.files:
-            return jsonify({"error": "No files part"}), 400
-
-        uploaded_files = request.files.getlist('files[]')
-        output_file_name = request.form.get("output_file_name", "concatenated_audio.wav")
-        threshold = int(request.form.get("threshold", 50))
-        sheet_name = request.form.get("sheet_name")
-
-        if not uploaded_files or uploaded_files[0].filename == '':
-            return jsonify({"error": "No selected file"}), 400
-
-        if not sheet_name:
-            return jsonify({"error": "Sheet name is required"}), 400
-
-        temp_upload_dir = tempfile.mkdtemp()
-        saved_file_paths = []
+        # Create a temporary directory for all uploads for this request
+        temp_request_dir = tempfile.mkdtemp()
+        excel_file_path = None # Path to the uploaded Excel file (temporary)
+        final_excel_output_path = None # Path to the *modified* Excel file (in COMPLIANCE_EXCEL_OUTPUT)
         concatenated_audio_path = None
-        cleaned_path = None
+        cleaned_audio_path = None
 
         try:
-            for file in uploaded_files:
+            # 1. Handle Excel file upload
+            if 'excel_file' not in request.files:
+                raise ValueError("No Excel file part in the request.")
+            
+            excel_file_upload = request.files['excel_file']
+            if excel_file_upload.filename == '':
+                raise ValueError("No selected Excel file.")
+            
+            # Secure filename and save the Excel file to the temporary directory
+            excel_filename = secure_filename(excel_file_upload.filename)
+            excel_file_path = os.path.join(temp_request_dir, excel_filename)
+            excel_file_upload.save(excel_file_path)
+            print(f"Excel file saved temporarily for processing at: {excel_file_path}")
+
+            # 2. Handle Audio file(s) upload
+            if 'audio_files[]' not in request.files:
+                raise ValueError("No audio files part in the request.")
+            
+            uploaded_audio_files = request.files.getlist('audio_files[]')
+            if not uploaded_audio_files or uploaded_audio_files[0].filename == '':
+                raise ValueError("No audio files selected.")
+
+            saved_audio_paths = []
+            for file in uploaded_audio_files:
                 if file:
-                    filename = secure_filename(file.filename)
-                    file_path = os.path.join(temp_upload_dir, filename)
-                    file.save(file_path)
-                    saved_file_paths.append(file_path)
+                    audio_filename = secure_filename(file.filename)
+                    # Save audio files also to the temporary directory
+                    audio_file_path = os.path.join(temp_request_dir, audio_filename)
+                    file.save(audio_file_path)
+                    saved_audio_paths.append(audio_file_path)
 
-            if not saved_file_paths:
-                return jsonify({"error": "No valid files uploaded"}), 400
+            if not saved_audio_paths:
+                raise ValueError("No valid audio files uploaded.")
 
-            # Optimization: Skip concatenation if only one file is uploaded
-            if len(saved_file_paths) == 1:
-                # If only one file, use it directly as the source for preprocessing
-                concatenated_audio_path = saved_file_paths[0]
-                print(f"Skipping concatenation: Directly processing single file: {os.path.basename(concatenated_audio_path)}")
+            # Get other form data
+            output_file_name = request.form.get("output_file_name", "concatenated_audio.wav")
+            threshold = int(request.form.get("threshold", 50))
+            sheet_name = request.form.get("sheet_name")
+
+            if not sheet_name:
+                raise ValueError("Sheet name is required.")
+            if not output_file_name:
+                raise ValueError("Output file name is required.")
+
+            # 3. Audio Processing (Concatenation, Preprocessing, Transcription)
+            if len(saved_audio_paths) == 1:
+                concatenated_audio_path = saved_audio_paths[0]
+                print(f"Skipping concatenation: Directly processing single audio file: {os.path.basename(concatenated_audio_path)}")
             else:
-                # If multiple files, proceed with concatenation
-                concatenated_audio_path = concatenate_audio_files(saved_file_paths, output_file_name, app.config["UPLOAD_FOLDER"])
+                concatenated_audio_path = concatenate_audio_files(saved_audio_paths, output_file_name, app.config["UPLOAD_FOLDER"])
                 if not concatenated_audio_path:
-                    return jsonify({"error": "Audio concatenation failed. Check FFmpeg installation and file formats."}), 500
+                    raise Exception("Audio concatenation failed. Check FFmpeg installation and file formats.")
                 print(f"Concatenated audio saved to: {os.path.basename(concatenated_audio_path)}")
 
+            cleaned_audio_path = preprocess_audio(concatenated_audio_path)
+            if not cleaned_audio_path:
+                raise Exception("Audio preprocessing failed.")
 
-            # Preprocess the concatenated (or single) audio file
-            cleaned_path = preprocess_audio(concatenated_audio_path)
-            if not cleaned_path:
-                return jsonify({"error": "Audio preprocessing failed"}), 500
+            transcript = transcribe_audio(cleaned_audio_path, output_file_name)
 
-            # Load checklist and transcribe cleaned audio
-            df, checklist = load_checklist(sheet_name)
-            transcript = transcribe_audio(cleaned_path, output_file_name)
-
-
-            # Check compliance
+            # 4. Load Checklist and Check Compliance
+            df, checklist = load_checklist(excel_file_path, sheet_name) # Pass the uploaded excel_file_path
             results = check_compliance(transcript, checklist, threshold)
 
-            # Calculate compliance statistics for frontend and Excel
+            # Calculate compliance statistics
             passed_count = sum(1 for r in results if r[0] == "PASS")
             total_checks = len(results)
             compliance_percent = round((passed_count / total_checks) * 100, 1) if total_checks else 0
-
             not_complied_count = total_checks - passed_count
 
-            # Update Excel
-            try:
-                update_excel(results, sheet_name, not_complied_count, compliance_percent)
-            except Exception as e:
-                return jsonify({"error": f"Error updating Excel file: {e}. Please ensure the Excel file is not open and accessible."}), 500
+            # 5. Update the *uploaded* Excel file and get the path to the saved modified version
+            final_excel_output_path = update_excel(excel_file_path, results, sheet_name, not_complied_count, compliance_percent)
 
-            # Save compliance report to file
+            # 6. Save compliance report to a separate text file
             save_compliance_report(results, output_file_name)
 
-            # Return results as JSON for frontend
+            # 7. Return results as JSON for frontend, including the download URL for the updated Excel
+            updated_excel_filename = os.path.basename(final_excel_output_path)
+            download_url = url_for('download_updated_excel', filename=updated_excel_filename, _external=True)
+
             return jsonify({
                 "results": results,
                 "compliance_percent": compliance_percent,
-                "not_complied_count": not_complied_count
+                "not_complied_count": not_complied_count,
+                "excel_updated": True,
+                "updated_excel_filename": updated_excel_filename,
+                "download_excel_url": download_url # NEW: URL to download the updated Excel file
             })
 
         except Exception as e:
-            print(f"An unexpected error occurred: {e}")
-            return jsonify({"error": f"An unexpected error occurred: {e}"}), 500
+            print(f"An error occurred: {e}")
+            return jsonify({"error": f"Error processing files: {e}"}), 500
         finally:
-            # Clean up the temporary directory after processing
-            if os.path.exists(temp_upload_dir):
-                shutil.rmtree(temp_upload_dir)
-
-            # Remove the cleaned audio file (it's temporary for transcription)
-            if cleaned_path and os.path.exists(cleaned_path):
-                os.remove(cleaned_path)
+            # Clean up: remove the temporary directory and all its contents
+            if os.path.exists(temp_request_dir):
+                shutil.rmtree(temp_request_dir)
+            # The concatenated_audio_path might be in UPLOAD_FOLDER (which is app.config["UPLOAD_FOLDER"]),
+            # and it's up to you if you want to clear that folder after some time or keep the files.
+            # For now, it's not deleted here as it's outside temp_request_dir.
+            # cleaned_audio_path is usually the same as concatenated_audio_path or a temp copy that should be handled by tempfile.
+            # If `preprocess_audio` creates a new file, ensure it's in temp_request_dir or explicitly deleted.
 
     return render_template("index.html")
 

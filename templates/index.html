@@ -4,37 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audio Compliance Checker</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts - Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
         }
+        /* Custom spinner for better visual consistency */
+        .loader {
+            border-top-color: #4f46e5; /* Tailwind indigo-600 */
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
     <div id="root"></div>
-    <!-- Load React and ReactDOM UMD builds directly, making them globally available -->
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <!-- Load Babel Standalone for JSX transformation -->
+    <script src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script type="text/babel">
-        // Main App component - now directly embedded
         const App = () => {
-            // State variables for selected files (array), output file name, sheet name, threshold, loading, errors, and report
             const [selectedFiles, setSelectedFiles] = React.useState([]);
+            const [excelFile, setExcelFile] = React.useState(null);
             const [outputFileName, setOutputFileName] = React.useState('');
-            // Updated sheetName default to the first option in the dropdown
             const [sheetName, setSheetName] = React.useState('STARTING WITH AC-GPU CHECKLIST');
-            const [threshold, setThreshold] = React.useState(90); // Default compliance threshold
-            const [loading, setLoading] = React.useState(false); // Loading indicator for processing
-            const [error, setError] = React.useState(null); // Stores any error messages
-            const [report, setReport] = React.useState(null); // Stores the entire compliance report
+            const [threshold, setThreshold] = React.useState(90);
+            const [loading, setLoading] = React.useState(false);
+            const [error, setError] = React.useState(null);
+            const [report, setReport] = React.useState(null);
+            const [fileRemovedMessage, setFileRemovedMessage] = React.useState('');
+            const [downloadExcelUrl, setDownloadExcelUrl] = React.useState(null); // NEW STATE for download URL
 
-            // Function to play a short sound notification
             const playSoundNotification = () => {
                 try {
                     const context = new (window.AudioContext || window.webkitAudioContext)();
@@ -47,18 +52,15 @@
                     gainNode.connect(context.destination);
 
                     oscillator.start();
-                    // Fade out over a very short duration
-                    gainNode.gain.exponentialRampToValueAtTime(0.00001, context.currentTime + 0.5); // 0.5 second duration
+                    gainNode.gain.exponentialRampToValueAtTime(0.00001, context.currentTime + 0.5);
                     oscillator.stop(context.currentTime + 0.5);
                 } catch (e) {
                     console.warn("Could not play system beep:", e);
                 }
             };
 
-
-            // Handlers for drag-and-drop functionality
             const handleDragOver = (event) => {
-                event.preventDefault(); // Prevent default to allow drop
+                event.preventDefault();
                 event.currentTarget.classList.add('border-indigo-500', 'bg-indigo-50');
             };
 
@@ -66,32 +68,62 @@
                 event.currentTarget.classList.remove('border-indigo-500', 'bg-indigo-50');
             };
 
-            const handleDrop = (event) => {
-                event.preventDefault(); // Prevent default to allow drop
+            const handleAudioDrop = (event) => {
+                event.preventDefault();
                 event.currentTarget.classList.remove('border-indigo-500', 'bg-indigo-50');
-                const files = Array.from(event.dataTransfer.files); // Get files from drop event
-                setSelectedFiles((prevFiles) => [...prevFiles, ...files]); // Add new files to existing
-                setError(null); // Clear previous errors
+                const files = Array.from(event.dataTransfer.files);
+                setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
+                setError(null);
             };
 
-            // Function to handle file selection from input
-            const handleFileChange = (event) => {
+            const handleAudioFileChange = (event) => {
                 const files = Array.from(event.target.files);
-                setSelectedFiles((prevFiles) => [...prevFiles, ...files]); // Add new files to existing
-                setError(null); // Clear previous errors
+                setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
+                setError(null);
             };
 
-            // Function to remove a selected file
+            const handleExcelFileChange = (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    if (!file.name.match(/\.(xlsx|xls|xlsm)$/i)) {
+                        setError('Please select a valid Excel file (.xlsx, .xls, or .xlsm).');
+                        setExcelFile(null); // Clear the file if it's not valid
+                        return;
+                    }
+                    setExcelFile(file);
+                    setError(null);
+                }
+            };
+
             const removeFile = (fileName) => {
                 setSelectedFiles((prevFiles) => prevFiles.filter(file => file.name !== fileName));
+                setFileRemovedMessage(`"${fileName}" removed.`);
+                setTimeout(() => setFileRemovedMessage(''), 3000);
             };
 
-            // Function to handle form submission
+            const removeExcelFile = () => {
+                if (excelFile) {
+                    setFileRemovedMessage(`"${excelFile.name}" removed.`);
+                    setExcelFile(null);
+                    setTimeout(() => setFileRemovedMessage(''), 3000);
+                }
+            };
+
             const handleSubmit = async (event) => {
-                event.preventDefault(); // Prevent default form submission behavior
+                event.preventDefault();
 
                 if (selectedFiles.length === 0) {
                     setError('Please select at least one audio file.');
+                    return;
+                }
+
+                if (!excelFile) {
+                    setError('Please upload an Excel checklist file.');
+                    return;
+                }
+
+                if (!excelFile.name.match(/\.(xlsx|xls|xlsm)$/i)) { // Double-check for robustness
+                    setError('The uploaded file is not a valid Excel file type (.xlsx, .xls, or .xlsm).');
                     return;
                 }
 
@@ -105,43 +137,52 @@
                     return;
                 }
 
-                setLoading(true); // Start loading
-                setError(null); // Clear previous errors
-                setReport(null); // Clear previous report
+                setLoading(true);
+                setError(null);
+                setReport(null);
+                setDownloadExcelUrl(null); // Clear previous download URL
 
-                // Create FormData object to send files and other data
                 const formData = new FormData();
                 selectedFiles.forEach((file) => {
-                    formData.append('files[]', file); // Append each file with 'files[]' key
+                    formData.append('audio_files[]', file);
                 });
-                formData.append('output_file_name', outputFileName); // Append the desired output file name
+                formData.append('excel_file', excelFile);
+                formData.append('output_file_name', outputFileName);
                 formData.append('sheet_name', sheetName);
                 formData.append('threshold', threshold);
 
                 try {
-                    // Make a POST request to the Flask backend
                     const response = await fetch('/', {
                         method: 'POST',
                         body: formData,
                     });
 
-                    // Check if the response is successful
                     if (!response.ok) {
-                        // If not OK, try to read error message from response
                         const errorText = await response.text();
-                        throw new Error(`Server error: ${response.status} - ${errorText}`);
+                        // Attempt to parse JSON error if available
+                        try {
+                            const errorJson = JSON.parse(errorText);
+                            throw new Error(`Server error: ${response.status} - ${errorJson.error || 'Unknown error'}`);
+                        } catch {
+                            throw new Error(`Server error: ${response.status} - ${errorText}`);
+                        }
                     }
 
-                    // Parse the JSON response from the Flask backend
                     const data = await response.json();
-                    setReport(data); // Set the report data
-                    playSoundNotification(); // Play sound on successful report generation
+                    setReport(data);
+                    playSoundNotification();
                     console.log('Report Data:', data);
+
+                    // NEW: Set the download URL if provided
+                    if (data.download_excel_url) {
+                        setDownloadExcelUrl(data.download_excel_url);
+                    }
+
                 } catch (err) {
                     console.error('Error during file upload or processing:', err);
-                    setError(`Failed to process audio: ${err.message}. Please ensure the Excel file is accessible and the backend is running correctly. Also, check Flask logs for more details.`);
+                    setError(`Failed to process: ${err.message}. Please ensure all files are valid, the Excel file is not open, and the backend is running correctly.`);
                 } finally {
-                    setLoading(false); // End loading
+                    setLoading(false);
                 }
             };
 
@@ -152,57 +193,121 @@
                             Audio Compliance Checker
                         </h1>
 
-                        {/* Upload Form Section */}
+                        {/* Excel File Upload Section */}
+                        <div className="space-y-4">
+                            <h2 className="text-2xl font-semibold text-indigo-600 mb-4">Upload Checklist Excel File</h2>
+                            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center transition-all duration-200 ease-in-out hover:border-green-500 hover:bg-green-50"
+                                onDragOver={handleDragOver}
+                                onDragLeave={handleDragLeave}
+                                onDrop={(e) => {
+                                    e.preventDefault();
+                                    e.currentTarget.classList.remove('border-green-500', 'bg-green-50');
+                                    const file = e.dataTransfer.files[0];
+                                    if (file) {
+                                        if (!file.name.match(/\.(xlsx|xls|xlsm)$/i)) {
+                                            setError('Please drop a valid Excel file (.xlsx, .xls, or .xlsm).');
+                                            setExcelFile(null);
+                                        } else {
+                                            setExcelFile(file);
+                                            setError(null);
+                                        }
+                                    }
+                                }}
+                                aria-live="polite" aria-atomic="true">
+                                <span className="mx-auto block text-5xl text-gray-400 mb-3" role="img" aria-label="Excel file icon">📄</span>
+                                <p className="text-lg text-gray-600 font-semibold">Drag & drop your Excel file here, or</p>
+                                <label htmlFor="excelFile" className="cursor-pointer inline-flex items-center px-4 py-2 mt-3 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                    Browse Excel File
+                                </label>
+                                <input
+                                    type="file"
+                                    id="excelFile"
+                                    accept=".xlsx, .xls, .xlsm"
+                                    onChange={handleExcelFileChange}
+                                    className="sr-only"
+                                    aria-describedby="excel-upload-description"
+                                />
+                                <p id="excel-upload-description" className="sr-only">Upload your Excel checklist file.</p>
+                            </div>
+                            {excelFile && (
+                                <div className="bg-gray-50 p-4 rounded-lg shadow-inner border border-gray-200 flex justify-between items-center">
+                                    <span className="text-sm text-gray-800 truncate" aria-label={`Excel file selected: ${excelFile.name}`}>
+                                        Selected Excel File: <strong className="font-medium">{excelFile.name}</strong>
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={removeExcelFile}
+                                        className="ml-4 text-red-500 hover:text-red-700 transition-colors duration-150 ease-in-out focus:outline-none"
+                                        title={`Remove ${excelFile.name}`}
+                                        aria-label={`Remove Excel file ${excelFile.name}`}
+                                    >
+                                        ❌
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Audio Files Upload Section */}
+                        <h2 className="text-2xl font-semibold text-indigo-600 mb-4 mt-8">Upload Audio Files</h2>
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            {/* Drag and Drop Area */}
                             <div
                                 onDragOver={handleDragOver}
                                 onDragLeave={handleDragLeave}
-                                onDrop={handleDrop}
+                                onDrop={handleAudioDrop}
                                 className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center transition-all duration-200 ease-in-out hover:border-indigo-500 hover:bg-indigo-50"
+                                aria-live="polite"
+                                aria-atomic="true"
                             >
-                                <span className="mx-auto block text-5xl text-gray-400 mb-3">⬆️</span> {/* Replaced Upload icon */}
+                                <span className="mx-auto block text-5xl text-gray-400 mb-3" role="img" aria-label="Upload icon">⬆️</span>
                                 <p className="text-lg text-gray-600 font-semibold">Drag & drop your audio files here, or</p>
                                 <label htmlFor="audioFile" className="cursor-pointer inline-flex items-center px-4 py-2 mt-3 border border-transparent text-sm font-medium rounded-full shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    Select Files
+                                    Select Audio Files
                                 </label>
                                 <input
                                     type="file"
                                     id="audioFile"
                                     accept="audio/*"
-                                    multiple // Allow multiple file selection
-                                    onChange={handleFileChange}
-                                    className="sr-only" // Hide the actual input visually
+                                    multiple
+                                    onChange={handleAudioFileChange}
+                                    className="sr-only"
+                                    aria-describedby="audio-upload-description"
                                 />
+                                <p id="audio-upload-description" className="sr-only">Upload audio files for compliance checking.</p>
                             </div>
 
-                            {/* Display Selected Files */}
+                            {/* Display Selected Audio Files */}
                             {selectedFiles.length > 0 && (
                                 <div className="bg-gray-50 p-4 rounded-lg shadow-inner border border-gray-200">
                                     <h3 className="text-lg font-medium text-gray-700 mb-2">Selected Audio Files:</h3>
                                     <ul className="list-disc pl-5 space-y-1">
                                         {selectedFiles.map((file, index) => (
-                                            <li key={index} className="flex justify-between items-center text-sm text-gray-800">
-                                                <span className="truncate">{file.name}</span>
+                                            <li key={file.name + index} className="flex justify-between items-center text-sm text-gray-800 py-1">
+                                                <span className="truncate" aria-label={`Audio file selected: ${file.name}`}>{file.name}</span>
                                                 <button
                                                     type="button"
                                                     onClick={() => removeFile(file.name)}
                                                     className="ml-4 text-red-500 hover:text-red-700 transition-colors duration-150 ease-in-out focus:outline-none"
-                                                    title="Remove file"
+                                                    title={`Remove ${file.name}`}
+                                                    aria-label={`Remove audio file ${file.name}`}
                                                 >
-                                                    ❌ {/* Replaced XCircle icon */}
+                                                    ❌
                                                 </button>
                                             </li>
                                         ))}
                                     </ul>
                                 </div>
                             )}
+                            {fileRemovedMessage && (
+                                <p className="mt-2 text-sm text-green-600" aria-live="assertive">
+                                    {fileRemovedMessage}
+                                </p>
+                            )}
 
                             <div className="flex flex-col sm:flex-row sm:items-end sm:space-x-6 space-y-6 sm:space-y-0">
                                 {/* Resultant Audio File Name Input */}
                                 <div className="flex-1">
                                     <label htmlFor="outputFileName" className="block text-sm font-medium text-gray-700 mb-2">
-                                        🎵 Resultant Audio File Name {/* Replaced FileAudio icon */}
+                                        <span role="img" aria-label="Musical note icon">🎵</span> Resultant Audio File Name
                                     </label>
                                     <input
                                         type="text"
@@ -211,19 +316,21 @@
                                         onChange={(e) => setOutputFileName(e.target.value)}
                                         placeholder="e.g., combined_audio.wav"
                                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-150 ease-in-out"
+                                        aria-required="true"
                                     />
                                 </div>
 
                                 {/* Excel Sheet Name Dropdown */}
                                 <div>
                                     <label htmlFor="sheetName" className="block text-sm font-medium text-gray-700 mb-2">
-                                        📄 Excel Sheet Name {/* Replaced FileText icon */}
+                                        <span role="img" aria-label="Page icon">📄</span> Excel Sheet Name
                                     </label>
                                     <select
                                         id="sheetName"
                                         value={sheetName}
                                         onChange={(e) => setSheetName(e.target.value)}
                                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-150 ease-in-out bg-white"
+                                        aria-required="true"
                                     >
                                         <option value="STARTING WITH AC-GPU CHECKLIST">STARTING WITH AC-GPU CHECKLIST</option>
                                         <option value="STARTING WITH DC-GPU CHECKLIST">STARTING WITH DC-GPU CHECKLIST</option>
@@ -234,7 +341,7 @@
                                 {/* Threshold Input */}
                                 <div>
                                     <label htmlFor="threshold" className="block text-sm font-medium text-gray-700 mb-2">
-                                        % Match Threshold (%) {/* Replaced Percent icon */}
+                                        <span role="img" aria-label="Percent sign icon">%</span> Match Threshold (%)
                                     </label>
                                     <input
                                         type="number"
@@ -244,6 +351,9 @@
                                         min="0"
                                         max="100"
                                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-150 ease-in-out"
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"
+                                        aria-valuenow={threshold}
                                     />
                                 </div>
                             </div>
@@ -257,6 +367,8 @@
                                         ? 'bg-indigo-400 cursor-not-allowed'
                                         : 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
                                 }`}
+                                aria-live="polite"
+                                aria-busy={loading ? "true" : "false"}
                             >
                                 {loading ? 'Processing Audio...' : 'Generate Compliance Report'}
                             </button>
@@ -272,7 +384,7 @@
 
                         {/* Loading Indicator */}
                         {loading && (
-                            <div className="flex items-center justify-center p-6 bg-blue-50 rounded-lg shadow-inner">
+                            <div className="flex items-center justify-center p-6 bg-blue-50 rounded-lg shadow-inner" role="status" aria-label="Loading">
                                 <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mr-4"></div>
                                 <span className="text-xl text-blue-700 font-medium">Analyzing audio and generating report...</span>
                             </div>
@@ -282,8 +394,24 @@
                         {report && (
                             <div className="space-y-6 mt-10">
                                 <h2 className="text-3xl font-bold text-center text-indigo-600 flex items-center justify-center">
-                                    ℹ️ Compliance Report {/* Replaced Info icon */}
+                                    <span role="img" aria-label="Information icon">ℹ️</span> Compliance Report
                                 </h2>
+
+                                {/* Download Updated Excel Button (NEW) */}
+                                {downloadExcelUrl && (
+                                    <div className="flex justify-center mt-6">
+                                        <a
+                                            href={downloadExcelUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-150 ease-in-out"
+                                            download // Suggests the browser to download the file
+                                        >
+                                            <span role="img" aria-label="Download icon" className="mr-2">⬇️</span> Download Updated Excel File
+                                        </a>
+                                    </div>
+                                )}
+
 
                                 {/* Overall Compliance Summary as a professional report */}
                                 <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
@@ -311,10 +439,10 @@
                                 {/* Compliance Results Table */}
                                 <div className="bg-gray-50 p-6 rounded-lg shadow-md border border-gray-200">
                                     <h3 className="text-2xl font-semibold text-gray-800 mb-4">
-                                        ✅ Checklist Compliance {/* Replaced CheckCircle icon */}
+                                        <span role="img" aria-label="Checkmark icon">✅</span> Checklist Compliance
                                     </h3>
                                     <div className="overflow-x-auto">
-                                        <table className="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden shadow-sm">
+                                        <table className="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden shadow-sm" role="table">
                                             <thead className="bg-indigo-100">
                                                 <tr>
                                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-indigo-800 uppercase tracking-wider rounded-tl-lg">
@@ -330,15 +458,15 @@
                                             </thead>
                                             <tbody className="bg-white divide-y divide-gray-200">
                                                 {report.results.map((item, index) => (
-                                                    <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                                    <tr key={item[1] + index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                             {item[0] === 'PASS' ? (
-                                                                <span className="text-green-600 flex items-center">
-                                                                    ✅ PASS {/* Replaced CheckCircle icon */}
+                                                                <span className="text-green-600 flex items-center" role="status">
+                                                                    <span role="img" aria-label="Green checkmark">✅</span> PASS
                                                                 </span>
                                                             ) : (
-                                                                <span className="text-red-600 flex items-center">
-                                                                    ❌ FAIL {/* Replaced XCircle icon */}
+                                                                <span className="text-red-600 flex items-center" role="status">
+                                                                    <span role="img" aria-label="Red X">❌</span> FAIL
                                                                 </span>
                                                             )}
                                                         </td>
@@ -357,24 +485,10 @@
                             </div>
                         )}
                     </div>
-                    {/* Tailwind CSS spinner for loading animation */}
-                    <style jsx>{`
-                        .loader {
-                            border-top-color: #3498db;
-                            animation: spin 1s linear infinite;
-                        }
-
-                        @keyframes spin {
-                            0% { transform: rotate(0deg); }
-                            100% { transform: rotate(360deg); }
-                        }
-                    `}</style>
                 </div>
             );
         };
 
-
-        // Mount the React App component to the 'root' div
         ReactDOM.createRoot(document.getElementById('root')).render(
             <React.StrictMode>
                 <App />
