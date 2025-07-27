@@ -25,3 +25,15 @@ consider using the _time column to measure rate of change, T1 and T2 and Pitch
 N1/N2 Split
 -----------------------------
 Checklist compliance in the right cell started on 12th July 25
+-------------------------------
+Anomaly detector
+flight 03-07-25_1 highest NZ after landing
+--------------
+the sysstem needs to be documented in the SOPS
+PROCEDURE APPLICABILIRTY()
+FDAP SOP needs to be amended to reflect its functionalities
+----------------------------
+RAF-2712
+Speed negative throught the flight
+
+----------------------------
