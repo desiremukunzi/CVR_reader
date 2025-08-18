@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anomaly Detection Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        .section-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1a202c;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 0.5rem;
+        }
+        .anomaly-item {
+            background-color: #ffebeb; /* Light red background for anomalies */
+            border: 1px solid #ffcccc;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        .anomaly-item strong {
+            color: #c53030; /* Darker red for emphasis */
+        }
+        .plot-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        .plot-image {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .no-data-message {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #718096;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: #f7fafc;
+            border-radius: 8px;
+            border: 1px dashed #cbd5e0;
+        }
+        .back-button {
+            display: inline-block;
+            margin-top: 2rem;
+            background-color: #4a5568;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .back-button:hover {
+            background-color: #2d3748;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container">
+        <h1 class="section-title text-center mb-6">Anomaly Detection Report for Flight ID: {{ current_flight_id }}</h1>
+
+        {% if message %}
+            <div class="no-data-message">{{ message }}</div>
+        {% else %}
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Detected Anomalies ({{ detected_anomalies|length }}):</h2>
+            {% if detected_anomalies %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                    {% for anomaly in detected_anomalies %}
+                        <div class="anomaly-item">
+                            <p><strong>Parameter:</strong> {{ anomaly.parameter }}</p>
+                            <p><strong>Phase:</strong> {{ anomaly.phase }}</p>
+                            <p><strong>Time:</strong> {{ "%.2f" | format(anomaly.time) }}</p>
+                            <p><strong>Value:</strong> {{ "%.2f" | format(anomaly.value) }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-data-message mb-8">No anomalies detected for this flight.</div>
+            {% endif %}
+
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Flight Parameter Plots:</h2>
+            {% if plot_filenames %} {# Check for plot_filenames instead of base64_plot_images #}
+                <div class="plot-container">
+                    {% for img_filename in plot_filenames %} {# Loop through filenames #}
+                        <img src="{{ url_for('serve_temp_image', filename=img_filename) }}" alt="Flight Parameter Plot" class="plot-image">
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-data-message">No plots generated.</div>
+            {% endif %}
+        {% endif %}
+
+        <div class="text-center">
+            <a href="/" class="back-button">Go Back to Upload</a>
+        </div>
+    </div>
+</body>
+</html>

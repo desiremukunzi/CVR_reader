@@ -33,7 +33,9 @@ the sysstem needs to be documented in the SOPS
 PROCEDURE APPLICABILIRTY()
 FDAP SOP needs to be amended to reflect its functionalities
 ----------------------------
-RAF-2712
+RAF-2712 since 10/07/2025
 Speed negative throught the flight
 
 ----------------------------
+RAF-61504 on 05/08/2025
+checklist compliance below 90
