@@ -1,0 +1,849 @@
+Compliance Report for: 20.08
+Generated On: 2025-08-21 14:24:45
+--------------------------------------------------
+
+Status: FAIL
+Checklist Item: MI-17V-5 HELICOPTER START UP WITH AC GPU & INFLIGHT CHECKLIST
+Matched Text: "a"
+Score: 74.2%
+--------------------
+Status: FAIL
+Checklist Item:           PRE APU START
+Matched Text: "a"
+Score: 77.1%
+--------------------
+Status: FAIL
+Checklist Item: Instruments and all switches As required
+Matched Text: "a"
+Score: 74.6%
+--------------------
+Status: FAIL
+Checklist Item: Battery 1 and 2 Check and On
+Matched Text: "a"
+Score: 75.8%
+--------------------
+Status: FAIL
+Checklist Item: GPU Connected check and On
+Matched Text: "a"
+Score: 75.8%
+--------------------
+Status: FAIL
+Checklist Item: Rectifiers On
+Matched Text: "are"
+Score: 65.3%
+--------------------
+Status: FAIL
+Checklist Item: Circuit Breakers On
+Matched Text: "a"
+Score: 76.0%
+--------------------
+Status: FAIL
+Checklist Item: FDR and CVR On
+Matched Text: "a"
+Score: 76.9%
+--------------------
+Status: FAIL
+Checklist Item: Headsets Connected
+Matched Text: "a"
+Score: 76.1%
+--------------------
+Status: FAIL
+Checklist Item: Intercom Readability Check
+Matched Text: "a"
+Score: 75.9%
+--------------------
+Status: FAIL
+Checklist Item: ADF On
+Matched Text: "a"
+Score: 81.0%
+--------------------
+Status: FAIL
+Checklist Item: GPS On
+Matched Text: "go."
+Score: 62.2%
+--------------------
+Status: FAIL
+Checklist Item: Transponder On
+Matched Text: "a"
+Score: 76.9%
+--------------------
+Status: FAIL
+Checklist Item: ELT Arming
+Matched Text: "a"
+Score: 78.2%
+--------------------
+Status: FAIL
+Checklist Item: Global satellite tracking system On
+Matched Text: "a"
+Score: 74.8%
+--------------------
+Status: FAIL
+Checklist Item: TCAS On
+Matched Text: "a"
+Score: 80.0%
+--------------------
+Status: FAIL
+Checklist Item: Aircraft records on board and filled
+Matched Text: "a"
+Score: 74.8%
+--------------------
+Status: FAIL
+Checklist Item: Overhead hatch closed
+Matched Text: "a"
+Score: 75.8%
+--------------------
+Status: FAIL
+Checklist Item: Windscreens Clean
+Matched Text: "a"
+Score: 76.3%
+--------------------
+Status: FAIL
+Checklist Item: Seatbelts Fastened
+Matched Text: "a"
+Score: 76.1%
+--------------------
+Status: FAIL
+Checklist Item: Pneumatic System Check Pressure
+Matched Text: "a"
+Score: 75.3%
+--------------------
+Status: FAIL
+Checklist Item: Pedals Neutral
+Matched Text: "a"
+Score: 76.9%
+--------------------
+Status: FAIL
+Checklist Item: Cyclic Stick Neutral           
+Matched Text: "a"
+Score: 75.9%
+--------------------
+Status: FAIL
+Checklist Item: Landing gear brakes applied
+Matched Text: "a"
+Score: 75.2%
+--------------------
+Status: FAIL
+Checklist Item: Collective pitch fully down
+Matched Text: "thank you so"
+Score: 44.2%
+--------------------
+Status: FAIL
+Checklist Item: Throttle Twist Grip Fully Left
+Matched Text: "out"
+Score: 52.9%
+--------------------
+Status: FAIL
+Checklist Item: Friction Clutch Adjusted
+Matched Text: "a"
+Score: 75.5%
+--------------------
+Status: FAIL
+Checklist Item: Separate Throttle Lever Middle and Latched
+Matched Text: "a"
+Score: 74.6%
+--------------------
+Status: FAIL
+Checklist Item: Main Rotor Brake Fully Down
+Matched Text: "a"
+Score: 75.2%
+--------------------
+Status: FAIL
+Checklist Item: Engine Shut Down Levers Backward
+Matched Text: "a"
+Score: 74.9%
+--------------------
+Status: FAIL
+Checklist Item: Fuel Quantity Check
+Matched Text: "a"
+Score: 77.1%
+--------------------
+Status: FAIL
+Checklist Item: Warning Lights Check 
+Matched Text: "a"
+Score: 76.9%
+--------------------
+Status: FAIL
+Checklist Item: Fire extinguishing System Check 
+Matched Text: "are"
+Score: 52.7%
+--------------------
+Status: FAIL
+Checklist Item: Voice Warning System Check 
+Matched Text: "a"
+Score: 75.9%
+--------------------
+Status: FAIL
+Checklist Item: EGT Indicators Test
+Matched Text: "a"
+Score: 76.0%
+--------------------
+Status: FAIL
+Checklist Item: Engine vibration system test
+Matched Text: "a"
+Score: 75.2%
+--------------------
+Status: FAIL
+Checklist Item: Fire extinguishing System On
+Matched Text: "are"
+Score: 52.3%
+--------------------
+Status: FAIL
+Checklist Item: All pumps On
+Matched Text: "a"
+Score: 77.4%
+--------------------
+Status: FAIL
+Checklist Item: Generators Off
+Matched Text: "a"
+Score: 76.9%
+--------------------
+Status: FAIL
+Checklist Item: Fire Fuel shut off valve Check and  Open
+Matched Text: "a"
+Score: 74.9%
+--------------------
+Status: FAIL
+Checklist Item: Engine Shut Down Levers Backward
+Matched Text: "a"
+Score: 74.9%
+--------------------
+Status: FAIL
+Checklist Item: Pre APU Start Checklist Completed
+Matched Text: "a"
+Score: 74.9%
+--------------------
+Status: FAIL
+Checklist Item: APU START CHECKLIST 
+Matched Text: "a"
+Score: 76.0%
+--------------------
+Status: FAIL
+Checklist Item: Startup clearance ATC Request
+Matched Text: "a"
+Score: 75.1%
+--------------------
+Status: FAIL
+Checklist Item: Ground crew Signal               
+Matched Text: "a"
+Score: 76.1%
+--------------------
+Status: FAIL
+Checklist Item: APU Start               
+Matched Text: "a"
+Score: 78.7%
+--------------------
+Status: FAIL
+Checklist Item: APU Parameters Check as Required     
+Matched Text: "a"
+Score: 75.3%
+--------------------
+Status: FAIL
+Checklist Item: APU Generator On
+Matched Text: "a"
+Score: 76.5%
+--------------------
+Status: FAIL
+Checklist Item: GPU Off and disconnected
+Matched Text: "a"
+Score: 75.5%
+--------------------
+Status: FAIL
+Checklist Item: Startup checklist Completed            
+Matched Text: "a"
+Score: 75.2%
+--------------------
+Status: FAIL
+Checklist Item: ENGINE START UP
+Matched Text: "a"
+Score: 76.7%
+--------------------
+Status: FAIL
+Checklist Item:  Start up Area Clear
+Matched Text: "are"
+Score: 80.6%
+--------------------
+Status: FAIL
+Checklist Item: Anti collision light  On
+Matched Text: "a"
+Score: 75.5%
+--------------------
+Status: FAIL
+Checklist Item: Engine selection   as per wind direction    
+Matched Text: "a"
+Score: 74.7%
+--------------------
+Status: FAIL
+Checklist Item: Ground crew  Signal
+Matched Text: "a"
+Score: 76.1%
+--------------------
+Status: FAIL
+Checklist Item: Engine  Start button    press
+Matched Text: "a"
+Score: 75.2%
+--------------------
+Status: FAIL
+Checklist Item: HP cock open
+Matched Text: "ok. ok."
+Score: 68.8%
+--------------------
+Status: FAIL
+Checklist Item: Stop watch Set
+Matched Text: "a"
+Score: 76.9%
+--------------------
+Status: FAIL
+Checklist Item: Warm up engine 1 to 2 minutes
+Matched Text: "a"
+Score: 75.1%
+--------------------
+Status: FAIL
+Checklist Item: Engine Parameters as required
+Matched Text: "a"
+Score: 75.1%
+--------------------
+Status: FAIL
+Checklist Item: Start second engine as above
+Matched Text: "a"
+Score: 75.2%
+--------------------
+Status: FAIL
+Checklist Item: Warm up second engine 1 to 2 minutes
+Matched Text: "a"
+Score: 74.8%
+--------------------
+Status: FAIL
+Checklist Item: Idle parameters Check
+Matched Text: "a"
+Score: 76.7%
+--------------------
+Status: FAIL
+Checklist Item: DPD On
+Matched Text: "ready. ok."
+Score: 47.6%
+--------------------
+Status: FAIL
+Checklist Item: EGT Air Check
+Matched Text: "a"
+Score: 80.0%
+--------------------
+Status: FAIL
+Checklist Item: FUNCTIONAL CHECK
+Matched Text: "a"
+Score: 78.2%
+--------------------
+Status: FAIL
+Checklist Item: Hydraulic system Check
+Matched Text: "a"
+Score: 76.5%
+--------------------
+Status: FAIL
+Checklist Item: Controls Response Check
+Matched Text: "are"
+Score: 54.2%
+--------------------
+Status: FAIL
+Checklist Item: EEG Test
+Matched Text: "go. we"
+Score: 56.3%
+--------------------
+Status: FAIL
+Checklist Item: Partial acceleration Check
+Matched Text: "a"
+Score: 75.9%
+--------------------
+Status: FAIL
+Checklist Item: ENGINE OPERATIONAL MODE
+Matched Text: "a"
+Score: 75.6%
+--------------------
+Status: FAIL
+Checklist Item: Throttle Twist Grip Fully Right 
+Matched Text: "out"
+Score: 52.8%
+--------------------
+Status: FAIL
+Checklist Item: Generators Test and On
+Matched Text: "a"
+Score: 75.7%
+--------------------
+Status: FAIL
+Checklist Item: APU Generator Off
+Matched Text: "a"
+Score: 76.3%
+--------------------
+Status: FAIL
+Checklist Item: Inverters Auto position                                    
+Matched Text: "a"
+Score: 75.6%
+--------------------
+Status: FAIL
+Checklist Item: APU Off
+Matched Text: "a"
+Score: 80.0%
+--------------------
+Status: FAIL
+Checklist Item: Navigation Lights On
+Matched Text: "a"
+Score: 75.9%
+--------------------
+Status: FAIL
+Checklist Item: Blade tip lights Night and Poor visibility On
+Matched Text: "a"
+Score: 74.5%
+--------------------
+Status: FAIL
+Checklist Item: Cabin Lighting Night and Poor visibility On
+Matched Text: "a"
+Score: 74.5%
+--------------------
+Status: FAIL
+Checklist Item: Formation lights Night and Poor visibility On
+Matched Text: "a"
+Score: 74.5%
+--------------------
+Status: FAIL
+Checklist Item: Voice Warning System On
+Matched Text: "a"
+Score: 75.6%
+--------------------
+Status: FAIL
+Checklist Item: Gyro Horizons On
+Matched Text: "you so"
+Score: 58.6%
+--------------------
+Status: FAIL
+Checklist Item: Compass System On and Check
+Matched Text: "a"
+Score: 75.8%
+--------------------
+Status: FAIL
+Checklist Item: Radio Altimeter On and Check
+Matched Text: "a"
+Score: 75.7%
+--------------------
+Status: FAIL
+Checklist Item: Baro Altimeter Set
+Matched Text: "a"
+Score: 76.1%
+--------------------
+Status: FAIL
+Checklist Item: Pitch Limit System Check
+Matched Text: "much."
+Score: 42.7%
+--------------------
+Status: FAIL
+Checklist Item: Auto Pilot On and Check
+Matched Text: "a"
+Score: 76.3%
+--------------------
+Status: FAIL
+Checklist Item: Main Rotor Control speed Check range
+Matched Text: "a"
+Score: 75.0%
+--------------------
+Status: FAIL
+Checklist Item: Main Rotor RPM Set 95 %
+Matched Text: "a"
+Score: 75.8%
+--------------------
+Status: FAIL
+Checklist Item: Collective Down
+Matched Text: "we go."
+Score: 52.0%
+--------------------
+Status: FAIL
+Checklist Item: Engine Startup checklist Completed
+Matched Text: "a"
+Score: 74.9%
+--------------------
+Status: FAIL
+Checklist Item: BEFORE TAXI
+Matched Text: "a"
+Score: 77.8%
+--------------------
+Status: FAIL
+Checklist Item: Taxing clearance ATC Request
+Matched Text: "a"
+Score: 75.2%
+--------------------
+Status: FAIL
+Checklist Item: Area Clear         
+Matched Text: "are"
+Score: 85.6%
+--------------------
+Status: FAIL
+Checklist Item: Chocks   Removed and Stowed                     
+Matched Text: "we"
+Score: 77.1%
+--------------------
+Status: FAIL
+Checklist Item: Crew And Pax  Briefed          
+Matched Text: "a"
+Score: 75.8%
+--------------------
+Status: FAIL
+Checklist Item: Doors and Windows Closed
+Matched Text: "a"
+Score: 75.5%
+--------------------
+Status: FAIL
+Checklist Item: Cargo Compartment  Secured  
+Matched Text: "go."
+Score: 77.2%
+--------------------
+Status: FAIL
+Checklist Item: Autopilot Off
+Matched Text: "a"
+Score: 77.1%
+--------------------
+Status: FAIL
+Checklist Item: Before Taxing Checklist  Completed                        
+Matched Text: "a"
+Score: 74.9%
+--------------------
+Status: FAIL
+Checklist Item: LINEUP POSITION
+Matched Text: "ok. out"
+Score: 44.3%
+--------------------
+Status: FAIL
+Checklist Item: Area Clear                 
+Matched Text: "are"
+Score: 85.6%
+--------------------
+Status: FAIL
+Checklist Item: Obstacles in TakeOff Direction Absent                    
+Matched Text: "a"
+Score: 74.7%
+--------------------
+Status: FAIL
+Checklist Item: Gyro Same readings     
+Matched Text: "a"
+Score: 76.1%
+--------------------
+Status: FAIL
+Checklist Item: Heading Set
+Matched Text: "a"
+Score: 77.8%
+--------------------
+Status: FAIL
+Checklist Item: Autopilot ON                         
+Matched Text: "a"
+Score: 77.4%
+--------------------
+Status: FAIL
+Checklist Item: Type of TakeOFF Decide                   
+Matched Text: "a"
+Score: 75.7%
+--------------------
+Status: FAIL
+Checklist Item: Request for TakeOFF Performed               
+Matched Text: "a"
+Score: 75.1%
+--------------------
+Status: FAIL
+Checklist Item: Stop watch Press                      
+Matched Text: "a"
+Score: 76.5%
+--------------------
+Status: FAIL
+Checklist Item: BEFORE TAKE OFF 
+Matched Text: "a"
+Score: 76.7%
+--------------------
+Status: FAIL
+Checklist Item: Fuel Selector    Service                  
+Matched Text: "we"
+Score: 51.1%
+--------------------
+Status: FAIL
+Checklist Item: Fuel Pump Lights  Check Off              
+Matched Text: "so much. ok. ok."
+Score: 45.7%
+--------------------
+Status: FAIL
+Checklist Item: Transponder Alt                          
+Matched Text: "a"
+Score: 76.7%
+--------------------
+Status: FAIL
+Checklist Item: Autopilot On                              
+Matched Text: "a"
+Score: 77.4%
+--------------------
+Status: FAIL
+Checklist Item: Engine And Transmission Checked           
+Matched Text: "a"
+Score: 75.0%
+--------------------
+Status: FAIL
+Checklist Item: Before Takeoff Checklist Completed
+Matched Text: "a"
+Score: 74.9%
+--------------------
+Status: FAIL
+Checklist Item: AFTER TAKE OFF  
+Matched Text: "a"
+Score: 76.9%
+--------------------
+Status: FAIL
+Checklist Item: Main rotor 95 plus or minus 2 percent                
+Matched Text: "a"
+Score: 74.7%
+--------------------
+Status: FAIL
+Checklist Item: DPDS Above 50 meters OFF                            
+Matched Text: "a"
+Score: 75.5%
+--------------------
+Status: FAIL
+Checklist Item: Fuel consumption Monitored                       
+Matched Text: "ready."
+Score: 60.2%
+--------------------
+Status: FAIL
+Checklist Item: Monitor every 15 to 20 meters                                        
+Matched Text: "are"
+Score: 52.2%
+--------------------
+Status: FAIL
+Checklist Item: After takeoff checklist Completed   
+Matched Text: "a"
+Score: 74.9%
+--------------------
+Status: FAIL
+Checklist Item: IN FLIGHT CHECKS
+Matched Text: "so"
+Score: 51.9%
+--------------------
+Status: FAIL
+Checklist Item: Power setting As  per graph            
+Matched Text: "we"
+Score: 77.1%
+--------------------
+Status: FAIL
+Checklist Item: Fuel quantity Check                       
+Matched Text: "a"
+Score: 77.1%
+--------------------
+Status: FAIL
+Checklist Item: Other Parameters Normal operation
+Matched Text: "a"
+Score: 74.9%
+--------------------
+Status: FAIL
+Checklist Item:  Flight Following Call                       
+Matched Text: "a"
+Score: 75.8%
+--------------------
+Status: FAIL
+Checklist Item: PRE LANDING CHECKS
+Matched Text: "a"
+Score: 76.1%
+--------------------
+Status: FAIL
+Checklist Item: Landing clearance Request
+Matched Text: "a"
+Score: 75.4%
+--------------------
+Status: FAIL
+Checklist Item: Runway Condition Known
+Matched Text: "a"
+Score: 75.7%
+--------------------
+Status: FAIL
+Checklist Item: Autopilot Alt channel Off
+Matched Text: "a"
+Score: 75.4%
+--------------------
+Status: FAIL
+Checklist Item: Cargo Secured
+Matched Text: "go."
+Score: 80.4%
+--------------------
+Status: FAIL
+Checklist Item: Landing lights On
+Matched Text: "a"
+Score: 76.3%
+--------------------
+Status: FAIL
+Checklist Item: Fuel quantity Check
+Matched Text: "a"
+Score: 77.1%
+--------------------
+Status: FAIL
+Checklist Item: Compass Matched
+Matched Text: "a"
+Score: 76.7%
+--------------------
+Status: FAIL
+Checklist Item: dpds On At 50m
+Matched Text: "a"
+Score: 76.9%
+--------------------
+Status: FAIL
+Checklist Item: Type of Landing Decide
+Matched Text: "a"
+Score: 75.7%
+--------------------
+Status: FAIL
+Checklist Item: Runway Exit and Parking As instructed
+Matched Text: "a"
+Score: 74.7%
+--------------------
+Status: FAIL
+Checklist Item: Parameters Within Limit
+Matched Text: "a"
+Score: 75.6%
+--------------------
+Status: FAIL
+Checklist Item: Main rotor 95 plus or minus 2 percent                
+Matched Text: "a"
+Score: 74.7%
+--------------------
+Status: FAIL
+Checklist Item: Landing Gear Brakes Released
+Matched Text: "a"
+Score: 75.2%
+--------------------
+Status: FAIL
+Checklist Item: dpds On 
+Matched Text: "so"
+Score: 48.5%
+--------------------
+Status: FAIL
+Checklist Item: Cargo compartment Secured
+Matched Text: "go."
+Score: 77.3%
+--------------------
+Status: FAIL
+Checklist Item: Crew Briefed
+Matched Text: "we are"
+Score: 60.7%
+--------------------
+Status: FAIL
+Checklist Item: Before landing checklist Completed
+Matched Text: "a"
+Score: 74.9%
+--------------------
+Status: FAIL
+Checklist Item: AFTER LANDING
+Matched Text: "a"
+Score: 77.1%
+--------------------
+Status: FAIL
+Checklist Item: Collective fully down                           
+Matched Text: "you so"
+Score: 44.6%
+--------------------
+Status: FAIL
+Checklist Item: Auto pilot      Off                                             
+Matched Text: "a"
+Score: 76.4%
+--------------------
+Status: FAIL
+Checklist Item: Parking as required                          
+Matched Text: "a"
+Score: 76.0%
+--------------------
+Status: FAIL
+Checklist Item: After landing checklist completed
+Matched Text: "a"
+Score: 74.9%
+--------------------
+Status: FAIL
+Checklist Item: ENGINE SHUT DOWN  
+Matched Text: "out"
+Score: 55.9%
+--------------------
+Status: FAIL
+Checklist Item: Landing gear Brake Apply                               
+Matched Text: "a"
+Score: 75.5%
+--------------------
+Status: FAIL
+Checklist Item: Consumers Off                                          
+Matched Text: "we go."
+Score: 51.4%
+--------------------
+Status: FAIL
+Checklist Item: Rectifiers Off                                           
+Matched Text: "are"
+Score: 64.9%
+--------------------
+Status: FAIL
+Checklist Item: Inverters Neutral                                      
+Matched Text: "a"
+Score: 76.3%
+--------------------
+Status: FAIL
+Checklist Item: Generators Off                                    
+Matched Text: "a"
+Score: 76.9%
+--------------------
+Status: FAIL
+Checklist Item: Throttle Fully Left
+Matched Text: "out"
+Score: 54.9%
+--------------------
+Status: FAIL
+Checklist Item: Left and Right Fuel Pumps Off
+Matched Text: "a"
+Score: 75.1%
+--------------------
+Status: FAIL
+Checklist Item: Engines Cooling 1 to 2 Minutes
+Matched Text: "recording, we go."
+Score: 54.1%
+--------------------
+Status: FAIL
+Checklist Item: Eng  Shutdown Levers Backward
+Matched Text: "a"
+Score: 75.1%
+--------------------
+Status: FAIL
+Checklist Item: Stopwatch Press
+Matched Text: "a"
+Score: 76.7%
+--------------------
+Status: FAIL
+Checklist Item: Ngg equal 0 at 35 Second Minimum
+Matched Text: "a"
+Score: 74.9%
+--------------------
+Status: FAIL
+Checklist Item: MAIN ROTOR STOP                 
+Matched Text: "a"
+Score: 76.7%
+--------------------
+Status: FAIL
+Checklist Item: At less or equal to 15% Main Rotor Slowly apply Main Rotor brake                
+Matched Text: "a"
+Score: 74.3%
+--------------------
+Status: FAIL
+Checklist Item: At  Main Rotor stop  Controls move back and forth                                                 
+Matched Text: "a"
+Score: 74.4%
+--------------------
+Status: FAIL
+Checklist Item: Fire extinguisher  switch Off
+Matched Text: "are"
+Score: 52.3%
+--------------------
+Status: FAIL
+Checklist Item: Fuel shut off valves Leave open position                       
+Matched Text: "a"
+Score: 74.6%
+--------------------
+Status: FAIL
+Checklist Item: Service tank pump Off
+Matched Text: "a"
+Score: 75.8%
+--------------------
+Status: FAIL
+Checklist Item: Batteries 1 and 2 Off
+Matched Text: "a"
+Score: 75.8%
+--------------------

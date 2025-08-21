@@ -43,8 +43,40 @@ model = WhisperModel("medium", device="cuda", compute_type="float16")
 
 def preprocess_audio(input_path):
     # All files are .wav already, assume they’re good
-    print(f"Skipping preprocessing. Using original WAV: {input_path}")
-    return input_path
+   print(f"Skipping preprocessing. Using original WAV: {input_path}")
+   return input_path
+
+# The below to be used if you want to preprocess audio files when the transcript generated is ------- ,okay okay,etc (broken)
+# def preprocess_audio(input_path, output_folder="uploads", filename_prefix="cleaned_"):
+#     """
+#     Converts, trims silence, normalizes volume, and prepares audio for transcription.
+#     Returns path to the cleaned WAV file.
+#     """
+#     os.makedirs(output_folder, exist_ok=True)
+
+#     base = os.path.basename(input_path)
+#     name, _ = os.path.splitext(base)
+#     output_path = os.path.join(output_folder, f"{filename_prefix}{name}.wav")
+
+#     command = [
+#         "ffmpeg", "-y",
+#         "-i", input_path,
+#         "-ac", "1",
+#         "-ar", "16000",
+#         "-af", "silenceremove=1:0:-50dB,loudnorm",
+#         "-c:a", "pcm_s16le",
+#         output_path
+#     ]
+
+#     try:
+#         # Capture stderr to see FFmpeg's error messages
+#         result = subprocess.run(command, capture_output=True, text=True, check=True)
+#         print(f"FFmpeg stdout (preprocessing): {result.stdout}")
+#         return output_path
+#     except subprocess.CalledProcessError as e:
+#         print(f"FFmpeg failed during preprocessing: {e}")
+#         print(f"FFmpeg stderr (preprocessing): {e.stderr}")
+#         return None
 
 def concatenate_audio_files(input_paths, output_filename, upload_folder):
     """
