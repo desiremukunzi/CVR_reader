@@ -39,3 +39,7 @@ Speed negative throught the flight
 ----------------------------
 RAF-61504 on 05/08/2025
 checklist compliance below 90
+---------------------------------------
+RAF-2712 on 01/10/2025
+hydraulics not analyzed since this date
+---------------------------------------
