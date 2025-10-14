@@ -41,12 +41,13 @@ os.makedirs(app.config['COMPLIANCE_TEXT_REPORTS_FOLDER'], exist_ok=True)
 # Initialize Whisper model globally (to avoid reloading for every request)
 model = WhisperModel("medium", device="cuda", compute_type="float16")
 
+#normal audio preprocessing function
 def preprocess_audio(input_path):
     # All files are .wav already, assume they’re good
    print(f"Skipping preprocessing. Using original WAV: {input_path}")
    return input_path
 
-# The below to be used if you want to preprocess audio files when the transcript generated is ------- ,okay okay,etc (broken)
+# #The below to be used if you want to preprocess audio files when the transcript generated is ------- ,okay okay,etc (broken)
 # def preprocess_audio(input_path, output_folder="uploads", filename_prefix="cleaned_"):
 #     """
 #     Converts, trims silence, normalizes volume, and prepares audio for transcription.
