@@ -1,0 +1,849 @@
+Compliance Report for: testing
+Generated On: 2025-11-17 09:49:48
+--------------------------------------------------
+
+Status: FAIL
+Checklist Item: MI-17V-5 HELICOPTER START UP WITH AC GPU & INFLIGHT CHECKLIST
+Matched Text: "elt,"
+Score: 51.5%
+--------------------
+Status: FAIL
+Checklist Item:           PRE APU START
+Matched Text: "clean, seatbelts"
+Score: 48.7%
+--------------------
+Status: FAIL
+Checklist Item: Instruments and all switches As required
+Matched Text: "windscreens clean,"
+Score: 57.6%
+--------------------
+Status: FAIL
+Checklist Item: Battery 1 and 2 Check and On
+Matched Text: "seatbelts fastened."
+Score: 42.9%
+--------------------
+Status: FAIL
+Checklist Item: GPU Connected check and On
+Matched Text: "elt,"
+Score: 53.4%
+--------------------
+Status: FAIL
+Checklist Item: Rectifiers On
+Matched Text: "elt,"
+Score: 55.6%
+--------------------
+Status: FAIL
+Checklist Item: Circuit Breakers On
+Matched Text: "windscreens clean,"
+Score: 43.5%
+--------------------
+Status: FAIL
+Checklist Item: FDR and CVR On
+Matched Text: "fastened."
+Score: 47.6%
+--------------------
+Status: FAIL
+Checklist Item: Headsets Connected
+Matched Text: "elt,"
+Score: 54.0%
+--------------------
+Status: FAIL
+Checklist Item: Intercom Readability Check
+Matched Text: "elt,"
+Score: 55.8%
+--------------------
+Status: FAIL
+Checklist Item: ADF On
+Matched Text: "windscreens clean,"
+Score: 43.6%
+--------------------
+Status: FAIL
+Checklist Item: GPS On
+Matched Text: "humming, windscreens"
+Score: 43.1%
+--------------------
+Status: FAIL
+Checklist Item: Transponder On
+Matched Text: "fastened."
+Score: 46.4%
+--------------------
+Status: PASS
+Checklist Item: ELT Arming
+Matched Text: "elt,"
+Score: 92.8%
+--------------------
+Status: FAIL
+Checklist Item: Global satellite tracking system On
+Matched Text: "seatbelts"
+Score: 57.4%
+--------------------
+Status: FAIL
+Checklist Item: TCAS On
+Matched Text: "clean,"
+Score: 47.8%
+--------------------
+Status: FAIL
+Checklist Item: Aircraft records on board and filled
+Matched Text: "clean,"
+Score: 41.9%
+--------------------
+Status: FAIL
+Checklist Item: Overhead hatch closed
+Matched Text: "clean,"
+Score: 51.2%
+--------------------
+Status: PASS
+Checklist Item: Windscreens Clean
+Matched Text: "windscreens clean,"
+Score: 100.0%
+--------------------
+Status: PASS
+Checklist Item: Seatbelts Fastened
+Matched Text: "seatbelts fastened."
+Score: 100.0%
+--------------------
+Status: FAIL
+Checklist Item: Pneumatic System Check Pressure
+Matched Text: "seatbelts fastened."
+Score: 40.9%
+--------------------
+Status: FAIL
+Checklist Item: Pedals Neutral
+Matched Text: "elt,"
+Score: 56.7%
+--------------------
+Status: FAIL
+Checklist Item: Cyclic Stick Neutral           
+Matched Text: "elt,"
+Score: 54.7%
+--------------------
+Status: FAIL
+Checklist Item: Landing gear brakes applied
+Matched Text: "clean,"
+Score: 60.8%
+--------------------
+Status: FAIL
+Checklist Item: Collective pitch fully down
+Matched Text: "elt,"
+Score: 53.3%
+--------------------
+Status: FAIL
+Checklist Item: Throttle Twist Grip Fully Left
+Matched Text: "elt,"
+Score: 53.7%
+--------------------
+Status: FAIL
+Checklist Item: Friction Clutch Adjusted
+Matched Text: "fastened."
+Score: 58.1%
+--------------------
+Status: FAIL
+Checklist Item: Separate Throttle Lever Middle and Latched
+Matched Text: "clean,"
+Score: 63.2%
+--------------------
+Status: FAIL
+Checklist Item: Main Rotor Brake Fully Down
+Matched Text: "humming,"
+Score: 45.5%
+--------------------
+Status: FAIL
+Checklist Item: Engine Shut Down Levers Backward
+Matched Text: "clean,"
+Score: 46.2%
+--------------------
+Status: FAIL
+Checklist Item: Fuel Quantity Check
+Matched Text: "elt,"
+Score: 58.9%
+--------------------
+Status: FAIL
+Checklist Item: Warning Lights Check 
+Matched Text: "windscreens clean, seatbelts"
+Score: 43.6%
+--------------------
+Status: FAIL
+Checklist Item: Fire extinguishing System Check 
+Matched Text: "elt,"
+Score: 52.7%
+--------------------
+Status: FAIL
+Checklist Item: Voice Warning System Check 
+Matched Text: "clean,"
+Score: 52.5%
+--------------------
+Status: FAIL
+Checklist Item: EGT Indicators Test
+Matched Text: "elt, humming, windscreens"
+Score: 53.9%
+--------------------
+Status: FAIL
+Checklist Item: Engine vibration system test
+Matched Text: "elt,"
+Score: 52.3%
+--------------------
+Status: FAIL
+Checklist Item: Fire extinguishing System On
+Matched Text: "elt,"
+Score: 52.3%
+--------------------
+Status: FAIL
+Checklist Item: All pumps On
+Matched Text: "elt, humming,"
+Score: 45.4%
+--------------------
+Status: FAIL
+Checklist Item: Generators Off
+Matched Text: "clean, seatbelts fastened."
+Score: 46.5%
+--------------------
+Status: FAIL
+Checklist Item: Fire Fuel shut off valve Check and  Open
+Matched Text: "elt,"
+Score: 53.2%
+--------------------
+Status: FAIL
+Checklist Item: Engine Shut Down Levers Backward
+Matched Text: "clean,"
+Score: 46.2%
+--------------------
+Status: FAIL
+Checklist Item: Pre APU Start Checklist Completed
+Matched Text: "elt,"
+Score: 53.3%
+--------------------
+Status: FAIL
+Checklist Item: APU START CHECKLIST 
+Matched Text: "windscreens clean, seatbelts"
+Score: 47.1%
+--------------------
+Status: FAIL
+Checklist Item: Startup clearance ATC Request
+Matched Text: "clean,"
+Score: 66.5%
+--------------------
+Status: FAIL
+Checklist Item: Ground crew Signal               
+Matched Text: "windscreens"
+Score: 50.1%
+--------------------
+Status: FAIL
+Checklist Item: APU Start               
+Matched Text: "clean, seatbelts"
+Score: 51.9%
+--------------------
+Status: FAIL
+Checklist Item: APU Parameters Check as Required     
+Matched Text: "elt,"
+Score: 52.5%
+--------------------
+Status: FAIL
+Checklist Item: APU Generator On
+Matched Text: "fastened."
+Score: 45.6%
+--------------------
+Status: FAIL
+Checklist Item: GPU Off and disconnected
+Matched Text: "elt,"
+Score: 52.8%
+--------------------
+Status: FAIL
+Checklist Item: Startup checklist Completed            
+Matched Text: "elt,"
+Score: 54.2%
+--------------------
+Status: FAIL
+Checklist Item: ENGINE START UP
+Matched Text: "clean,"
+Score: 47.2%
+--------------------
+Status: FAIL
+Checklist Item:  Start up Area Clear
+Matched Text: "clean,"
+Score: 67.6%
+--------------------
+Status: FAIL
+Checklist Item: Anti collision light  On
+Matched Text: "clean,"
+Score: 47.5%
+--------------------
+Status: FAIL
+Checklist Item: Engine selection   as per wind direction    
+Matched Text: "elt,"
+Score: 52.7%
+--------------------
+Status: FAIL
+Checklist Item: Ground crew  Signal
+Matched Text: "windscreens"
+Score: 49.9%
+--------------------
+Status: FAIL
+Checklist Item: Engine  Start button    press
+Matched Text: "seatbelts"
+Score: 47.3%
+--------------------
+Status: FAIL
+Checklist Item: HP cock open
+Matched Text: "clean,"
+Score: 51.3%
+--------------------
+Status: FAIL
+Checklist Item: Stopwatch Set
+Matched Text: "elt,"
+Score: 65.3%
+--------------------
+Status: FAIL
+Checklist Item: Warm up engine 1 to 2 minutes
+Matched Text: "seatbelts"
+Score: 42.3%
+--------------------
+Status: FAIL
+Checklist Item: Engine Parameters as required
+Matched Text: "seatbelts fastened."
+Score: 53.8%
+--------------------
+Status: FAIL
+Checklist Item: Start second engine as above
+Matched Text: "seatbelts fastened."
+Score: 49.5%
+--------------------
+Status: FAIL
+Checklist Item: Warm up second engine 1 to 2 minutes
+Matched Text: "fastened."
+Score: 42.1%
+--------------------
+Status: FAIL
+Checklist Item: Idle parameters Check
+Matched Text: "elt,"
+Score: 54.8%
+--------------------
+Status: FAIL
+Checklist Item: DPD On
+Matched Text: "windscreens clean,"
+Score: 30.2%
+--------------------
+Status: FAIL
+Checklist Item: EGT Air Check
+Matched Text: "elt,"
+Score: 59.6%
+--------------------
+Status: FAIL
+Checklist Item: FUNCTIONAL CHECK
+Matched Text: "humming,"
+Score: 40.8%
+--------------------
+Status: FAIL
+Checklist Item: Hydraulic system Check
+Matched Text: "fastened."
+Score: 45.6%
+--------------------
+Status: FAIL
+Checklist Item: Controls Response Check
+Matched Text: "clean,"
+Score: 46.4%
+--------------------
+Status: FAIL
+Checklist Item: EEG Test
+Matched Text: "elt,"
+Score: 58.6%
+--------------------
+Status: FAIL
+Checklist Item: Partial acceleration Check
+Matched Text: "elt,"
+Score: 55.8%
+--------------------
+Status: FAIL
+Checklist Item: ENGINE OPERATIONAL MODE
+Matched Text: "clean,"
+Score: 47.6%
+--------------------
+Status: FAIL
+Checklist Item: Throttle Twist Grip Fully Right 
+Matched Text: "elt,"
+Score: 52.8%
+--------------------
+Status: FAIL
+Checklist Item: Generators Test and On
+Matched Text: "elt,"
+Score: 53.2%
+--------------------
+Status: FAIL
+Checklist Item: APU Generator Off
+Matched Text: "fastened."
+Score: 45.2%
+--------------------
+Status: FAIL
+Checklist Item: Inverters Auto position                                    
+Matched Text: "elt,"
+Score: 53.0%
+--------------------
+Status: FAIL
+Checklist Item: APU Off
+Matched Text: "clean,"
+Score: 28.9%
+--------------------
+Status: FAIL
+Checklist Item: Navigation Lights On
+Matched Text: "seatbelts fastened."
+Score: 38.8%
+--------------------
+Status: FAIL
+Checklist Item: Blade tip lights Night and Poor visibility On
+Matched Text: "elt,"
+Score: 52.2%
+--------------------
+Status: FAIL
+Checklist Item: Cabin Lighting Night and Poor visibility On
+Matched Text: "elt,"
+Score: 51.2%
+--------------------
+Status: FAIL
+Checklist Item: Formation lights Night and Poor visibility On
+Matched Text: "elt,"
+Score: 51.1%
+--------------------
+Status: FAIL
+Checklist Item: Voice Warning System On
+Matched Text: "clean,"
+Score: 51.6%
+--------------------
+Status: FAIL
+Checklist Item: Gyro Horizons On
+Matched Text: "humming, windscreens"
+Score: 39.5%
+--------------------
+Status: FAIL
+Checklist Item: Compass System On and Check
+Matched Text: "fastened."
+Score: 49.2%
+--------------------
+Status: FAIL
+Checklist Item: Radio Altimeter On and Check
+Matched Text: "elt,"
+Score: 53.2%
+--------------------
+Status: FAIL
+Checklist Item: Baro Altimeter Set
+Matched Text: "elt,"
+Score: 63.7%
+--------------------
+Status: FAIL
+Checklist Item: Pitch Limit System Check
+Matched Text: "fastened."
+Score: 42.8%
+--------------------
+Status: FAIL
+Checklist Item: Auto Pilot On and Check
+Matched Text: "elt,"
+Score: 54.2%
+--------------------
+Status: FAIL
+Checklist Item: Main Rotor Control speed Check range
+Matched Text: "humming,"
+Score: 45.7%
+--------------------
+Status: FAIL
+Checklist Item: Main Rotor RPM Set 95 %
+Matched Text: "elt,"
+Score: 53.3%
+--------------------
+Status: FAIL
+Checklist Item: Collective Down
+Matched Text: "elt,"
+Score: 54.8%
+--------------------
+Status: FAIL
+Checklist Item: Engine Startup checklist Completed
+Matched Text: "elt,"
+Score: 53.2%
+--------------------
+Status: FAIL
+Checklist Item: BEFORE TAXI
+Matched Text: "elt,"
+Score: 56.5%
+--------------------
+Status: FAIL
+Checklist Item: Taxing clearance ATC Request
+Matched Text: "clean,"
+Score: 66.7%
+--------------------
+Status: FAIL
+Checklist Item: Area Clear         
+Matched Text: "clean,"
+Score: 72.9%
+--------------------
+Status: FAIL
+Checklist Item: Chocks   Removed and Stowed                     
+Matched Text: "fastened."
+Score: 49.8%
+--------------------
+Status: FAIL
+Checklist Item: Crew And Pax  Briefed          
+Matched Text: "clean,"
+Score: 51.3%
+--------------------
+Status: FAIL
+Checklist Item: Doors and Windows Closed
+Matched Text: "windscreens clean,"
+Score: 54.3%
+--------------------
+Status: FAIL
+Checklist Item: Cargo Compartment  Secured  
+Matched Text: "elt,"
+Score: 52.6%
+--------------------
+Status: FAIL
+Checklist Item: Autopilot Off
+Matched Text: "elt,"
+Score: 55.6%
+--------------------
+Status: FAIL
+Checklist Item: Before Taxing Checklist  Completed                        
+Matched Text: "elt,"
+Score: 53.3%
+--------------------
+Status: FAIL
+Checklist Item: LINEUP POSITION
+Matched Text: "clean,"
+Score: 44.7%
+--------------------
+Status: FAIL
+Checklist Item: Area Clear                 
+Matched Text: "clean,"
+Score: 72.9%
+--------------------
+Status: FAIL
+Checklist Item: Obstacles in TakeOff Direction Absent                    
+Matched Text: "elt,"
+Score: 52.2%
+--------------------
+Status: FAIL
+Checklist Item: Gyro Same readings     
+Matched Text: "clean,"
+Score: 51.0%
+--------------------
+Status: FAIL
+Checklist Item: Heading Set
+Matched Text: "elt,"
+Score: 66.3%
+--------------------
+Status: FAIL
+Checklist Item: Autopilot ON                         
+Matched Text: "elt,"
+Score: 56.0%
+--------------------
+Status: FAIL
+Checklist Item: Type of TakeOFF Decide                   
+Matched Text: "clean, seatbelts fastened."
+Score: 41.6%
+--------------------
+Status: FAIL
+Checklist Item: Request for TakeOFF Performed               
+Matched Text: "elt,"
+Score: 52.2%
+--------------------
+Status: FAIL
+Checklist Item: Stopwatch Press                      
+Matched Text: "windscreens"
+Score: 41.5%
+--------------------
+Status: FAIL
+Checklist Item: BEFORE TAKE OFF 
+Matched Text: "elt,"
+Score: 54.8%
+--------------------
+Status: FAIL
+Checklist Item: Fuel Selector    Service                  
+Matched Text: "elt,"
+Score: 55.2%
+--------------------
+Status: FAIL
+Checklist Item: Fuel Pump Lights  Check Off              
+Matched Text: "elt, humming,"
+Score: 57.5%
+--------------------
+Status: FAIL
+Checklist Item: Transponder Alt                          
+Matched Text: "elt,"
+Score: 66.1%
+--------------------
+Status: FAIL
+Checklist Item: Autopilot On                              
+Matched Text: "elt,"
+Score: 56.0%
+--------------------
+Status: FAIL
+Checklist Item: Engine And Transmission Checked           
+Matched Text: "clean,"
+Score: 49.2%
+--------------------
+Status: FAIL
+Checklist Item: Before Takeoff Checklist Completed
+Matched Text: "elt,"
+Score: 53.2%
+--------------------
+Status: FAIL
+Checklist Item: AFTER TAKE OFF  
+Matched Text: "fastened."
+Score: 46.4%
+--------------------
+Status: FAIL
+Checklist Item: Main rotor 95 plus or minus 2 percent                
+Matched Text: "clean,"
+Score: 52.7%
+--------------------
+Status: FAIL
+Checklist Item: DPDS Above 50 meters OFF                            
+Matched Text: "elt,"
+Score: 52.8%
+--------------------
+Status: FAIL
+Checklist Item: Fuel consumption Monitored                       
+Matched Text: "elt,"
+Score: 54.4%
+--------------------
+Status: FAIL
+Checklist Item: Monitor every 15 to 20 meters                                        
+Matched Text: "elt,"
+Score: 52.2%
+--------------------
+Status: FAIL
+Checklist Item: After takeoff checklist Completed   
+Matched Text: "elt,"
+Score: 53.3%
+--------------------
+Status: FAIL
+Checklist Item: IN FLIGHT CHECKS
+Matched Text: "humming, windscreens"
+Score: 43.0%
+--------------------
+Status: FAIL
+Checklist Item: Power setting As  per graph            
+Matched Text: "elt,"
+Score: 52.5%
+--------------------
+Status: FAIL
+Checklist Item: Fuel quantity Check                       
+Matched Text: "elt,"
+Score: 58.9%
+--------------------
+Status: FAIL
+Checklist Item: Other Parameters Normal operation
+Matched Text: "elt,"
+Score: 52.6%
+--------------------
+Status: FAIL
+Checklist Item:  Flight Following Call                       
+Matched Text: "elt, humming,"
+Score: 43.3%
+--------------------
+Status: FAIL
+Checklist Item: PRE LANDING CHECKS
+Matched Text: "elt,"
+Score: 54.0%
+--------------------
+Status: FAIL
+Checklist Item: Landing clearance Request
+Matched Text: "clean,"
+Score: 67.6%
+--------------------
+Status: FAIL
+Checklist Item: Runway Condition Known
+Matched Text: "humming, windscreens clean,"
+Score: 37.5%
+--------------------
+Status: FAIL
+Checklist Item: Autopilot Alt channel Off
+Matched Text: "elt,"
+Score: 52.7%
+--------------------
+Status: FAIL
+Checklist Item: Cargo Secured
+Matched Text: "fastened."
+Score: 51.8%
+--------------------
+Status: FAIL
+Checklist Item: Landing lights On
+Matched Text: "clean,"
+Score: 62.3%
+--------------------
+Status: FAIL
+Checklist Item: Fuel quantity Check
+Matched Text: "elt,"
+Score: 58.9%
+--------------------
+Status: FAIL
+Checklist Item: Compass Matched
+Matched Text: "fastened."
+Score: 53.5%
+--------------------
+Status: FAIL
+Checklist Item: dpds On At 50m
+Matched Text: "windscreens clean, seatbelts"
+Score: 40.5%
+--------------------
+Status: FAIL
+Checklist Item: Type of Landing Decide
+Matched Text: "clean,"
+Score: 50.9%
+--------------------
+Status: FAIL
+Checklist Item: Runway Exit and Parking As instructed
+Matched Text: "fastened."
+Score: 46.5%
+--------------------
+Status: FAIL
+Checklist Item: Parameters Within Limit
+Matched Text: "elt,"
+Score: 54.0%
+--------------------
+Status: FAIL
+Checklist Item: Main rotor 95 plus or minus 2 percent                
+Matched Text: "clean,"
+Score: 52.7%
+--------------------
+Status: FAIL
+Checklist Item: Landing Gear Brakes Released
+Matched Text: "clean,"
+Score: 59.8%
+--------------------
+Status: FAIL
+Checklist Item: dpds On 
+Matched Text: "windscreens"
+Score: 40.3%
+--------------------
+Status: FAIL
+Checklist Item: Cargo compartment Secured
+Matched Text: "elt,"
+Score: 52.7%
+--------------------
+Status: FAIL
+Checklist Item: Crew Briefed
+Matched Text: "fastened."
+Score: 48.0%
+--------------------
+Status: FAIL
+Checklist Item: Before landing checklist Completed
+Matched Text: "elt,"
+Score: 53.2%
+--------------------
+Status: FAIL
+Checklist Item: AFTER LANDING
+Matched Text: "clean,"
+Score: 52.9%
+--------------------
+Status: FAIL
+Checklist Item: Collective fully down                           
+Matched Text: "elt,"
+Score: 53.3%
+--------------------
+Status: FAIL
+Checklist Item: Auto pilot      Off                                             
+Matched Text: "elt,"
+Score: 54.5%
+--------------------
+Status: FAIL
+Checklist Item: Parking as required                          
+Matched Text: "humming, windscreens"
+Score: 45.0%
+--------------------
+Status: FAIL
+Checklist Item: After landing checklist completed
+Matched Text: "elt,"
+Score: 53.3%
+--------------------
+Status: FAIL
+Checklist Item: ENGINE SHUT DOWN  
+Matched Text: "clean,"
+Score: 47.0%
+--------------------
+Status: FAIL
+Checklist Item: Landing gear Brake Apply                               
+Matched Text: "clean,"
+Score: 61.4%
+--------------------
+Status: FAIL
+Checklist Item: Consumers Off                                          
+Matched Text: "clean,"
+Score: 42.6%
+--------------------
+Status: FAIL
+Checklist Item: Rectifiers Off                                           
+Matched Text: "elt,"
+Score: 55.2%
+--------------------
+Status: FAIL
+Checklist Item: Inverters Neutral                                      
+Matched Text: "elt,"
+Score: 54.2%
+--------------------
+Status: FAIL
+Checklist Item: Generators Off                                    
+Matched Text: "clean, seatbelts fastened."
+Score: 46.5%
+--------------------
+Status: FAIL
+Checklist Item: Throttle Fully Left
+Matched Text: "elt,"
+Score: 54.9%
+--------------------
+Status: FAIL
+Checklist Item: Left and Right Fuel Pumps Off
+Matched Text: "elt,"
+Score: 53.1%
+--------------------
+Status: FAIL
+Checklist Item: Engines Cooling 1 to 2 Minutes
+Matched Text: "elt, humming, windscreens clean,"
+Score: 47.9%
+--------------------
+Status: FAIL
+Checklist Item: Eng  Shutdown Levers Backward
+Matched Text: "clean,"
+Score: 47.5%
+--------------------
+Status: FAIL
+Checklist Item: Stopwatch Press
+Matched Text: "windscreens"
+Score: 41.5%
+--------------------
+Status: FAIL
+Checklist Item: Ngg equal 0 at 35 Second Minimum
+Matched Text: "fastened."
+Score: 44.0%
+--------------------
+Status: FAIL
+Checklist Item: MAIN ROTOR STOP                 
+Matched Text: "humming,"
+Score: 47.3%
+--------------------
+Status: FAIL
+Checklist Item: At less or equal to 15% Main Rotor Slowly apply Main Rotor brake                
+Matched Text: "elt,"
+Score: 51.6%
+--------------------
+Status: FAIL
+Checklist Item: At  Main Rotor stop  Controls move back and forth                                                 
+Matched Text: "clean,"
+Score: 48.5%
+--------------------
+Status: FAIL
+Checklist Item: Fire extinguisher  switch Off
+Matched Text: "elt,"
+Score: 52.3%
+--------------------
+Status: FAIL
+Checklist Item: Fuel shut off valves Leave open position                       
+Matched Text: "elt,"
+Score: 52.6%
+--------------------
+Status: FAIL
+Checklist Item: Service tank pump Off
+Matched Text: "elt,"
+Score: 53.3%
+--------------------
+Status: FAIL
+Checklist Item: Batteries 1 and 2 Off
+Matched Text: "seatbelts fastened."
+Score: 46.5%
+--------------------
