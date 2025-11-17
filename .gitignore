@@ -146,3 +146,4 @@ Thumbs.db
 *.cvr
 *.bak
 *.tmp
+*.joblib
