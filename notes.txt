@@ -27,7 +27,7 @@ N1/N2 Split
 Checklist compliance in the right cell started on 12th July 25
 -------------------------------
 Anomaly detector
-flight 03-07-25_1 highest NZ after landing
+flight 03-07-25_1 highest NZ before landing
 --------------
 the sysstem needs to be documented in the SOPS
 PROCEDURE APPLICABILIRTY()

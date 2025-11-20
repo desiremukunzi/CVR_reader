@@ -1,0 +1,45 @@
+# Add the flight anomaly analysis route right here, after save_compliance_report
+# and before the main "/" route
+
+@app.route("/analyze_flight_anomalies", methods=["POST"])
+def analyze_flight_anomalies():
+    """
+    Endpoint to analyze flight data for anomalies using the "Clean Data" sheet
+    from the compliance Excel file.
+    """
+    try:
+        data = request.get_json()
+        excel_filename = data.get('excel_filename')
+        add_to_training = data.get('add_to_training', False)
+        sheet_name = data.get('sheet_name', 'Clean Data')
+        
+        if not excel_filename:
+            return jsonify({'error': 'No Excel filename provided'}), 400
+        
+        # The Excel file is in COMPLIANCE_EXCEL_OUTPUT from the compliance check
+        excel_path = os.path.join(COMPLIANCE_EXCEL_OUTPUT, excel_filename)
+        
+        if not os.path.exists(excel_path):
+            return jsonify({'error': f'Excel file not found: {excel_filename}'}), 404
+        
+        print(f"Analyzing flight data from: {excel_path}")
+        print(f"Sheet name: {sheet_name}")
+        print(f"Add to training: {add_to_training}")
+        
+        # Analyze the flight using "Clean Data" sheet
+        results = flight_analyzer.analyze_flight(
+            excel_path=excel_path,
+            sheet_name=sheet_name,
+            add_to_training=add_to_training
+        )
+        
+        if 'error' in results:
+            return jsonify({'error': results['error']}), 500
+        
+        return jsonify(results)
+        
+    except Exception as e:
+        print(f"Error in flight anomaly analysis: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500

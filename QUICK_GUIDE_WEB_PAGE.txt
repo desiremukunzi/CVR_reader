@@ -1,0 +1,137 @@
+# QUICK START - NEW WEB PAGE REPORT
+
+## What You Get
+
+Instead of downloading HTML files, you now get a **professional web page** that opens in a new tab!
+
+## Tab Layout
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│  Flight Anomaly Analysis Report - Flight 1                  [Close] │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  📊 Stats   🔍 Anomalies   📈 Fcp   📈 Xcpl   📈 Pedals ...         │
+│  ▔▔▔▔▔▔▔▔                                                           │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  [Tab content shows here]                                            │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+## 11 Tabs Total
+
+### 1. 📊 Stats & Summary
+- Flight ID, Total Points, Anomalies, Rate
+- Training status
+- Phase breakdown (before takeoff, airborne, landing)
+
+### 2. 🔍 Detected Anomalies
+- Full table of all anomalies
+- Parameter, Phase, Time, Value
+- Or "No Anomalies Detected" message
+
+### 3-11. 📈 Parameters (One tab each)
+- Fcp
+- Xcpl  
+- Pedals
+- X_lat
+- X_long
+- PITCH
+- NZ
+- T1
+- T2
+
+Each parameter tab shows:
+- 3 charts (one per phase)
+- Historical data (grey dots)
+- Current flight (blue dots)
+- Anomalies (red X marks)
+- Interactive zoom/pan
+
+## How to Use
+
+### Step 1: Analyze Flight
+1. Generate compliance report (as before)
+2. Check "Add to training" if desired
+3. Click "Analyze Flight for Anomalies"
+
+### Step 2: View Report
+- **New tab opens automatically**
+- No popups to allow
+- No files to download
+- Just a clean web page!
+
+### Step 3: Navigate Tabs
+- Click any tab to switch views
+- Charts load on-demand (fast!)
+- Scroll within each tab
+- Use Close button when done
+
+## Features
+
+✅ Professional dashboard look
+✅ No popup blockers
+✅ Organized by parameter
+✅ Interactive charts
+✅ Responsive design
+✅ Can bookmark/refresh page
+
+## Test Now
+
+```bash
+cd A:\CVR_reader
+python app.py
+```
+
+Then:
+1. Upload files → Compliance report
+2. Click "Analyze Flight"
+3. **New tab opens with report**
+4. Switch between 11 tabs
+5. Explore your data!
+
+## Example Views
+
+**Stats Tab:**
+```
+┌──────────────┬──────────────┬──────────────┬──────────────┐
+│ Flight ID    │ Data Points  │ Anomalies    │ Rate         │
+│      1       │    5,432     │      0       │   0.00%      │
+└──────────────┴──────────────┴──────────────┴──────────────┘
+
+Phase Breakdown:
+Before Takeoff: 1,234 points, 0 anomalies
+When Airborne:  3,456 points, 0 anomalies  
+After Landing:    742 points, 0 anomalies
+```
+
+**Anomalies Tab:**
+```
+┌───────────┬─────────────────┬──────────┬─────────┐
+│ Parameter │ Phase           │ Time     │ Value   │
+├───────────┼─────────────────┼──────────┼─────────┤
+│ PITCH     │ when airborne   │ 234.56   │ 15.2    │
+│ NZ        │ when airborne   │ 235.12   │ 2.8     │
+└───────────┴─────────────────┴──────────┴─────────┘
+```
+
+**Parameter Tab (e.g., Fcp):**
+```
+Charts shown for:
+- Before Takeoff  [Interactive Plotly Chart]
+- When Airborne   [Interactive Plotly Chart]
+- After Landing   [Interactive Plotly Chart]
+
+Each chart shows:
+• Historical data (background grey)
+• Current flight (blue line/dots)
+• Anomalies (red X marks)
+```
+
+## That's It!
+
+Simple, clean, professional. No downloads needed!
+
+🎉 **Ready to test!**

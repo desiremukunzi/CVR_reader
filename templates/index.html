@@ -10,9 +10,8 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        /* Custom spinner for better visual consistency */
         .loader {
-            border-top-color: #4f46e5; /* Tailwind indigo-600 */
+            border-top-color: #4f46e5;
             animation: spin 1s linear infinite;
         }
 
@@ -38,7 +37,8 @@
             const [error, setError] = React.useState(null);
             const [report, setReport] = React.useState(null);
             const [fileRemovedMessage, setFileRemovedMessage] = React.useState('');
-            const [downloadExcelUrl, setDownloadExcelUrl] = React.useState(null); // NEW STATE for download URL
+            const [addToTraining, setAddToTraining] = React.useState(false);
+            const [analyzingFlight, setAnalyzingFlight] = React.useState(false);
 
             const playSoundNotification = () => {
                 try {
@@ -87,7 +87,7 @@
                 if (file) {
                     if (!file.name.match(/\.(xlsx|xls|xlsm)$/i)) {
                         setError('Please select a valid Excel file (.xlsx, .xls, or .xlsm).');
-                        setExcelFile(null); // Clear the file if it's not valid
+                        setExcelFile(null);
                         return;
                     }
                     setExcelFile(file);
@@ -122,7 +122,7 @@
                     return;
                 }
 
-                if (!excelFile.name.match(/\.(xlsx|xls|xlsm)$/i)) { // Double-check for robustness
+                if (!excelFile.name.match(/\.(xlsx|xls|xlsm)$/i)) {
                     setError('The uploaded file is not a valid Excel file type (.xlsx, .xls, or .xlsm).');
                     return;
                 }
@@ -140,7 +140,6 @@
                 setLoading(true);
                 setError(null);
                 setReport(null);
-                setDownloadExcelUrl(null); // Clear previous download URL
 
                 const formData = new FormData();
                 selectedFiles.forEach((file) => {
@@ -159,7 +158,6 @@
 
                     if (!response.ok) {
                         const errorText = await response.text();
-                        // Attempt to parse JSON error if available
                         try {
                             const errorJson = JSON.parse(errorText);
                             throw new Error(`Server error: ${response.status} - ${errorJson.error || 'Unknown error'}`);
@@ -173,17 +171,259 @@
                     playSoundNotification();
                     console.log('Report Data:', data);
 
-                    // NEW: Set the download URL if provided
-                    if (data.download_excel_url) {
-                        setDownloadExcelUrl(data.download_excel_url);
-                    }
-
                 } catch (err) {
                     console.error('Error during file upload or processing:', err);
-                    setError(`Failed to process: ${err.message}. Please ensure all files are valid, the Excel file is not open, and the backend is running correctly.`);
+                    setError(`Failed to process: ${err.message}. Please ensure all files are valid and the backend is running correctly.`);
                 } finally {
                     setLoading(false);
                 }
+            };
+
+            const handleAnalyzeFlightAnomalies = async () => {
+                if (!report || !report.updated_excel_filename) {
+                    setError('No compliance report available. Please generate a report first.');
+                    return;
+                }
+
+                setAnalyzingFlight(true);
+                setError(null);
+
+                try {
+                    const response = await fetch('/analyze_flight_anomalies', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            excel_filename: report.updated_excel_filename,
+                            add_to_training: addToTraining,
+                            sheet_name: 'Clean Data'
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Failed to analyze flight anomalies');
+                    }
+
+                    const data = await response.json();
+                    console.log('Analysis complete, redirecting to report page...');
+                    
+                    // Redirect to the anomaly report page directly
+                    // The backend will handle storing the data and rendering the page
+                    window.location.href = '/anomaly_report';
+
+                } catch (err) {
+                    console.error('Error analyzing flight anomalies:', err);
+                    setError(`Failed to analyze flight anomalies: ${err.message}`);
+                    setAnalyzingFlight(false);
+                }
+            };
+
+            const downloadHTMLReport = (htmlContent, filename) => {
+                // Create a Blob from the HTML content
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                
+                // Create a temporary link and trigger download
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                
+                // Cleanup
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                console.log(`Report downloaded as ${filename}`);
+            };
+
+            const generateAnomalyReportHTML = (results) => {
+                // Generate HTML for the anomaly report in a new window
+                return `
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Flight Anomaly Analysis - Flight ${results.flight_id}</title>
+                        <script src="https://cdn.tailwindcss.com"><\/script>
+                        <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"><\/script>
+                        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+                        <style>
+                            body { font-family: 'Inter', sans-serif; }
+                        </style>
+                    </head>
+                    <body class="bg-gradient-to-br from-blue-100 to-purple-100 p-4">
+                        <div class="max-w-7xl mx-auto">
+                            <div class="bg-white shadow-xl rounded-2xl p-8 mb-6">
+                                <h1 class="text-4xl font-extrabold text-center text-indigo-700 mb-8">
+                                    Flight Anomaly Analysis Report
+                                </h1>
+                                
+                                <!-- Summary Cards -->
+                                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                                    <div class="bg-blue-50 p-6 rounded-lg shadow-md border border-blue-200">
+                                        <p class="text-sm font-medium text-blue-800 mb-2">Flight ID</p>
+                                        <p class="text-3xl font-bold text-blue-900">${results.flight_id}</p>
+                                    </div>
+                                    <div class="bg-green-50 p-6 rounded-lg shadow-md border border-green-200">
+                                        <p class="text-sm font-medium text-green-800 mb-2">Total Data Points</p>
+                                        <p class="text-3xl font-bold text-green-900">${results.total_data_points}</p>
+                                    </div>
+                                    <div class="bg-red-50 p-6 rounded-lg shadow-md border border-red-200">
+                                        <p class="text-sm font-medium text-red-800 mb-2">Anomalies Detected</p>
+                                        <p class="text-3xl font-bold text-red-900">${results.anomaly_count}</p>
+                                    </div>
+                                    <div class="bg-purple-50 p-6 rounded-lg shadow-md border border-purple-200">
+                                        <p class="text-sm font-medium text-purple-800 mb-2">Anomaly Rate</p>
+                                        <p class="text-3xl font-bold text-purple-900">${results.anomaly_percentage}%</p>
+                                    </div>
+                                </div>
+
+                                <!-- Training Status -->
+                                <div class="mb-8 p-4 rounded-lg ${results.added_to_training ? 'bg-green-50 border border-green-300' : 'bg-gray-50 border border-gray-300'}">
+                                    <p class="text-center font-semibold">
+                                        ${results.added_to_training 
+                                            ? '✅ This flight has been added to the training database' 
+                                            : '📊 Analysis only - not added to training database'}
+                                    </p>
+                                    <p class="text-center text-sm text-gray-600 mt-2">
+                                        Total historical flights in database: ${results.total_historical_flights}
+                                    </p>
+                                </div>
+
+                                <!-- Phase Summary -->
+                                <div class="bg-gray-50 p-6 rounded-lg shadow-md mb-8">
+                                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Phase Summary</h2>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        ${Object.entries(results.phases_summary).map(([phase, data]) => `
+                                            <div class="bg-white p-4 rounded-lg shadow border border-gray-200">
+                                                <h3 class="font-semibold text-lg text-indigo-700 mb-2 capitalize">${phase}</h3>
+                                                <p class="text-sm text-gray-600">Data Points: <span class="font-bold">${data.total_points}</span></p>
+                                                <p class="text-sm text-gray-600">Anomalies: <span class="font-bold text-red-600">${data.anomaly_count}</span></p>
+                                                <p class="text-sm text-gray-600">Rate: <span class="font-bold">${data.anomaly_percentage}%</span></p>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+
+                                <!-- Anomaly Details -->
+                                ${results.anomaly_count > 0 ? `
+                                    <div class="bg-red-50 p-6 rounded-lg shadow-md mb-8">
+                                        <h2 class="text-2xl font-bold text-red-800 mb-4">Detected Anomalies</h2>
+                                        <div class="overflow-x-auto">
+                                            <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden shadow-sm">
+                                                <thead class="bg-red-100">
+                                                    <tr>
+                                                        <th class="px-6 py-3 text-left text-xs font-medium text-red-800 uppercase">Parameter</th>
+                                                        <th class="px-6 py-3 text-left text-xs font-medium text-red-800 uppercase">Phase</th>
+                                                        <th class="px-6 py-3 text-left text-xs font-medium text-red-800 uppercase">Time</th>
+                                                        <th class="px-6 py-3 text-left text-xs font-medium text-red-800 uppercase">Value</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white divide-y divide-gray-200">
+                                                    ${results.anomalies.map((anomaly, idx) => `
+                                                        <tr class="${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}">
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${anomaly.parameter}</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 capitalize">${anomaly.phase}</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${anomaly.time.toFixed(2)}</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${anomaly.value.toFixed(2)}</td>
+                                                        </tr>
+                                                    `).join('')}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                ` : `
+                                    <div class="bg-green-50 p-6 rounded-lg shadow-md mb-8 text-center">
+                                        <p class="text-2xl font-bold text-green-800">✅ No anomalies detected</p>
+                                        <p class="text-gray-600 mt-2">All parameters are within expected ranges based on historical data</p>
+                                    </div>
+                                `}
+
+                                <!-- Charts Section -->
+                                <div class="mt-8">
+                                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Parameter Visualizations</h2>
+                                    <div id="charts-container"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                            const vizData = ${JSON.stringify(results.visualization_data)};
+                            const chartsContainer = document.getElementById('charts-container');
+                            
+                            // Generate charts for each parameter and phase
+                            Object.keys(vizData).forEach(param => {
+                                if (param === 'historical') return; // Skip historical key
+                                
+                                const paramData = vizData[param];
+                                const phases = ['before takeoff', 'when airborne', 'after landing'];
+                                
+                                phases.forEach(phase => {
+                                    const phaseData = paramData[phase];
+                                    if (!phaseData || !phaseData.has_data) return;
+                                    
+                                    const chartDiv = document.createElement('div');
+                                    chartDiv.className = 'mb-6 bg-white p-4 rounded-lg shadow-md';
+                                    chartDiv.id = param + '-' + phase.replace(/\\s+/g, '-');
+                                    chartsContainer.appendChild(chartDiv);
+                                    
+                                    const traces = [];
+                                    
+                                    // Add historical data if available
+                                    if (vizData.historical && vizData.historical[param] && vizData.historical[param][phase]) {
+                                        traces.push({
+                                            x: vizData.historical[param][phase].time,
+                                            y: vizData.historical[param][phase].values,
+                                            mode: 'markers',
+                                            type: 'scatter',
+                                            name: 'Historical Data',
+                                            marker: { color: 'darkgrey', size: 4, opacity: 0.5 }
+                                        });
+                                    }
+                                    
+                                    // Add normal points
+                                    if (phaseData.normal && phaseData.normal.time.length > 0) {
+                                        traces.push({
+                                            x: phaseData.normal.time,
+                                            y: phaseData.normal.values,
+                                            mode: 'markers',
+                                            type: 'scatter',
+                                            name: 'Current Flight',
+                                            marker: { color: 'blue', size: 6 }
+                                        });
+                                    }
+                                    
+                                    // Add anomalies
+                                    if (phaseData.anomalies && phaseData.anomalies.time.length > 0) {
+                                        traces.push({
+                                            x: phaseData.anomalies.time,
+                                            y: phaseData.anomalies.values,
+                                            mode: 'markers',
+                                            type: 'scatter',
+                                            name: 'Anomalies',
+                                            marker: { color: 'red', size: 10, symbol: 'x' }
+                                        });
+                                    }
+                                    
+                                    const layout = {
+                                        title: param + ' - ' + phase.charAt(0).toUpperCase() + phase.slice(1),
+                                        xaxis: { title: 'Time' },
+                                        yaxis: { title: param },
+                                        showlegend: true,
+                                        height: 400
+                                    };
+                                    
+                                    Plotly.newPlot(chartDiv.id, traces, layout);
+                                });
+                            });
+                        <\/script>
+                    </body>
+                    </html>
+                `;
             };
 
             return (
@@ -397,23 +637,7 @@
                                     <span role="img" aria-label="Information icon">ℹ️</span> Compliance Report
                                 </h2>
 
-                                {/* Download Updated Excel Button (NEW) */}
-                                {downloadExcelUrl && (
-                                    <div className="flex justify-center mt-6">
-                                        <a
-                                            href={downloadExcelUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-150 ease-in-out"
-                                            download // Suggests the browser to download the file
-                                        >
-                                            <span role="img" aria-label="Download icon" className="mr-2">⬇️</span> Download Updated Excel File
-                                        </a>
-                                    </div>
-                                )}
-
-
-                                {/* Overall Compliance Summary as a professional report */}
+                                {/* Overall Compliance Summary */}
                                 <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
                                     <h3 className="text-2xl font-semibold text-gray-800 mb-4 text-center">Summary</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -434,6 +658,45 @@
                                             </p>
                                         </div>
                                     </div>
+                                </div>
+
+                                {/* Flight Anomaly Analysis Section */}
+                                <div className="bg-gradient-to-r from-purple-50 to-indigo-50 p-6 rounded-lg shadow-md border-2 border-indigo-200">
+                                    <h3 className="text-2xl font-semibold text-indigo-800 mb-4 text-center">
+                                        <span role="img" aria-label="Chart icon">📊</span> Flight Data Anomaly Analysis
+                                    </h3>
+                                    
+                                    <div className="flex items-center justify-center mb-4">
+                                        <label className="flex items-center cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={addToTraining}
+                                                onChange={(e) => setAddToTraining(e.target.checked)}
+                                                className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 focus:ring-2"
+                                            />
+                                            <span className="ml-3 text-sm font-medium text-gray-700">
+                                                Add this flight data to training database
+                                            </span>
+                                        </label>
+                                    </div>
+
+                                    <button
+                                        onClick={handleAnalyzeFlightAnomalies}
+                                        disabled={analyzingFlight}
+                                        className={`w-full py-3 px-6 border border-transparent rounded-lg shadow-sm text-lg font-semibold text-white transition duration-300 ease-in-out ${
+                                            analyzingFlight
+                                                ? 'bg-purple-400 cursor-not-allowed'
+                                                : 'bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500'
+                                        }`}
+                                    >
+                                        {analyzingFlight ? 'Analyzing Flight Data...' : 'Analyze Flight for Anomalies'}
+                                    </button>
+
+                                    <p className="text-xs text-gray-600 text-center mt-3">
+                                        {addToTraining 
+                                            ? '✓ Flight will be analyzed and added to historical data for future comparisons' 
+                                            : 'ℹ Flight will only be analyzed, not added to training database'}
+                                    </p>
                                 </div>
 
                                 {/* Compliance Results Table */}

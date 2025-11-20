@@ -3,119 +3,322 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anomaly Detection Report</title>
+    <title>Flight Anomaly Analysis - Flight {{ report.flight_id }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
+        body { font-family: 'Inter', sans-serif; }
+        .tab-button {
+            transition: all 0.3s ease;
         }
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-        .section-title {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #1a202c;
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid #edf2f7;
-            padding-bottom: 0.5rem;
-        }
-        .anomaly-item {
-            background-color: #ffebeb; /* Light red background for anomalies */
-            border: 1px solid #ffcccc;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        }
-        .anomaly-item strong {
-            color: #c53030; /* Darker red for emphasis */
-        }
-        .plot-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            justify-content: center;
-            margin-top: 2rem;
-        }
-        .plot-image {
-            max-width: 100%;
-            height: auto;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-        .no-data-message {
-            text-align: center;
-            font-size: 1.2rem;
-            color: #718096;
-            margin-top: 2rem;
-            padding: 1.5rem;
-            background-color: #f7fafc;
-            border-radius: 8px;
-            border: 1px dashed #cbd5e0;
-        }
-        .back-button {
-            display: inline-block;
-            margin-top: 2rem;
-            background-color: #4a5568;
-            color: white;
-            padding: 0.8rem 1.5rem;
-            border-radius: 8px;
+        .tab-button.active {
+            border-bottom: 3px solid #4f46e5;
+            color: #4f46e5;
             font-weight: 600;
-            transition: background-color 0.2s, transform 0.1s;
         }
-        .back-button:hover {
-            background-color: #2d3748;
-            transform: translateY(-1px);
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
         }
     </style>
 </head>
-<body class="bg-gray-100">
-    <div class="container">
-        <h1 class="section-title text-center mb-6">Anomaly Detection Report for Flight ID: {{ current_flight_id }}</h1>
-
-        {% if message %}
-            <div class="no-data-message">{{ message }}</div>
-        {% else %}
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Detected Anomalies ({{ detected_anomalies|length }}):</h2>
-            {% if detected_anomalies %}
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-                    {% for anomaly in detected_anomalies %}
-                        <div class="anomaly-item">
-                            <p><strong>Parameter:</strong> {{ anomaly.parameter }}</p>
-                            <p><strong>Phase:</strong> {{ anomaly.phase }}</p>
-                            <p><strong>Time:</strong> {{ "%.2f" | format(anomaly.time) }}</p>
-                            <p><strong>Value:</strong> {{ "%.2f" | format(anomaly.value) }}</p>
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Beautified Header -->
+        <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 shadow-2xl rounded-3xl p-8 mb-6 relative overflow-hidden">
+            <!-- Decorative background elements -->
+            <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
+            <div class="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24"></div>
+            
+            <div class="relative z-10 flex justify-between items-center">
+                <div class="flex-1">
+                    <div class="flex items-center space-x-4 mb-2">
+                        <span class="text-6xl">🚁</span>
+                        <div>
+                            <h1 class="text-5xl font-extrabold text-white tracking-tight">
+                                MI-17 Flight Anomaly Analysis
+                            </h1>
+                            <p class="text-indigo-100 text-lg mt-2 font-medium">
+                                Advanced AI-Powered Helicopter Flight Data Analytics
+                            </p>
                         </div>
-                    {% endfor %}
+                    </div>
+                    <div class="flex items-center space-x-6 mt-4">
+                        <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg px-4 py-2">
+                            <span class="text-indigo-100 text-sm">Flight ID:</span>
+                            <span class="text-white font-bold text-xl ml-2">{{ report.flight_id }}</span>
+                        </div>
+                        <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg px-4 py-2">
+                            <span class="text-indigo-100 text-sm">Analysis Date:</span>
+                            <span class="text-white font-bold text-xl ml-2">{{ report.analysis_date }}</span>
+                        </div>
+                    </div>
                 </div>
-            {% else %}
-                <div class="no-data-message mb-8">No anomalies detected for this flight.</div>
-            {% endif %}
-
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Flight Parameter Plots:</h2>
-            {% if plot_filenames %} {# Check for plot_filenames instead of base64_plot_images #}
-                <div class="plot-container">
-                    {% for img_filename in plot_filenames %} {# Loop through filenames #}
-                        <img src="{{ url_for('serve_temp_image', filename=img_filename) }}" alt="Flight Parameter Plot" class="plot-image">
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="no-data-message">No plots generated.</div>
-            {% endif %}
-        {% endif %}
-
-        <div class="text-center">
-            <a href="/" class="back-button">Go Back to Upload</a>
+                <a href="/" class="bg-white hover:bg-indigo-50 text-indigo-600 font-bold px-8 py-4 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl flex items-center space-x-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    <span class="text-lg">Home</span>
+                </a>
+            </div>
         </div>
+
+        <!-- Tabs Navigation -->
+        <div class="bg-white shadow-lg rounded-2xl mb-6 overflow-hidden">
+            <div class="flex overflow-x-auto border-b border-gray-200">
+                <button class="tab-button active px-6 py-4 text-sm font-medium whitespace-nowrap" onclick="openTab(event, 'stats')">
+                    📊 Stats & Summary
+                </button>
+                <button class="tab-button px-6 py-4 text-sm font-medium whitespace-nowrap" onclick="openTab(event, 'anomalies')">
+                    🔍 Detected Anomalies
+                </button>
+                {% for param in ['Fcp', 'Xcpl', 'Pedals', 'X_lat', 'X_long', 'PITCH', 'NZ', 'T1', 'T2'] %}
+                <button class="tab-button px-6 py-4 text-sm font-medium whitespace-nowrap" onclick="openTab(event, 'param_{{ param }}')">
+                    📈 {{ param }}
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Tab 1: Stats & Phase Summary -->
+        <div id="stats" class="tab-content active">
+            <div class="bg-white shadow-xl rounded-2xl p-8">
+                <h2 class="text-3xl font-bold text-indigo-700 mb-6">Overview & Statistics</h2>
+                
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-xl shadow-lg">
+                        <p class="text-sm font-medium opacity-90 mb-2">Flight ID</p>
+                        <p class="text-4xl font-bold">{{ report.flight_id }}</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-xl shadow-lg">
+                        <p class="text-sm font-medium opacity-90 mb-2">Total Data Points</p>
+                        <p class="text-4xl font-bold">{{ "{:,}".format(report.total_data_points) }}</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-red-500 to-red-600 text-white p-6 rounded-xl shadow-lg">
+                        <p class="text-sm font-medium opacity-90 mb-2">Anomalies Detected</p>
+                        <p class="text-4xl font-bold">{{ report.anomaly_count }}</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-xl shadow-lg">
+                        <p class="text-sm font-medium opacity-90 mb-2">Anomaly Rate</p>
+                        <p class="text-4xl font-bold">{{ "%.2f"|format(report.anomaly_percentage) }}%</p>
+                    </div>
+                </div>
+
+                <!-- Training Status -->
+                <div class="mb-8 p-6 rounded-xl {% if report.added_to_training %}bg-green-50 border-2 border-green-300{% else %}bg-gray-50 border-2 border-gray-300{% endif %}">
+                    <p class="text-center text-lg font-semibold mb-2">
+                        {% if report.added_to_training %}
+                        ✅ This flight has been added to the training database
+                        {% else %}
+                        📊 Analysis only - not added to training database
+                        {% endif %}
+                    </p>
+                    <p class="text-center text-gray-600">
+                        Total historical flights in database: <span class="font-bold">{{ report.total_historical_flights }}</span>
+                    </p>
+                </div>
+
+                <!-- Phase Summary -->
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Phase Breakdown</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {% for phase, data in report.phases_summary.items() %}
+                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-xl shadow-md border border-gray-200">
+                            <h4 class="font-semibold text-xl text-indigo-700 mb-4 capitalize">{{ phase }}</h4>
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Data Points:</span>
+                                    <span class="font-bold">{{ "{:,}".format(data.total_points) }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Anomalies:</span>
+                                    <span class="font-bold text-red-600">{{ data.anomaly_count }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Rate:</span>
+                                    <span class="font-bold">{{ "%.2f"|format(data.anomaly_percentage) }}%</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Detected Anomalies Table -->
+        <div id="anomalies" class="tab-content">
+            <div class="bg-white shadow-xl rounded-2xl p-8">
+                <h2 class="text-3xl font-bold text-indigo-700 mb-6">Detected Anomalies</h2>
+                
+                {% if report.anomaly_count > 0 %}
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden shadow">
+                        <thead class="bg-gradient-to-r from-red-500 to-red-600 text-white">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-sm font-semibold uppercase">Parameter</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold uppercase">Phase</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold uppercase">Time</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold uppercase">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for anomaly in report.anomalies %}
+                            <tr class="{% if loop.index % 2 == 0 %}bg-gray-50{% else %}bg-white{% endif %} hover:bg-red-50 transition">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ anomaly.parameter }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 capitalize">{{ anomaly.phase }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ "%.2f"|format(anomaly.time) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ "%.2f"|format(anomaly.value) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="bg-green-50 p-12 rounded-xl shadow-md text-center border-2 border-green-300">
+                    <div class="text-6xl mb-4">✅</div>
+                    <p class="text-3xl font-bold text-green-800 mb-2">No Anomalies Detected</p>
+                    <p class="text-gray-600 text-lg">All parameters are within expected ranges based on historical data</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Parameter Tabs (Fcp, Xcpl, etc.) -->
+        {% for param in ['Fcp', 'Xcpl', 'Pedals', 'X_lat', 'X_long', 'PITCH', 'NZ', 'T1', 'T2'] %}
+        <div id="param_{{ param }}" class="tab-content">
+            <div class="bg-white shadow-xl rounded-2xl p-8">
+                <h2 class="text-3xl font-bold text-indigo-700 mb-6">Parameter: {{ param }}</h2>
+                
+                <!-- Charts for each phase -->
+                {% for phase in ['before takeoff', 'when airborne', 'after landing'] %}
+                {% if report.visualization_data.get(param, {}).get(phase, {}).get('has_data', False) %}
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4 capitalize">{{ phase }}</h3>
+                    <div id="chart_{{ param }}_{{ loop.index }}" class="bg-gray-50 p-4 rounded-lg shadow-inner"></div>
+                </div>
+                {% endif %}
+                {% endfor %}
+                
+                <!-- If no data for this parameter -->
+                {% if not report.visualization_data.get(param) %}
+                <div class="bg-yellow-50 p-12 rounded-xl shadow-md text-center border-2 border-yellow-300">
+                    <div class="text-6xl mb-4">⚠️</div>
+                    <p class="text-2xl font-bold text-yellow-800 mb-2">No Data Available</p>
+                    <p class="text-gray-600 text-lg">Parameter {{ param }} was not found in the flight data</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+
     </div>
+
+    <script>
+        // Tab switching functionality
+        function openTab(evt, tabName) {
+            // Hide all tab contents
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            // Remove active class from all tab buttons
+            const tabButtons = document.getElementsByClassName('tab-button');
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove('active');
+            }
+            
+            // Show current tab and add active class
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
+            
+            // Render charts for this tab if it's a parameter tab
+            if (tabName.startsWith('param_')) {
+                const param = tabName.replace('param_', '');
+                renderParameterCharts(param);
+            }
+        }
+
+        // Store chart data from server
+        const vizData = {{ report.visualization_data | tojson }};
+        const renderedCharts = new Set();
+
+        function renderParameterCharts(param) {
+            // Only render once
+            if (renderedCharts.has(param)) return;
+            renderedCharts.add(param);
+            
+            if (!vizData[param]) return;
+            
+            const phases = ['before takeoff', 'when airborne', 'after landing'];
+            phases.forEach((phase, index) => {
+                const phaseData = vizData[param][phase];
+                if (!phaseData || !phaseData.has_data) return;
+                
+                const chartDiv = `chart_${param}_${index + 1}`;
+                const traces = [];
+                
+                // Add historical data if available
+                if (vizData.historical && vizData.historical[param] && vizData.historical[param][phase]) {
+                    traces.push({
+                        x: vizData.historical[param][phase].time,
+                        y: vizData.historical[param][phase].values,
+                        mode: 'markers',
+                        type: 'scatter',
+                        name: 'Historical Data',
+                        marker: { color: 'darkgrey', size: 4, opacity: 0.5 }
+                    });
+                }
+                
+                // Add normal points
+                if (phaseData.normal && phaseData.normal.time.length > 0) {
+                    traces.push({
+                        x: phaseData.normal.time,
+                        y: phaseData.normal.values,
+                        mode: 'markers',
+                        type: 'scatter',
+                        name: 'Current Flight',
+                        marker: { color: 'blue', size: 6 }
+                    });
+                }
+                
+                // Add anomalies
+                if (phaseData.anomalies && phaseData.anomalies.time.length > 0) {
+                    traces.push({
+                        x: phaseData.anomalies.time,
+                        y: phaseData.anomalies.values,
+                        mode: 'markers',
+                        type: 'scatter',
+                        name: 'Anomalies',
+                        marker: { color: 'red', size: 12, symbol: 'x', line: { width: 2 } }
+                    });
+                }
+                
+                const layout = {
+                    title: {
+                        text: `${param} - ${phase.charAt(0).toUpperCase() + phase.slice(1)}`,
+                        font: { size: 18, weight: 'bold' }
+                    },
+                    xaxis: { title: 'Time', gridcolor: '#e5e7eb' },
+                    yaxis: { title: param, gridcolor: '#e5e7eb' },
+                    showlegend: true,
+                    height: 450,
+                    paper_bgcolor: '#f9fafb',
+                    plot_bgcolor: '#ffffff',
+                    margin: { t: 60, b: 60, l: 60, r: 60 }
+                };
+                
+                Plotly.newPlot(chartDiv, traces, layout, { responsive: true });
+            });
+        }
+
+        // Render charts for the first parameter tab on load (optional pre-rendering)
+        // renderParameterCharts('Fcp');
+    </script>
 </body>
 </html>
