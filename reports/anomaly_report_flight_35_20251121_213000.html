@@ -1,0 +1,1216 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Anomaly Report - Flight 35</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+                background: #f5f5f5;
+            }
+            .header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 30px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+            }
+            .card {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .stat {
+                display: inline-block;
+                margin: 10px 20px;
+                text-align: center;
+            }
+            .stat-value {
+                font-size: 2em;
+                font-weight: bold;
+                color: #667eea;
+            }
+            .stat-label {
+                color: #666;
+                font-size: 0.9em;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th, td {
+                padding: 12px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
+            th {
+                background: #667eea;
+                color: white;
+            }
+            tr:hover {
+                background: #f5f5f5;
+            }
+            .anomaly {
+                color: #e74c3c;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>🛩️ MI-17 Flight Anomaly Analysis Report</h1>
+            <p><strong>Flight ID:</strong> 35</p>
+            <p><strong>File:</strong> UNO-561P_01-08-25_1.xlsm</p>
+            <p><strong>Generated:</strong> 2025-11-21 21:30:00</p>
+        </div>
+        
+        <div class="card">
+            <h2>📊 Summary Statistics</h2>
+            <div class="stat">
+                <div class="stat-value">10,253</div>
+                <div class="stat-label">Total Data Points</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" style="color: #e74c3c">152</div>
+                <div class="stat-label">Anomalies Detected</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">1.48%</div>
+                <div class="stat-label">Anomaly Rate</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>📋 Phase Breakdown</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Phase</th>
+                        <th>Total Points</th>
+                        <th>Anomalies</th>
+                        <th>Anomaly Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+    
+                    <tr>
+                        <td><strong>Before takeoff</strong></td>
+                        <td>1,083</td>
+                        <td class="anomaly">46</td>
+                        <td>4.2%</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>When airborne</strong></td>
+                        <td>8,968</td>
+                        <td class="anomaly">106</td>
+                        <td>1.2%</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>After landing</strong></td>
+                        <td>202</td>
+                        <td class="anomaly">0</td>
+                        <td>0.0%</td>
+                    </tr>
+            
+                </tbody>
+            </table>
+        </div>
+    
+        <div class="card">
+            <h2>🎯 Detected Anomalies</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Phase</th>
+                        <th>Time</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+        
+                    <tr>
+                        <td><strong>Fcp</strong></td>
+                        <td>before takeoff</td>
+                        <td>1078</td>
+                        <td class="anomaly">5.08</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Fcp</strong></td>
+                        <td>before takeoff</td>
+                        <td>1079</td>
+                        <td class="anomaly">5.12</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Fcp</strong></td>
+                        <td>before takeoff</td>
+                        <td>1080</td>
+                        <td class="anomaly">5.40</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Fcp</strong></td>
+                        <td>before takeoff</td>
+                        <td>1081</td>
+                        <td class="anomaly">5.84</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Fcp</strong></td>
+                        <td>before takeoff</td>
+                        <td>1082</td>
+                        <td class="anomaly">6.24</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Fcp</strong></td>
+                        <td>when airborne</td>
+                        <td>10048</td>
+                        <td class="anomaly">2.27</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Fcp</strong></td>
+                        <td>when airborne</td>
+                        <td>10049</td>
+                        <td class="anomaly">2.23</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Fcp</strong></td>
+                        <td>when airborne</td>
+                        <td>10050</td>
+                        <td class="anomaly">2.25</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Xcpl</strong></td>
+                        <td>before takeoff</td>
+                        <td>1078</td>
+                        <td class="anomaly">12.21</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Xcpl</strong></td>
+                        <td>before takeoff</td>
+                        <td>1079</td>
+                        <td class="anomaly">12.54</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Xcpl</strong></td>
+                        <td>before takeoff</td>
+                        <td>1080</td>
+                        <td class="anomaly">13.41</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Xcpl</strong></td>
+                        <td>before takeoff</td>
+                        <td>1081</td>
+                        <td class="anomaly">14.56</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Xcpl</strong></td>
+                        <td>before takeoff</td>
+                        <td>1082</td>
+                        <td class="anomaly">15.77</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>787</td>
+                        <td class="anomaly">246.32</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>788</td>
+                        <td class="anomaly">246.32</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>789</td>
+                        <td class="anomaly">246.32</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>790</td>
+                        <td class="anomaly">246.32</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>791</td>
+                        <td class="anomaly">247.37</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>801</td>
+                        <td class="anomaly">247.27</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>802</td>
+                        <td class="anomaly">247.62</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>803</td>
+                        <td class="anomaly">247.62</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>804</td>
+                        <td class="anomaly">247.67</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>805</td>
+                        <td class="anomaly">247.67</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>806</td>
+                        <td class="anomaly">247.73</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>809</td>
+                        <td class="anomaly">248.73</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>815</td>
+                        <td class="anomaly">249.08</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>816</td>
+                        <td class="anomaly">248.33</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>823</td>
+                        <td class="anomaly">249.24</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>874</td>
+                        <td class="anomaly">249.19</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>877</td>
+                        <td class="anomaly">247.62</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>878</td>
+                        <td class="anomaly">248.13</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>879</td>
+                        <td class="anomaly">248.73</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>880</td>
+                        <td class="anomaly">249.69</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>884</td>
+                        <td class="anomaly">249.19</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>885</td>
+                        <td class="anomaly">249.24</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>886</td>
+                        <td class="anomaly">249.69</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>887</td>
+                        <td class="anomaly">250.14</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>894</td>
+                        <td class="anomaly">249.24</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>895</td>
+                        <td class="anomaly">248.73</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>896</td>
+                        <td class="anomaly">248.73</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>897</td>
+                        <td class="anomaly">248.58</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>898</td>
+                        <td class="anomaly">248.28</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>899</td>
+                        <td class="anomaly">248.13</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>900</td>
+                        <td class="anomaly">248.58</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>901</td>
+                        <td class="anomaly">249.69</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>907</td>
+                        <td class="anomaly">250.14</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>918</td>
+                        <td class="anomaly">249.08</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>919</td>
+                        <td class="anomaly">248.73</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>before takeoff</td>
+                        <td>920</td>
+                        <td class="anomaly">248.73</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Pedals</strong></td>
+                        <td>when airborne</td>
+                        <td>1632</td>
+                        <td class="anomaly">277.00</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>X_long</strong></td>
+                        <td>when airborne</td>
+                        <td>1632</td>
+                        <td class="anomaly">2.20</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>X_long</strong></td>
+                        <td>when airborne</td>
+                        <td>1633</td>
+                        <td class="anomaly">2.20</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>1634</td>
+                        <td class="anomaly">12.00</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9965</td>
+                        <td class="anomaly">4.82</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9966</td>
+                        <td class="anomaly">4.67</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9967</td>
+                        <td class="anomaly">4.74</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>10009</td>
+                        <td class="anomaly">4.82</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>10010</td>
+                        <td class="anomaly">4.82</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>10011</td>
+                        <td class="anomaly">4.89</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>10012</td>
+                        <td class="anomaly">4.89</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>10013</td>
+                        <td class="anomaly">4.53</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>10020</td>
+                        <td class="anomaly">4.67</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1247</td>
+                        <td class="anomaly">1.29</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1300</td>
+                        <td class="anomaly">1.10</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1301</td>
+                        <td class="anomaly">1.08</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1306</td>
+                        <td class="anomaly">1.26</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1318</td>
+                        <td class="anomaly">1.19</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1319</td>
+                        <td class="anomaly">1.08</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1320</td>
+                        <td class="anomaly">1.08</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1326</td>
+                        <td class="anomaly">1.11</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1370</td>
+                        <td class="anomaly">1.17</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1371</td>
+                        <td class="anomaly">1.19</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1373</td>
+                        <td class="anomaly">1.25</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1496</td>
+                        <td class="anomaly">1.11</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1632</td>
+                        <td class="anomaly">2.00</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1869</td>
+                        <td class="anomaly">1.25</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1870</td>
+                        <td class="anomaly">1.13</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1871</td>
+                        <td class="anomaly">1.09</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1873</td>
+                        <td class="anomaly">1.60</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1874</td>
+                        <td class="anomaly">1.08</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1875</td>
+                        <td class="anomaly">1.15</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1876</td>
+                        <td class="anomaly">1.08</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1877</td>
+                        <td class="anomaly">1.21</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1878</td>
+                        <td class="anomaly">1.15</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1879</td>
+                        <td class="anomaly">1.35</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1880</td>
+                        <td class="anomaly">1.13</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1881</td>
+                        <td class="anomaly">1.12</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1882</td>
+                        <td class="anomaly">1.08</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1887</td>
+                        <td class="anomaly">1.15</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1935</td>
+                        <td class="anomaly">1.25</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1936</td>
+                        <td class="anomaly">1.18</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1937</td>
+                        <td class="anomaly">1.15</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1969</td>
+                        <td class="anomaly">1.08</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1970</td>
+                        <td class="anomaly">1.10</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1971</td>
+                        <td class="anomaly">1.08</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1973</td>
+                        <td class="anomaly">1.16</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1974</td>
+                        <td class="anomaly">1.12</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1976</td>
+                        <td class="anomaly">1.27</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1977</td>
+                        <td class="anomaly">1.12</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1978</td>
+                        <td class="anomaly">1.13</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1979</td>
+                        <td class="anomaly">1.18</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1980</td>
+                        <td class="anomaly">1.15</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1981</td>
+                        <td class="anomaly">1.15</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1982</td>
+                        <td class="anomaly">1.13</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1983</td>
+                        <td class="anomaly">1.13</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1984</td>
+                        <td class="anomaly">1.07</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1985</td>
+                        <td class="anomaly">1.10</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1986</td>
+                        <td class="anomaly">1.10</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1989</td>
+                        <td class="anomaly">1.11</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1990</td>
+                        <td class="anomaly">1.09</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1991</td>
+                        <td class="anomaly">1.18</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1992</td>
+                        <td class="anomaly">1.11</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1993</td>
+                        <td class="anomaly">1.11</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1995</td>
+                        <td class="anomaly">1.12</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1996</td>
+                        <td class="anomaly">1.11</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1997</td>
+                        <td class="anomaly">1.26</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>1999</td>
+                        <td class="anomaly">1.30</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2000</td>
+                        <td class="anomaly">1.23</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2001</td>
+                        <td class="anomaly">1.27</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2002</td>
+                        <td class="anomaly">1.26</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2003</td>
+                        <td class="anomaly">1.20</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2004</td>
+                        <td class="anomaly">1.20</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2005</td>
+                        <td class="anomaly">1.20</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2006</td>
+                        <td class="anomaly">1.19</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2007</td>
+                        <td class="anomaly">1.26</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2008</td>
+                        <td class="anomaly">1.28</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2009</td>
+                        <td class="anomaly">1.18</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2010</td>
+                        <td class="anomaly">1.17</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2011</td>
+                        <td class="anomaly">1.26</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2013</td>
+                        <td class="anomaly">1.25</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2014</td>
+                        <td class="anomaly">1.27</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2015</td>
+                        <td class="anomaly">1.23</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2016</td>
+                        <td class="anomaly">1.21</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2017</td>
+                        <td class="anomaly">1.21</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2018</td>
+                        <td class="anomaly">1.18</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2019</td>
+                        <td class="anomaly">1.11</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2020</td>
+                        <td class="anomaly">1.08</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2031</td>
+                        <td class="anomaly">1.21</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2046</td>
+                        <td class="anomaly">1.19</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2047</td>
+                        <td class="anomaly">1.13</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2048</td>
+                        <td class="anomaly">1.13</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2049</td>
+                        <td class="anomaly">1.13</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2050</td>
+                        <td class="anomaly">1.19</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2051</td>
+                        <td class="anomaly">1.15</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2052</td>
+                        <td class="anomaly">1.10</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2053</td>
+                        <td class="anomaly">1.09</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2055</td>
+                        <td class="anomaly">1.07</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2057</td>
+                        <td class="anomaly">1.10</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2060</td>
+                        <td class="anomaly">1.13</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>NZ</strong></td>
+                        <td>when airborne</td>
+                        <td>2061</td>
+                        <td class="anomaly">1.16</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>T2</strong></td>
+                        <td>when airborne</td>
+                        <td>1632</td>
+                        <td class="anomaly">600.00</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>T2</strong></td>
+                        <td>when airborne</td>
+                        <td>1633</td>
+                        <td class="anomaly">600.00</td>
+                    </tr>
+            
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="card">
+            <p style="color: #666; text-align: center;">
+                <em>Note: For detailed charts and visualizations, please use the full web application.</em>
+            </p>
+        </div>
+    </body>
+    </html>
+    

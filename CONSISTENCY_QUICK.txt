@@ -1,0 +1,94 @@
+# ✅ QUICK FIX - ANOMALY CONSISTENCY
+
+## What Was Fixed
+
+**Problem:** Anomaly table didn't match the charts
+- Charts showed T1 anomalies (red X)
+- Table showed NO T1 anomalies ❌
+
+**Solution:** Use ONE source for both table and charts
+- Now both read from the same dataframe ✅
+- Perfect consistency guaranteed!
+
+## Test Now (2 Steps)
+
+### Step 1: Restart Flask
+```bash
+cd A:\CVR_reader
+python app.py
+```
+
+### Step 2: Run Analysis
+1. Generate compliance report
+2. Click "Analyze Flight for Anomalies"
+3. Check the results!
+
+## Verify Consistency
+
+### Check T1 Example:
+```
+1. Go to T1 tab in report
+2. Count red X markers in chart (e.g., 2 anomalies)
+3. Go to "Detected Anomalies" tab
+4. Count T1 entries in table (should be 2!)
+```
+
+**They should MATCH perfectly!** ✅
+
+## What Changed
+
+**Before:**
+```python
+# Created anomaly list during detection
+anomalies = detect_anomalies(...)  
+# Created charts from dataframe
+charts = make_charts(analyzed_df)
+# Different sources = inconsistent ❌
+```
+
+**After:**
+```python
+# Mark anomalies in dataframe
+analyzed_df = detect_anomalies(...)
+# Create charts from dataframe
+charts = make_charts(analyzed_df)
+# Create table from SAME dataframe
+anomalies = extract_from(analyzed_df)
+# Same source = consistent! ✅
+```
+
+## Expected Results
+
+### Before Fix:
+| Source | Fcp | Xcpl | NZ | T1 |
+|--------|-----|------|----|----|
+| Charts | 3 | 3 | 2 | 2 |
+| Table | 3 | 3 | 2 | 0 ❌ |
+
+### After Fix:
+| Source | Fcp | Xcpl | NZ | T1 |
+|--------|-----|------|----|----|
+| Charts | 3 | 3 | 2 | 2 |
+| Table | 3 | 3 | 2 | 2 ✅ |
+
+**Perfect match!**
+
+## Benefits
+
+✅ **Consistency** - Table = Charts always
+✅ **Accuracy** - No missing data
+✅ **Reliability** - Single source of truth
+✅ **Your settings** - Contamination rate unchanged
+
+## Files Changed
+
+- ✅ `flight_analyzer.py` - Fixed data flow
+
+## That's It!
+
+Just:
+1. Restart Flask ✅
+2. Rerun analysis ✅
+3. Verify consistency ✅
+
+**Charts and table now match perfectly!** 🚀

@@ -9,8 +9,13 @@ from datetime import datetime
 PARAMETERS_TO_ANALYZE = ['Fcp', 'Xcpl', 'Pedals', 'X_lat', 'X_long', 'PITCH', 'NZ', 'T1', 'T2']
 
 # Anomaly detection configuration
-ANOMALY_CONTAMINATION_RATE = 0.0001
-N_ESTIMATORS = 300
+ANOMALY_CONTAMINATION_RATE = 0.001  # 0.1% - Very low rate to reduce false positives
+N_ESTIMATORS = 500  # More trees = better detection of outliers
+
+# Statistical anomaly filtering - eliminates false positives
+# Points must be outside mean ± (SIGMA_THRESHOLD * std_dev) of historical data
+SIGMA_THRESHOLD = 4  # 4 standard deviations (99.99% confidence)
+USE_STATISTICAL_FILTER = True  # Set to True to filter out borderline anomalies
 
 # File paths for persistence
 MODEL_FILENAME = 'trained_anomaly_models.joblib'
@@ -183,14 +188,15 @@ class FlightAnalyzer:
     
     def detect_anomalies(self, flight_df, parameters=None):
         """
-        Detect anomalies in flight data using trained models.
+        Detect anomalies in flight data using trained models with optional statistical filtering.
+        Creates parameter-specific anomaly tracking to prevent cross-contamination.
         
         Args:
             flight_df (pd.DataFrame): Flight data to analyze
             parameters (list): Parameters to check. Uses PARAMETERS_TO_ANALYZE if None.
             
         Returns:
-            tuple: (flight_df with 'is_anomaly' column, list of anomaly details)
+            tuple: (flight_df with parameter-specific anomaly columns, list of anomaly details)
         """
         if parameters is None:
             parameters = PARAMETERS_TO_ANALYZE
@@ -201,7 +207,12 @@ class FlightAnalyzer:
             return flight_df, []
         
         anomalies_detected = []
-        flight_df['is_anomaly'] = False
+        flight_df['is_anomaly'] = False  # Keep for backward compatibility
+        
+        # Create parameter-specific anomaly columns to prevent cross-contamination
+        for param in parameters:
+            if param in flight_df.columns:
+                flight_df[f'is_anomaly_{param}'] = False
         
         for param in parameters:
             if param not in flight_df.columns:
@@ -221,18 +232,93 @@ class FlightAnalyzer:
                         predictions = model.predict(X)
                         anomaly_indices = phase_data.index[predictions == -1]
                         
-                        flight_df.loc[anomaly_indices, 'is_anomaly'] = True
+                        # Apply statistical filter if enabled
+                        if USE_STATISTICAL_FILTER and not self.historical_data.empty:
+                            anomaly_indices = self._apply_statistical_filter(
+                                anomaly_indices, flight_df, param, phase
+                            )
+                        
+                        # Mark anomalies ONLY for this specific parameter
+                        flight_df.loc[anomaly_indices, f'is_anomaly_{param}'] = True
+                        flight_df.loc[anomaly_indices, 'is_anomaly'] = True  # General flag for any anomaly
                         
                         for idx in anomaly_indices:
                             anomalies_detected.append({
                                 'flight_id': int(flight_df.loc[idx, 'flight_id']),
                                 'parameter': str(param),
-                                'phase': str(phase),
+                                'phase': str(flight_df.loc[idx, 'phase']),
                                 'time': float(flight_df.loc[idx, '_time']),
                                 'value': float(flight_df.loc[idx, param])
                             })
         
         return flight_df, anomalies_detected
+    
+    def _apply_statistical_filter(self, anomaly_indices, flight_df, param, phase):
+        """
+        Filter anomalies using statistical thresholds based on historical data.
+        Only keeps anomalies that are outside mean ± (SIGMA_THRESHOLD * std_dev).
+        This eliminates false positives that are within normal statistical range.
+        
+        Args:
+            anomaly_indices: Indices flagged as anomalies by Isolation Forest
+            flight_df: Flight dataframe
+            param: Parameter name
+            phase: Flight phase
+            
+        Returns:
+            Filtered anomaly indices
+        """
+        if len(anomaly_indices) == 0:
+            return anomaly_indices
+        
+        print(f"\n  Statistical Filter: Checking {len(anomaly_indices)} {param} anomalies in '{phase}' phase...")
+        
+        # Get historical data for this parameter and phase
+        historical_phase_data = self.historical_data[
+            (self.historical_data['phase'] == phase) & 
+            (self.historical_data[param].notna())
+        ]
+        
+        if len(historical_phase_data) < 10:
+            print(f"  ⚠ Skipping filter: Not enough historical data ({len(historical_phase_data)} points, need 10+)")
+            return anomaly_indices
+        
+        # Calculate statistical bounds from historical data
+        hist_mean = historical_phase_data[param].mean()
+        hist_std = historical_phase_data[param].std()
+        
+        if hist_std == 0:
+            print(f"  ⚠ Skipping filter: No variation in historical data")
+            return anomaly_indices
+        
+        # Define acceptable range
+        lower_bound = hist_mean - (SIGMA_THRESHOLD * hist_std)
+        upper_bound = hist_mean + (SIGMA_THRESHOLD * hist_std)
+        
+        print(f"  Historical stats: mean={hist_mean:.2f}, std={hist_std:.2f}")
+        print(f"  Acceptance range: [{lower_bound:.2f}, {upper_bound:.2f}] ({SIGMA_THRESHOLD}σ)")
+        
+        # Filter: only keep anomalies that are truly outside the statistical range
+        filtered_indices = []
+        filtered_count = 0
+        
+        for idx in anomaly_indices:
+            value = flight_df.loc[idx, param]
+            time = flight_df.loc[idx, '_time']
+            
+            if value < lower_bound or value > upper_bound:
+                filtered_indices.append(idx)
+            else:
+                # This was a false positive - value is within normal range
+                filtered_count += 1
+                print(f"  ❌ Filtered: {param}={value:.2f} at t={time:.0f} (within normal range)")
+        
+        if filtered_count > 0:
+            print(f"  ✅ Filtered {filtered_count} false positives, kept {len(filtered_indices)} real anomalies")
+        else:
+            print(f"  ✅ All {len(filtered_indices)} anomalies are real (none filtered)")
+        
+        return pd.Index(filtered_indices)
     
     def add_to_training_data(self, flight_df):
         """
@@ -268,11 +354,14 @@ class FlightAnalyzer:
             self.flight_counter += 1
             processed_df = self.process_flight_data(df_raw, self.flight_counter)
             
-            # Detect anomalies
+            # Detect anomalies - use the actual anomaly list from detection
             analyzed_df, anomalies = self.detect_anomalies(processed_df.copy())
             
             # Prepare visualization data
-            viz_data = self._prepare_visualization_data(analyzed_df, anomalies)
+            viz_data = self._prepare_visualization_data(analyzed_df)
+            
+            # Use the anomalies list directly from detect_anomalies
+            # This ensures accuracy - only parameters that were actually flagged are included
             
             # Add to training if requested
             if add_to_training:
@@ -285,7 +374,7 @@ class FlightAnalyzer:
                 'total_data_points': int(len(analyzed_df)),
                 'anomaly_count': int(len(anomalies)),
                 'anomaly_percentage': float(round((len(anomalies) / len(analyzed_df)) * 100, 2)) if len(analyzed_df) > 0 else 0.0,
-                'anomalies': anomalies,  # Already converted in detect_anomalies
+                'anomalies': anomalies,
                 'visualization_data': viz_data,
                 'phases_summary': self._get_phases_summary(analyzed_df, anomalies),
                 'added_to_training': bool(add_to_training),
@@ -302,10 +391,52 @@ class FlightAnalyzer:
             traceback.print_exc()
             return {'error': str(e)}
     
-    def _prepare_visualization_data(self, flight_df, anomalies):
+    def _extract_anomalies_from_dataframe(self, flight_df):
+        """
+        Extract anomaly list from the analyzed dataframe.
+        This ensures the anomaly table matches exactly what's plotted in the charts.
+        
+        Args:
+            flight_df (pd.DataFrame): Flight data with 'is_anomaly' column
+            
+        Returns:
+            list: List of anomaly dictionaries
+        """
+        anomalies = []
+        
+        # Get all rows marked as anomalies
+        anomaly_rows = flight_df[flight_df['is_anomaly'] == True]
+        
+        # For each parameter that has data
+        for param in PARAMETERS_TO_ANALYZE:
+            if param not in flight_df.columns:
+                continue
+            
+            # Get anomalies for this parameter (where parameter value exists)
+            param_anomalies = anomaly_rows[anomaly_rows[param].notna()]
+            
+            for idx in param_anomalies.index:
+                anomalies.append({
+                    'flight_id': int(flight_df.loc[idx, 'flight_id']),
+                    'parameter': str(param),
+                    'phase': str(flight_df.loc[idx, 'phase']),
+                    'time': float(flight_df.loc[idx, '_time']),
+                    'value': float(flight_df.loc[idx, param])
+                })
+        
+        # Sort by time for better readability
+        anomalies.sort(key=lambda x: (x['parameter'], x['time']))
+        
+        return anomalies
+    
+    def _prepare_visualization_data(self, flight_df):
         """
         Prepare data for web visualization (organized by parameter and phase).
+        Uses parameter-specific 'is_anomaly_{param}' flags to prevent cross-contamination.
         
+        Args:
+            flight_df (pd.DataFrame): Flight data with parameter-specific anomaly columns
+            
         Returns:
             dict: Data organized for Plotly.js charts
         """
@@ -318,13 +449,23 @@ class FlightAnalyzer:
             
             viz_data[param] = {}
             
+            # Check if parameter-specific anomaly column exists
+            param_anomaly_col = f'is_anomaly_{param}'
+            has_param_anomaly_col = param_anomaly_col in flight_df.columns
+            
             for phase in phases:
                 phase_data = flight_df[flight_df['phase'] == phase].copy()
                 
                 if not phase_data.empty and param in phase_data.columns:
-                    # Separate normal and anomaly points
-                    normal_data = phase_data[phase_data['is_anomaly'] == False]
-                    anomaly_data = phase_data[phase_data['is_anomaly'] == True]
+                    # Separate normal and anomaly points using parameter-specific flag
+                    if has_param_anomaly_col:
+                        # Use parameter-specific anomaly detection (prevents cross-contamination)
+                        normal_data = phase_data[phase_data[param_anomaly_col] == False]
+                        anomaly_data = phase_data[phase_data[param_anomaly_col] == True]
+                    else:
+                        # Fallback to general flag (backward compatibility)
+                        normal_data = phase_data[phase_data['is_anomaly'] == False]
+                        anomaly_data = phase_data[phase_data['is_anomaly'] == True]
                     
                     # Convert to native Python types
                     viz_data[param][phase] = {

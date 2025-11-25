@@ -1,0 +1,134 @@
+# 🚀 QUICK ANALYZE - ONE-PAGE GUIDE
+
+## Setup (Do Once)
+
+**Edit `quick_analyze.py` lines 28-34:**
+```python
+FLIGHT_FILE_PATH = r'YOUR\PATH\TO\FLIGHT.xlsm'
+SHEET_NAME = 'Clean Data'
+ADD_TO_TRAINING = False  # False = just analyze, True = add to database
+AUTO_OPEN_BROWSER = True
+```
+
+## Run Analysis
+
+```bash
+cd A:\CVR_reader
+python quick_analyze.py
+```
+
+## What Happens
+
+```
+✅ File validation passed
+✅ Loaded 27 trained models
+📊 Analyzing: your_flight.xlsm
+
+Statistical Filter: Checking anomalies...
+✅ All 3 Fcp anomalies are real
+✅ All 2 NZ anomalies are real
+
+✅ Analysis complete!
+   - Flight ID: 21
+   - Anomalies detected: 8
+
+📄 Report saved
+🌐 Opening report in browser...
+🎉 ANALYSIS COMPLETE!
+```
+
+**Report opens automatically in your browser!** ✅
+
+## Configuration
+
+### Just Analyze (Default)
+```python
+ADD_TO_TRAINING = False
+```
+Quick check, don't modify training database
+
+### Analyze + Add to Training
+```python
+ADD_TO_TRAINING = True
+```
+Analyze + add to database + retrain models
+
+## Requirements
+
+**Must have trained models first:**
+```bash
+python quick_train.py  # Run once to create models
+```
+
+**Excel file must have:**
+- Sheet named `Clean Data`
+- Flight parameters (Fcp, Xcpl, PITCH, etc.)
+- `iWOW` and `_time` columns
+
+## Common Issues
+
+**"No trained models found"**
+→ Run `python quick_train.py` first
+
+**"File does not exist"**
+→ Check file path is correct, use `r'...'`
+
+**"Sheet not found"**  
+→ Change `SHEET_NAME` to match your sheet
+
+**Report doesn't open**
+→ Check `reports/` folder, open manually
+
+## Output
+
+**Report location:**
+```
+A:\CVR_reader\reports\
+└── anomaly_report_flight_21_20251121_223045.html
+```
+
+**Report contains:**
+- ✅ Summary statistics
+- ✅ Phase breakdown
+- ✅ Detected anomalies table
+- ✅ Parameter-by-parameter analysis
+
+## Use Cases
+
+**Quick daily check:**
+```python
+FLIGHT_FILE_PATH = r'A:\Flights\today.xlsm'
+ADD_TO_TRAINING = False
+```
+
+**Add normal flight to training:**
+```python
+FLIGHT_FILE_PATH = r'A:\Flights\normal_flight.xlsm'
+ADD_TO_TRAINING = True
+```
+
+## That's It!
+
+**3 steps:**
+1. Set file path in script
+2. Run `python quick_analyze.py`
+3. View report in browser
+
+**Done in 30 seconds!** ⚡
+
+## Comparison
+
+### Web App: ~5 minutes
+- Start Flask
+- Upload audio files
+- Upload Excel
+- Generate compliance report
+- Click "Analyze Anomalies"
+- View report
+
+### Quick Analyze: ~30 seconds ⚡
+- Edit file path
+- Run script
+- View report (auto-opens)
+
+**60x faster!** 🚀

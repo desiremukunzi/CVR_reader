@@ -1,0 +1,348 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Anomaly Report - Flight 180</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+                background: #f5f5f5;
+            }
+            .header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 30px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+            }
+            .card {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .stat {
+                display: inline-block;
+                margin: 10px 20px;
+                text-align: center;
+            }
+            .stat-value {
+                font-size: 2em;
+                font-weight: bold;
+                color: #667eea;
+            }
+            .stat-label {
+                color: #666;
+                font-size: 0.9em;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th, td {
+                padding: 12px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
+            th {
+                background: #667eea;
+                color: white;
+            }
+            tr:hover {
+                background: #f5f5f5;
+            }
+            .anomaly {
+                color: #e74c3c;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>🛩️ MI-17 Flight Anomaly Analysis Report</h1>
+            <p><strong>Flight ID:</strong> 180</p>
+            <p><strong>File:</strong> UNO-561P_01-08-25_2.xlsm</p>
+            <p><strong>Generated:</strong> 2025-11-24 21:00:01</p>
+        </div>
+        
+        <div class="card">
+            <h2>📊 Summary Statistics</h2>
+            <div class="stat">
+                <div class="stat-value">10,291</div>
+                <div class="stat-label">Total Data Points</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" style="color: #e74c3c">28</div>
+                <div class="stat-label">Anomalies Detected</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">0.27%</div>
+                <div class="stat-label">Anomaly Rate</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>📋 Phase Breakdown</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Phase</th>
+                        <th>Total Points</th>
+                        <th>Anomalies</th>
+                        <th>Anomaly Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+    
+                    <tr>
+                        <td><strong>Before takeoff</strong></td>
+                        <td>495</td>
+                        <td class="anomaly">2</td>
+                        <td>0.4%</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>When airborne</strong></td>
+                        <td>9,448</td>
+                        <td class="anomaly">26</td>
+                        <td>0.3%</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>After landing</strong></td>
+                        <td>321</td>
+                        <td class="anomaly">0</td>
+                        <td>0.0%</td>
+                    </tr>
+            
+                </tbody>
+            </table>
+        </div>
+    
+        <div class="card">
+            <h2>🎯 Detected Anomalies</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Phase</th>
+                        <th>Time</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+        
+                    <tr>
+                        <td><strong>Fcp</strong></td>
+                        <td>before takeoff</td>
+                        <td>494</td>
+                        <td class="anomaly">5.87</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>Xcpl</strong></td>
+                        <td>before takeoff</td>
+                        <td>494</td>
+                        <td class="anomaly">14.56</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>X_long</strong></td>
+                        <td>when airborne</td>
+                        <td>9957</td>
+                        <td class="anomaly">1.37</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9839</td>
+                        <td class="anomaly">5.33</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9840</td>
+                        <td class="anomaly">5.69</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9841</td>
+                        <td class="anomaly">5.40</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9842</td>
+                        <td class="anomaly">5.26</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9843</td>
+                        <td class="anomaly">4.82</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9875</td>
+                        <td class="anomaly">4.89</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9876</td>
+                        <td class="anomaly">4.89</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9884</td>
+                        <td class="anomaly">4.96</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9885</td>
+                        <td class="anomaly">5.33</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9886</td>
+                        <td class="anomaly">5.40</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9887</td>
+                        <td class="anomaly">5.55</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9888</td>
+                        <td class="anomaly">5.77</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9889</td>
+                        <td class="anomaly">5.55</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9890</td>
+                        <td class="anomaly">5.77</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9891</td>
+                        <td class="anomaly">6.93</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9892</td>
+                        <td class="anomaly">7.15</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9893</td>
+                        <td class="anomaly">7.15</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9894</td>
+                        <td class="anomaly">6.72</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9895</td>
+                        <td class="anomaly">6.06</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9896</td>
+                        <td class="anomaly">5.33</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9897</td>
+                        <td class="anomaly">5.18</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9898</td>
+                        <td class="anomaly">4.82</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9899</td>
+                        <td class="anomaly">4.89</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9900</td>
+                        <td class="anomaly">5.55</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>PITCH</strong></td>
+                        <td>when airborne</td>
+                        <td>9901</td>
+                        <td class="anomaly">5.40</td>
+                    </tr>
+            
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="card">
+            <p style="color: #666; text-align: center;">
+                <em>Note: For detailed charts and visualizations, please use the full web application.</em>
+            </p>
+        </div>
+    </body>
+    </html>
+    

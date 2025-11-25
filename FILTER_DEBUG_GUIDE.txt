@@ -1,0 +1,217 @@
+# 🔍 STATISTICAL FILTER - DEBUGGING GUIDE
+
+## What You Should See in Console
+
+### When Filter is Working:
+
+```
+Statistical Filter: Checking 3 NZ anomalies in 'when airborne' phase...
+  Historical stats: mean=0.52, std=0.28
+  Acceptance range: [-0.88, 1.92] (5.0σ)
+  ❌ Filtered: NZ=0.10 at t=10250 (within normal range)
+  ❌ Filtered: NZ=0.05 at t=10350 (within normal range)
+  ✅ Filtered 2 false positives, kept 1 real anomalies
+```
+
+### When Filter Skips (No Historical Data):
+
+```
+Statistical Filter: Checking 2 NZ anomalies in 'when airborne' phase...
+  ⚠ Skipping filter: Not enough historical data (5 points, need 10+)
+```
+
+### When All Anomalies Are Real:
+
+```
+Statistical Filter: Checking 3 T1 anomalies in 'when airborne' phase...
+  Historical stats: mean=502.35, std=12.45
+  Acceptance range: [440.10, 564.60] (5.0σ)
+  ✅ All 3 anomalies are real (none filtered)
+```
+
+## Troubleshooting
+
+### Issue 1: No Filter Output at All
+
+**Possible Causes:**
+1. `USE_STATISTICAL_FILTER = False` (filter disabled)
+2. No historical data loaded
+3. No anomalies detected by Isolation Forest
+
+**Solutions:**
+
+**Check 1: Is Filter Enabled?**
+```python
+# In flight_analyzer.py (line 17-18):
+USE_STATISTICAL_FILTER = True  # Should be True
+```
+
+**Check 2: Is There Historical Data?**
+Look for this in console at startup:
+```
+Loaded 27 models and 15432 historical data points.
+```
+
+If you see:
+```
+No existing models or historical data found. Starting fresh.
+```
+
+Then you need to:
+1. Check the "Add this flight data to training database" checkbox
+2. Run analysis
+3. This adds current flight to history
+4. Next flight analysis will use the filter
+
+**Check 3: Are Anomalies Being Detected?**
+```
+Analyzing Flight 1...
+  [No output about anomalies]
+```
+
+This means Isolation Forest isn't detecting ANY anomalies.
+
+### Issue 2: Filter Says "Not enough historical data"
+
+**Example:**
+```
+⚠ Skipping filter: Not enough historical data (5 points, need 10+)
+```
+
+**Cause:** Less than 10 data points in historical database for that parameter/phase combination.
+
+**Solution:** Add more flights to historical database:
+1. Check "Add to training" checkbox
+2. Analyze multiple flights (aim for 3-5 flights minimum)
+3. Filter will activate once enough data is collected
+
+### Issue 3: All Anomalies Pass Through (None Filtered)
+
+**Example:**
+```
+✅ All 8 anomalies are real (none filtered)
+```
+
+**This is NORMAL if:**
+- All detected anomalies are truly outside the statistical range
+- Means: Isolation Forest is doing a good job already!
+
+**If you think some should be filtered:**
+
+**Lower the sigma threshold:**
+```python
+# In flight_analyzer.py:
+SIGMA_THRESHOLD = 3.5  # Was 5.0, now more strict
+```
+
+| Threshold | What Gets Filtered |
+|-----------|-------------------|
+| 3.0σ | Filters more (99.7% confidence) |
+| 3.5σ | Balanced |
+| 4.0σ | Recommended |
+| 5.0σ | Very strict (current) |
+| 6.0σ | Extremely strict |
+
+## Testing Steps
+
+### Step 1: Check Configuration
+```bash
+cd A:\CVR_reader
+# Open flight_analyzer.py
+# Verify lines 17-18:
+USE_STATISTICAL_FILTER = True
+SIGMA_THRESHOLD = 5.0  # Or your preferred value
+```
+
+### Step 2: Check Historical Data
+
+**Option A: Check files exist**
+```
+A:\CVR_reader\flight_data\
+├── trained_anomaly_models.joblib  ← Should exist
+└── all_flights_data.parquet       ← Should exist
+```
+
+**Option B: Check console at startup**
+Look for:
+```
+Loaded 27 models and 15432 historical data points.
+```
+
+### Step 3: Run Analysis with Debug Mode
+
+1. Restart Flask
+2. Run analysis
+3. Watch console carefully
+4. Look for "Statistical Filter:" messages
+
+### Step 4: Interpret Output
+
+**Good Signs:**
+```
+✅ Filtered 2 false positives  ← Filter is working!
+✅ All X anomalies are real    ← Filter checked but all passed
+```
+
+**Warning Signs:**
+```
+⚠ Skipping filter: Not enough data  ← Need more history
+[No filter messages at all]          ← Filter not running
+```
+
+## Quick Fixes
+
+### Fix 1: Enable Filter
+```python
+USE_STATISTICAL_FILTER = True
+```
+
+### Fix 2: Build Historical Database
+1. Check "Add to training"
+2. Analyze 3-5 flights
+3. Filter activates automatically
+
+### Fix 3: Adjust Sensitivity
+```python
+# More filtering (catches more false positives):
+SIGMA_THRESHOLD = 3.5
+
+# Less filtering (more conservative):
+SIGMA_THRESHOLD = 6.0
+```
+
+### Fix 4: Force Verbose Output
+The new code now ALWAYS prints when filter runs, so you'll see:
+- How many anomalies are being checked
+- Historical statistics
+- Which ones get filtered
+- Final counts
+
+## Expected Workflow
+
+### First Flight (No History):
+```
+Analyzing Flight 1...
+  [Anomalies detected by Isolation Forest]
+  [NO filter output - no historical data yet]
+  ✓ Added to training database
+```
+
+### Second Flight (With History):
+```
+Analyzing Flight 2...
+  Statistical Filter: Checking 3 NZ anomalies...
+  ✅ Filtered 1 false positive, kept 2 real anomalies
+```
+
+## Summary
+
+**If you don't see filter output:**
+1. Check `USE_STATISTICAL_FILTER = True`
+2. Make sure historical data exists
+3. Make sure anomalies are being detected
+4. Watch console for debug messages
+
+**The new verbose output will show you exactly what's happening!**
+
+Restart Flask and try again - you should now see detailed filter activity! 🚀

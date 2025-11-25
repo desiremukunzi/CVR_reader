@@ -1,0 +1,73 @@
+# 🚀 QUICK TRAIN - ONE-PAGE GUIDE
+
+## Setup (Do Once)
+
+**Edit `quick_train.py` line 28:**
+```python
+TRAINING_DATA_FOLDER = r'YOUR\PATH\TO\TRAINING\DATA'
+```
+
+## Run Training
+
+```bash
+cd A:\CVR_reader
+python quick_train.py
+```
+
+## What You'll See
+
+```
+✅ Found 15 Excel file(s) for training
+
+[1/15] Processing: flight_01.xlsm
+   ✅ Added Flight 1 - 12,453 data points
+
+[2/15] Processing: flight_02.xlsm
+   ✅ Added Flight 2 - 11,892 data points
+
+...
+
+Training Isolation Forest models...
+  - Trained model for Fcp in 'when airborne'
+  - Trained model for Xcpl in 'when airborne'
+  ...
+
+Trained 27 models.
+
+🎉 TRAINING COMPLETE!
+```
+
+## After Training
+
+**Restart Flask:**
+```bash
+python app.py
+```
+
+**Your models are ready!** ✅
+
+## Requirements
+
+- **Folder:** Contains `.xlsx` or `.xlsm` files
+- **Sheet:** All files must have sheet named `Clean Data`
+- **Data:** Each file has `iWOW`, `_time`, and flight parameters
+
+## Quick Fixes
+
+**Issue:** No files found
+**Fix:** Check folder path is correct
+
+**Issue:** Sheet not found  
+**Fix:** Change `SHEET_NAME` in script to match your sheets
+
+**Issue:** Want to start fresh
+**Fix:** Delete `flight_data/*.joblib` and `flight_data/*.parquet` first
+
+## That's It!
+
+**3 steps:**
+1. Set folder path
+2. Run `python quick_train.py`
+3. Restart Flask
+
+**Done!** 🎉
