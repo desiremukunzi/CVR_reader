@@ -1,6 +1,9 @@
 #my inputs
 uploads/
-#transcripts/
+transcripts/
+compliance_excel_output/
+compliance_text_reports/
+reports/
 workbench/
 venv/
 venv-py311/
