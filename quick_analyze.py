@@ -30,7 +30,7 @@ from flight_analyzer import FlightAnalyzer, PARAMETERS_TO_ANALYZE
 # ============================================================================
 
 # Path to the Excel file you want to analyze
-FLIGHT_FILE_PATH = r'A:\Onedrive\RAF-61504\August\NORMAL\UNO-561P_01-08-25_1.xlsm'
+FLIGHT_FILE_PATH = r'A:\Onedrive\RAF-61504\April\UNO-561P_24-04-25_1.xlsm'
 
 # Excel sheet name containing clean flight data
 SHEET_NAME = 'Clean Data'

@@ -1,0 +1,140 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Anomaly Report - Flight 163</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+                background: #f5f5f5;
+            }
+            .header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 30px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+            }
+            .card {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .stat {
+                display: inline-block;
+                margin: 10px 20px;
+                text-align: center;
+            }
+            .stat-value {
+                font-size: 2em;
+                font-weight: bold;
+                color: #667eea;
+            }
+            .stat-label {
+                color: #666;
+                font-size: 0.9em;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th, td {
+                padding: 12px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
+            th {
+                background: #667eea;
+                color: white;
+            }
+            tr:hover {
+                background: #f5f5f5;
+            }
+            .anomaly {
+                color: #e74c3c;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>🛩️ MI-17 Flight Anomaly Analysis Report</h1>
+            <p><strong>Flight ID:</strong> 163</p>
+            <p><strong>File:</strong> UNO-561P_01-08-25_C.xlsm</p>
+            <p><strong>Generated:</strong> 2025-11-25 16:31:07</p>
+        </div>
+        
+        <div class="card">
+            <h2>📊 Summary Statistics</h2>
+            <div class="stat">
+                <div class="stat-value">10,253</div>
+                <div class="stat-label">Total Data Points</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" style="color: #27ae60">0</div>
+                <div class="stat-label">Anomalies Detected</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">0.0%</div>
+                <div class="stat-label">Anomaly Rate</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>📋 Phase Breakdown</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Phase</th>
+                        <th>Total Points</th>
+                        <th>Anomalies</th>
+                        <th>Anomaly Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+    
+                    <tr>
+                        <td><strong>Before takeoff</strong></td>
+                        <td>1,083</td>
+                        <td class="anomaly">0</td>
+                        <td>0.0%</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>When airborne</strong></td>
+                        <td>8,960</td>
+                        <td class="anomaly">0</td>
+                        <td>0.0%</td>
+                    </tr>
+            
+                    <tr>
+                        <td><strong>After landing</strong></td>
+                        <td>202</td>
+                        <td class="anomaly">0</td>
+                        <td>0.0%</td>
+                    </tr>
+            
+                </tbody>
+            </table>
+        </div>
+    
+        <div class="card">
+            <h2>✅ All Clear!</h2>
+            <p style="color: #27ae60; font-size: 1.2em;">No anomalies detected in this flight. All parameters within normal ranges.</p>
+        </div>
+        
+        <div class="card">
+            <p style="color: #666; text-align: center;">
+                <em>Note: For detailed charts and visualizations, please use the full web application.</em>
+            </p>
+        </div>
+    </body>
+    </html>
+    

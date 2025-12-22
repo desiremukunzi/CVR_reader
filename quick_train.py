@@ -29,7 +29,7 @@ from flight_analyzer import FlightAnalyzer, PARAMETERS_TO_ANALYZE
 # ============================================================================
 
 # Path to folder containing your training Excel files (.xlsx, .xlsm)
-TRAINING_DATA_FOLDER = r'A:\Onedrive\RAF-61504\August\Normal'
+TRAINING_DATA_FOLDER = r'A:\Onedrive\RAF-61504\Data'
 
 # Excel sheet name containing clean flight data
 SHEET_NAME = 'Clean Data'

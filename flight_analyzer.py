@@ -9,13 +9,17 @@ from datetime import datetime
 PARAMETERS_TO_ANALYZE = ['Fcp', 'Xcpl', 'Pedals', 'X_lat', 'X_long', 'PITCH', 'NZ', 'T1', 'T2']
 
 # Anomaly detection configuration
-ANOMALY_CONTAMINATION_RATE = 0.001  # 0.1% - Very low rate to reduce false positives
+ANOMALY_CONTAMINATION_RATE = 0.01  # 1% - Very low rate to reduce false positives
 N_ESTIMATORS = 500  # More trees = better detection of outliers
 
 # Statistical anomaly filtering - eliminates false positives
 # Points must be outside mean ± (SIGMA_THRESHOLD * std_dev) of historical data
-SIGMA_THRESHOLD = 4  # 4 standard deviations (99.99% confidence)
+SIGMA_THRESHOLD = 5  # 5 standard deviations (99.99994% confidence)
 USE_STATISTICAL_FILTER = True  # Set to True to filter out borderline anomalies
+
+# Visualization optimization
+MAX_HISTORICAL_POINTS_PER_PHASE = 20000
+HISTORICAL_DATA_SAMPLING = True
 
 # File paths for persistence
 MODEL_FILENAME = 'trained_anomaly_models.joblib'
@@ -489,9 +493,16 @@ class FlightAnalyzer:
         return viz_data
     
     def _prepare_historical_data(self):
-        """Prepare historical data for overlay on charts."""
+        """
+        Prepare historical data for overlay on charts with intelligent sampling.
+        Samples large datasets to prevent browser performance issues.
+        """
         historical_viz = {}
         phases = ['before takeoff', 'when airborne', 'after landing']
+        
+        print(f"\n📊 Preparing historical data for visualization...")
+        total_hist_points = len(self.historical_data)
+        print(f"   Total historical data points: {total_hist_points:,}")
         
         for param in PARAMETERS_TO_ANALYZE:
             if param not in self.historical_data.columns:
@@ -500,14 +511,51 @@ class FlightAnalyzer:
             historical_viz[param] = {}
             
             for phase in phases:
-                phase_data = self.historical_data[self.historical_data['phase'] == phase]
+                phase_data = self.historical_data[
+                    (self.historical_data['phase'] == phase) & 
+                    (self.historical_data[param].notna())
+                ].copy()
                 
-                if not phase_data.empty and param in phase_data.columns:
+                if not phase_data.empty:
+                    # Smart sampling if data exceeds threshold
+                    if HISTORICAL_DATA_SAMPLING and len(phase_data) > MAX_HISTORICAL_POINTS_PER_PHASE:
+                        # Calculate sampling ratio
+                        sample_size = MAX_HISTORICAL_POINTS_PER_PHASE
+                        sampling_ratio = sample_size / len(phase_data)
+                        
+                        print(f"   Sampling {param} '{phase}': {len(phase_data):,} → {sample_size} points ({sampling_ratio*100:.1f}%)")
+                        
+                        # Stratified sampling: preserve distribution
+                        # Sort by value to ensure we capture min/max/distribution
+                        phase_data_sorted = phase_data.sort_values(by=param)
+                        
+                        # Take every Nth point to maintain distribution
+                        step = len(phase_data_sorted) // sample_size
+                        if step < 1:
+                            step = 1
+                        
+                        sampled_data = phase_data_sorted.iloc[::step].head(sample_size)
+                        
+                        # Ensure we include absolute min and max (outliers)
+                        min_idx = phase_data[param].idxmin()
+                        max_idx = phase_data[param].idxmax()
+                        
+                        if min_idx not in sampled_data.index:
+                            sampled_data = pd.concat([sampled_data, phase_data.loc[[min_idx]]])
+                        if max_idx not in sampled_data.index:
+                            sampled_data = pd.concat([sampled_data, phase_data.loc[[max_idx]]])
+                        
+                        # Sort by time for proper plotting
+                        sampled_data = sampled_data.sort_values(by='_time')
+                        
+                        phase_data = sampled_data
+                    
                     historical_viz[param][phase] = {
                         'time': [float(x) for x in phase_data['_time'].tolist()],
                         'values': [float(x) for x in phase_data[param].tolist()]
                     }
         
+        print(f"   ✅ Historical data prepared for browser\n")
         return historical_viz
     
     def _get_phases_summary(self, flight_df, anomalies):
