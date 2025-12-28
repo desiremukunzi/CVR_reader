@@ -20,7 +20,7 @@ try:
     DATABASE_ENABLED = True
     print("Using FlightAnalyzer with database support")
 except ImportError:
-    from flight_analyzer import FlightAnalyzer
+    from populate_db import FlightAnalyzer
     DATABASE_ENABLED = False
     print("Warning: Using FlightAnalyzer without database support")
 
