@@ -43,3 +43,7 @@ checklist compliance below 90
 RAF-2712 on 01/10/2025
 hydraulics not analyzed since this date
 ---------------------------------------
+not working
+custom range of dates all flights(link) bring unrelevant
+saving and updating in flights table not accurate on anomalies and exceedances 
+---------------------------------------

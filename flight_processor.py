@@ -37,7 +37,7 @@ except ImportError as e:
 
 load_dotenv()
 
-FOLDER_PATH = r"A:\Onedrive\RAF-61504\August\NORMAL"
+FOLDER_PATH = r"A:\Onedrive\RAF-61504\October"
 START_DATE = date(2025, 1, 1)
 END_DATE = date(2025, 12, 31)
 AIRCRAFT_ID = 2
@@ -115,7 +115,7 @@ class DatabaseManager:
                 pool_reset_session=True,
                 host=os.getenv('DB_HOST', 'localhost'),
                 port=int(os.getenv('DB_PORT', 3306)),
-                database='fdap_new',
+                database='flight_data',
                 user=os.getenv('DB_USER', 'root'),
                 password=os.getenv('DB_PASSWORD', ''),
                 charset='utf8mb4',

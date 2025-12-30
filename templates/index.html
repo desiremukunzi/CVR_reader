@@ -24,6 +24,35 @@
     </style>
 </head>
 <body>
+    <!-- NEW: Navigation Bar -->
+    <nav class="bg-gradient-to-r from-purple-600 to-indigo-700 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-8">
+                    <a href="/" class="text-white text-xl font-bold hover:text-purple-200 transition">
+                        🚁 MI-17 Flight Safety
+                    </a>
+                    <div class="hidden md:flex space-x-4">
+                        <a href="/" class="text-white px-3 py-2 rounded-md text-sm font-medium bg-purple-700 hover:bg-purple-800 transition">
+                            CVR Analysis
+                        </a>
+                        <a href="/dashboard" class="text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-purple-700 transition">
+                            Dashboard
+                        </a>
+                        <a href="/flights_list" class="text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-purple-700 transition">
+                            Flight List
+                        </a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <a href="/dashboard" class="bg-yellow-400 text-gray-900 px-4 py-2 rounded-full text-sm font-semibold hover:bg-yellow-300 transition shadow-md hover:shadow-lg">
+                        📊 View Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
     <div id="root"></div>
     <script src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>

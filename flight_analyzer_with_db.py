@@ -38,6 +38,16 @@ PHASE_ID_MAP = {
     'after landing': 3
 }
 
+# Continuous vs Discrete parameter classification
+# Continuous: measured values that vary continuously
+# Discrete: binary states, switches, warnings
+CONTINUOUS_PARAMS = [
+    'IAS', 'Alt', 'H', 'ROLL', 'PITCH',
+    'N1', 'N2', 'T1', 'T2', 'Nmr', 'NLM', 'NPM',
+    'Fcp', 'X_lat', 'X_long', 'Xcpl', 'Pedals',
+    'NZ', 'Engine_split'
+]
+
 
 class DatabaseManager:
     """Manages database connections and operations for anomaly data"""
@@ -74,7 +84,10 @@ class DatabaseManager:
             print(f"✗ Error getting connection: {e}")
             raise
     
-    def get_or_create_flight(self, flight_date, pic, sic, fe, sortie=1, aircraft_id=3, compliance_percentage=None, checks_not_complied=None):
+    def get_or_create_flight(self, flight_date, pic, sic, fe, sortie=1, aircraft_id=3, 
+                             compliance_percentage=None, checks_not_complied=None,
+                             continuous_exceedances=0, discrete_exceedances=0, 
+                             anomalies=0, anomalies_percentage=0.0):
         """
         Get flight_id if exists, or create new flight record.
         Updates compliance_percentage and checks_not_complied if provided and flight exists.
@@ -99,7 +112,15 @@ class DatabaseManager:
                 print(f"  ✓ Found existing flight ID: {flight_id}")
                 
                 # Update compliance_percentage and checks_not_complied if provided
-                if compliance_percentage is not None or checks_not_complied is not None:
+                # Update all fields if any are provided
+                if any([
+                    compliance_percentage is not None,
+                    checks_not_complied is not None,
+                    continuous_exceedances != 0,
+                    discrete_exceedances != 0,
+                    anomalies != 0,
+                    anomalies_percentage != 0.0
+                ]):
                     update_parts = []
                     update_values = []
                     
@@ -110,6 +131,20 @@ class DatabaseManager:
                     if checks_not_complied is not None:
                         update_parts.append("checks_not_complied = %s")
                         update_values.append(checks_not_complied)
+                    
+                    # Always update exceedances and anomalies (even if 0)
+                    update_parts.append("continuous_exceedances = %s")
+                    update_values.append(continuous_exceedances)
+                    
+                    update_parts.append("discrete_exceedances = %s")
+                    update_values.append(discrete_exceedances)
+                    
+                    update_parts.append("anomalies = %s")
+                    update_values.append(anomalies)
+                    
+                    update_parts.append("anomalies_percentage = %s")
+                    update_values.append(anomalies_percentage)
+                    
                     
                     if update_parts:
                         update_query = f"""
@@ -126,13 +161,20 @@ class DatabaseManager:
                         if checks_not_complied is not None:
                             print(f"  ✓ Updated checks not complied: {checks_not_complied}")
                 
+                        print(f"  ✓ Updated continuous exceedances: {continuous_exceedances}")
+                        print(f"  ✓ Updated discrete exceedances: {discrete_exceedances}")
+                        print(f"  ✓ Updated anomalies: {anomalies}")
+                        print(f"  ✓ Updated anomalies percentage: {anomalies_percentage:.2f}%")
+                    
                 return flight_id
             else:
                 # Create new flight record
                 insert_query = """
                     INSERT INTO flights 
-                    (flight_date, aircraft_id, PIC, SIC, FE, flight_type_id, sortie, compliance_percentage, checks_not_complied)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    (flight_date, aircraft_id, PIC, SIC, FE, flight_type_id, sortie, 
+                     compliance_percentage, checks_not_complied,
+                     continuous_exceedances, discrete_exceedances, anomalies, anomalies_percentage)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """
                 
                 # DEBUG: Show exactly what we're about to insert
@@ -144,8 +186,16 @@ class DatabaseManager:
                 print(f"     sortie={sortie}")
                 print(f"     compliance_percentage={compliance_percentage} (type: {type(compliance_percentage).__name__})")
                 print(f"     checks_not_complied={checks_not_complied} (type: {type(checks_not_complied).__name__})")
+                print(f"     continuous_exceedances={continuous_exceedances} (type: {type(continuous_exceedances).__name__})")
+                print(f"     discrete_exceedances={discrete_exceedances} (type: {type(discrete_exceedances).__name__})")
+                print(f"     anomalies={anomalies} (type: {type(anomalies).__name__})")
+                print(f"     anomalies_percentage={anomalies_percentage} (type: {type(anomalies_percentage).__name__})")
                 
-                cursor.execute(insert_query, (flight_date, aircraft_id, pic, sic, fe, 1, sortie, compliance_percentage, checks_not_complied))
+                cursor.execute(insert_query, (
+                    flight_date, aircraft_id, pic, sic, fe, 1, sortie, 
+                    compliance_percentage, checks_not_complied,
+                    continuous_exceedances, discrete_exceedances, anomalies, anomalies_percentage
+                ))
                 flight_id = cursor.lastrowid
                 connection.commit()
                 print(f"  ✓ Created new flight ID: {flight_id}")
@@ -157,6 +207,10 @@ class DatabaseManager:
                     print(f"  ✓ Set checks not complied: {checks_not_complied}")
                 else:
                     print(f"  ⚠️ checks_not_complied was None, saved as NULL")
+                print(f"  ✓ Set continuous exceedances: {continuous_exceedances}")
+                print(f"  ✓ Set discrete exceedances: {discrete_exceedances}")
+                print(f"  ✓ Set anomalies: {anomalies}")
+                print(f"  ✓ Set anomalies percentage: {anomalies_percentage:.2f}%")
                 return flight_id
                 
         except Error as e:
@@ -905,6 +959,38 @@ class FlightAnalyzer:
                 print(f"  ⚠️ Checks not complied is None")
             
             # Get or create flight record (now with compliance data)
+            
+            # Calculate summary statistics for database
+            total_anomalies = sum(anomalies_summary.values())
+            
+            # Calculate continuous vs discrete exceedances
+            continuous_exc_count = 0
+            discrete_exc_count = 0
+            if exceedances_list:
+                for exc in exceedances_list:
+                    param = exc.get("parameter", "")
+                    count = exc.get("count", 0)
+                    if param in CONTINUOUS_PARAMS:
+                        continuous_exc_count += count
+                    else:
+                        discrete_exc_count += count
+            
+            # Calculate anomalies percentage
+            # Note: Requires total_data_points from flight analysis
+            # For now, set to 0.0 if not available
+            total_data_points = flight_metadata.get("total_data_points", 0)
+            if total_data_points > 0 and total_anomalies > 0:
+                anomalies_pct = round((total_anomalies / total_data_points) * 100, 2)
+            else:
+                anomalies_pct = 0.0
+            
+            print(f"  📊 Calculated statistics:")
+            print(f"     Total anomalies: {total_anomalies}")
+            print(f"     Continuous exceedances: {continuous_exc_count}")
+            print(f"     Discrete exceedances: {discrete_exc_count}")
+            print(f"     Anomalies percentage: {anomalies_pct:.2f}%")
+            
+            # Get or create flight record with all fields
             flight_id = self.db_manager.get_or_create_flight(
                 flight_date=flight_date,
                 pic=pic,
@@ -913,7 +999,11 @@ class FlightAnalyzer:
                 sortie=sortie,
                 aircraft_id=aircraft_id,
                 compliance_percentage=compliance_percentage,  # NEW: Pass compliance data
-                checks_not_complied=checks_not_complied  # NEW: Pass checks not complied count
+                checks_not_complied=checks_not_complied,  # NEW: Pass checks not complied count
+                continuous_exceedances=continuous_exc_count,  # NEW: Pass continuous exceedances
+                discrete_exceedances=discrete_exc_count,  # NEW: Pass discrete exceedances
+                anomalies=total_anomalies,  # NEW: Pass total anomalies
+                anomalies_percentage=anomalies_pct  # NEW: Pass anomalies percentage
             )
             
             if not flight_id:

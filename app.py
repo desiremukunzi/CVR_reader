@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from flask import Flask, render_template, request, jsonify, send_from_directory, url_for, session
+from flask import Flask, render_template, request, jsonify, send_from_directory, url_for, session, send_file
 from werkzeug.utils import secure_filename
 from rapidfuzz import fuzz
 from openpyxl import load_workbook
@@ -11,7 +11,9 @@ import re
 from faster_whisper import WhisperModel
 import tempfile
 import shutil
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
+from dateutil.relativedelta import relativedelta  # For dashboard date ranges
+import mysql.connector  # For dashboard database queries
 
 # Try to import enhanced FlightAnalyzer with database support
 # Falls back to regular FlightAnalyzer if database version not available
@@ -126,6 +128,102 @@ else:
 
 # Store the latest anomaly report (for backward compatibility)
 latest_anomaly_report = None
+
+
+# ============================================================================
+# DASHBOARD DATABASE CONNECTION AND UTILITIES
+# ============================================================================
+
+def get_db_connection():
+    """
+    Create database connection for dashboard queries.
+    UPDATE these credentials to match your database!
+    """
+    return mysql.connector.connect(
+        host='localhost',        # UPDATE: Your database host
+        user='root',             # UPDATE: Your database username
+        password='',             # UPDATE: Your database password
+        database='flight_data'      # UPDATE: Your database name
+    )
+
+
+def get_date_range(filter_type, custom_start=None, custom_end=None):
+    """
+    Calculate start and end dates based on filter type.
+    Returns tuple: (start_date, end_date, prev_start_date, prev_end_date)
+    """
+    today = datetime.now().date()
+    
+    if filter_type == 'today':
+        start = end = today
+        prev_start = prev_end = today - timedelta(days=1)
+    elif filter_type == 'yesterday':
+        start = end = today - timedelta(days=1)
+        prev_start = prev_end = today - timedelta(days=2)
+    elif filter_type == 'last_7_days':
+        end = today
+        start = today - timedelta(days=6)
+        prev_end = start - timedelta(days=1)
+        prev_start = prev_end - timedelta(days=6)
+    elif filter_type == 'last_30_days':
+        end = today
+        start = today - timedelta(days=29)
+        prev_end = start - timedelta(days=1)
+        prev_start = prev_end - timedelta(days=29)
+    elif filter_type == 'this_month':
+        start = today.replace(day=1)
+        end = today
+        prev_end = start - timedelta(days=1)
+        prev_start = prev_end.replace(day=1)
+    elif filter_type == 'last_month':
+        first_of_this_month = today.replace(day=1)
+        end = first_of_this_month - timedelta(days=1)
+        start = end.replace(day=1)
+        prev_end = start - timedelta(days=1)
+        prev_start = prev_end.replace(day=1)
+    elif filter_type == 'this_quarter':
+        quarter = (today.month - 1) // 3
+        start = datetime(today.year, quarter * 3 + 1, 1).date()
+        end = today
+        prev_quarter_start = start - relativedelta(months=3)
+        prev_end = start - timedelta(days=1)
+        prev_start = prev_quarter_start
+    elif filter_type == 'last_quarter':
+        quarter = (today.month - 1) // 3
+        current_quarter_start = datetime(today.year, quarter * 3 + 1, 1).date()
+        start = current_quarter_start - relativedelta(months=3)
+        end = current_quarter_start - timedelta(days=1)
+        prev_start = start - relativedelta(months=3)
+        prev_end = start - timedelta(days=1)
+    elif filter_type == 'this_year':
+        start = datetime(today.year, 1, 1).date()
+        end = today
+        prev_start = datetime(today.year - 1, 1, 1).date()
+        prev_end = prev_start + (end - start)
+    elif filter_type == 'last_year':
+        start = datetime(today.year - 1, 1, 1).date()
+        end = datetime(today.year - 1, 12, 31).date()
+        prev_start = datetime(today.year - 2, 1, 1).date()
+        prev_end = datetime(today.year - 2, 12, 31).date()
+    elif filter_type == 'custom' and custom_start and custom_end:
+        start = datetime.strptime(custom_start, '%Y-%m-%d').date()
+        end = datetime.strptime(custom_end, '%Y-%m-%d').date()
+        days_diff = (end - start).days
+        prev_end = start - timedelta(days=1)
+        prev_start = prev_end - timedelta(days=days_diff)
+    else:
+        # Default to this quarter
+        return get_date_range('this_quarter')
+    
+    return (start, end, prev_start, prev_end)
+
+
+def calculate_percentage_change(current, previous):
+    """Calculate percentage change between two values"""
+    if previous == 0:
+        return 100 if current > 0 else 0
+    return round(((current - previous) / previous) * 100, 1)
+
 
 
 def preprocess_audio(input_path):
@@ -1428,6 +1526,270 @@ def index():
     return render_template("index.html")
 
 
+
+# ============================================================================
+# NEW: DASHBOARD ROUTES
+# ============================================================================
+
+@app.route('/dashboard')
+def dashboard():
+    """
+    NEW ROUTE: Main Dashboard with KPIs and visualizations.
+    Displays flight safety metrics filtered by date range.
+    """
+    # Get filter parameters from request
+    date_range_type = request.args.get('date_range', 'this_quarter')
+    compare = request.args.get('compare', 'false') == 'true'
+    custom_start = request.args.get('custom_start')
+    custom_end = request.args.get('custom_end')
+    
+    # Calculate date ranges
+    start_date, end_date, prev_start_date, prev_end_date = get_date_range(
+        date_range_type, custom_start, custom_end
+    )
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    # ===== FETCH KPIs =====
+    kpis = {}
+    
+    # 1. Total Flights
+    cursor.execute("""
+        SELECT COUNT(*) as total_flights
+        FROM flights
+        WHERE flight_date BETWEEN %s AND %s
+    """, (start_date, end_date))
+    kpis['total_flights'] = cursor.fetchone()['total_flights']
+    
+    if compare:
+        cursor.execute("""
+            SELECT COUNT(*) as prev_total_flights
+            FROM flights
+            WHERE flight_date BETWEEN %s AND %s
+        """, (prev_start_date, prev_end_date))
+        prev_flights = cursor.fetchone()['prev_total_flights']
+        kpis['flights_change'] = calculate_percentage_change(kpis['total_flights'], prev_flights)
+    
+    # 2. Total Exceedances
+    cursor.execute("""
+        SELECT SUM(continuous_exceedances + discrete_exceedances) as total_exceedances
+        FROM flights
+        WHERE flight_date BETWEEN %s AND %s
+    """, (start_date, end_date))
+    kpis['total_exceedances'] = cursor.fetchone()['total_exceedances'] or 0
+    
+    if compare:
+        cursor.execute("""
+            SELECT SUM(continuous_exceedances + discrete_exceedances) as prev_total_exceedances
+            FROM flights
+            WHERE flight_date BETWEEN %s AND %s
+        """, (prev_start_date, prev_end_date))
+        prev_exc = cursor.fetchone()['prev_total_exceedances'] or 0
+        kpis['exceedances_change'] = calculate_percentage_change(kpis['total_exceedances'], prev_exc)
+    
+    # 3. Total Anomalies
+    cursor.execute("""
+        SELECT SUM(anomalies) as total_anomalies
+        FROM flights
+        WHERE flight_date BETWEEN %s AND %s
+    """, (start_date, end_date))
+    kpis['total_anomalies'] = cursor.fetchone()['total_anomalies'] or 0
+    
+    if compare:
+        cursor.execute("""
+            SELECT SUM(anomalies) as prev_total_anomalies
+            FROM flights
+            WHERE flight_date BETWEEN %s AND %s
+        """, (prev_start_date, prev_end_date))
+        prev_anom = cursor.fetchone()['prev_total_anomalies'] or 0
+        kpis['anomalies_change'] = calculate_percentage_change(kpis['total_anomalies'], prev_anom)
+    
+    # 4. Average Compliance Rate
+    cursor.execute("""
+        SELECT AVG(compliance_percentage) as avg_compliance
+        FROM flights
+        WHERE flight_date BETWEEN %s AND %s
+        AND compliance_percentage IS NOT NULL
+    """, (start_date, end_date))
+    result = cursor.fetchone()
+    kpis['avg_compliance'] = round(result['avg_compliance'], 1) if result['avg_compliance'] else 0
+    
+    if compare:
+        cursor.execute("""
+            SELECT AVG(compliance_percentage) as prev_avg_compliance
+            FROM flights
+            WHERE flight_date BETWEEN %s AND %s
+            AND compliance_percentage IS NOT NULL
+        """, (prev_start_date, prev_end_date))
+        prev_result = cursor.fetchone()
+        prev_comp = round(prev_result['prev_avg_compliance'], 1) if prev_result['prev_avg_compliance'] else 0
+        kpis['compliance_change'] = calculate_percentage_change(kpis['avg_compliance'], prev_comp)
+    
+    # ===== FETCH RECENT FLIGHTS =====
+    cursor.execute("""
+        SELECT 
+            f.id,
+            f.flight_date,
+            f.PIC,
+            f.SIC,
+            a.call_sign as aircraft_name,
+            f.sortie,
+            f.compliance_percentage,
+            f.checks_not_complied,
+            (f.continuous_exceedances + f.discrete_exceedances) as exceedance_count,
+            f.anomalies as anomaly_count,
+            CASE 
+                WHEN (f.continuous_exceedances + f.discrete_exceedances) = 0 
+                     AND f.anomalies = 0 
+                     AND (f.compliance_percentage >= 95 OR f.compliance_percentage IS NULL) 
+                THEN 'green'
+                WHEN (f.continuous_exceedances + f.discrete_exceedances) > 0 
+                     OR f.anomalies > 3 
+                     OR (f.compliance_percentage < 90 AND f.compliance_percentage IS NOT NULL) 
+                THEN 'red'
+                ELSE 'yellow'
+            END as status_color
+        FROM flights f
+        LEFT JOIN aircrafts a ON f.aircraft_id = a.id
+        WHERE f.flight_date BETWEEN %s AND %s
+        ORDER BY f.flight_date DESC, f.sortie DESC
+        LIMIT 20
+    """, (start_date, end_date))
+    recent_flights = cursor.fetchall()
+    
+    # ===== FETCH TREND DATA =====
+    cursor.execute("""
+        SELECT 
+            DATE_FORMAT(f.flight_date, '%%Y-%%m') as month,
+            COUNT(f.id) as total_flights,
+            AVG(COALESCE(f.compliance_percentage, 0)) as avg_compliance,
+            SUM(CASE WHEN (f.continuous_exceedances + f.discrete_exceedances) > 0 THEN 1 ELSE 0 END) as flights_with_exceedances
+        FROM flights f
+        WHERE f.flight_date BETWEEN %s AND %s
+        GROUP BY DATE_FORMAT(f.flight_date, '%%Y-%%m')
+        ORDER BY month
+    """, (start_date, end_date))
+    trend_data = cursor.fetchall()
+    
+    # Prepare trend data for charts
+    months = [row['month'] for row in trend_data]
+    total_flights_trend = [row['total_flights'] for row in trend_data]
+    avg_compliance_trend = [round(row['avg_compliance'], 1) for row in trend_data]
+    flights_with_issues = [row['flights_with_exceedances'] for row in trend_data]
+    
+    cursor.close()
+    conn.close()
+    
+    return render_template('dashboard.html',
+        kpis=kpis,
+        recent_flights=recent_flights,
+        start_date=start_date,
+        end_date=end_date,
+        prev_start_date=prev_start_date,
+        prev_end_date=prev_end_date,
+        compare=compare,
+        date_range_type=date_range_type,
+        months=months,
+        total_flights_trend=total_flights_trend,
+        avg_compliance_trend=avg_compliance_trend,
+        flights_with_issues=flights_with_issues
+    )
+
+
+@app.route('/flights_list')
+def flights_list():
+    """
+    NEW ROUTE: Full flight list with pagination and export capabilities.
+    Allows browsing all flights with filtering and data export.
+    """
+    date_range_type = request.args.get('date_range', 'this_quarter')
+    custom_start = request.args.get('custom_start')
+    custom_end = request.args.get('custom_end')
+    page = int(request.args.get('page', 1))
+    page_size = int(request.args.get('page_size', 50))
+    export_format = request.args.get('export')
+    
+    start_date, end_date, _, _ = get_date_range(date_range_type, custom_start, custom_end)
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    # Count total flights for pagination
+    cursor.execute("""
+        SELECT COUNT(*) as total_count
+        FROM flights
+        WHERE flight_date BETWEEN %s AND %s
+    """, (start_date, end_date))
+    total_count = cursor.fetchone()['total_count']
+    total_pages = (total_count + page_size - 1) // page_size
+    
+    # Fetch flights for current page
+    offset = (page - 1) * page_size
+    cursor.execute("""
+        SELECT 
+            f.id,
+            f.flight_date,
+            f.PIC,
+            f.SIC,
+            f.FE,
+            a.call_sign as aircraft_name,
+            f.sortie,
+            f.compliance_percentage,
+            f.checks_not_complied,
+            (f.continuous_exceedances + f.discrete_exceedances) as exceedance_count,
+            f.anomalies as anomaly_count,
+            CASE 
+                WHEN (f.continuous_exceedances + f.discrete_exceedances) = 0 
+                     AND f.anomalies = 0 
+                     AND (f.compliance_percentage >= 95 OR f.compliance_percentage IS NULL) 
+                THEN 'green'
+                WHEN (f.continuous_exceedances + f.discrete_exceedances) > 0 
+                     OR f.anomalies > 3 
+                     OR (f.compliance_percentage < 90 AND f.compliance_percentage IS NOT NULL) 
+                THEN 'red'
+                ELSE 'yellow'
+            END as status_color
+        FROM flights f
+        LEFT JOIN aircrafts a ON f.aircraft_id = a.id
+        WHERE f.flight_date BETWEEN %s AND %s
+        ORDER BY f.flight_date DESC, f.sortie DESC
+        LIMIT %s OFFSET %s
+    """, (start_date, end_date, page_size, offset))
+    flights = cursor.fetchall()
+    
+    cursor.close()
+    conn.close()
+    
+    # Handle export requests
+    if export_format in ['excel', 'csv']:
+        df = pd.DataFrame(flights)
+        
+        if export_format == 'excel':
+            filename = f'flights_{start_date}_to_{end_date}.xlsx'
+            filepath = os.path.join(tempfile.gettempdir(), filename)
+            df.to_excel(filepath, index=False, engine='openpyxl')
+            return send_file(filepath, as_attachment=True, download_name=filename)
+        
+        elif export_format == 'csv':
+            filename = f'flights_{start_date}_to_{end_date}.csv'
+            filepath = os.path.join(tempfile.gettempdir(), filename)
+            df.to_csv(filepath, index=False)
+            return send_file(filepath, as_attachment=True, download_name=filename)
+    
+    # Render template for normal page view
+    return render_template('flights_list.html',
+        flights=flights,
+        start_date=start_date,
+        end_date=end_date,
+        page=page,
+        total_pages=total_pages,
+        total_count=total_count,
+        page_size=page_size,
+        date_range_type=date_range_type
+    )
+
+
 if __name__ == "__main__":
     print("\n" + "="*60)
     print("🚁 MI-17 Flight Analysis System Starting...")
@@ -1436,6 +1798,8 @@ if __name__ == "__main__":
     print(f"Upload folder: {UPLOAD_FOLDER}")
     print(f"Flight data folder: {FLIGHT_DATA_FOLDER}")
     print(f"Historical flights loaded: {flight_analyzer.historical_data['flight_id'].nunique() if hasattr(flight_analyzer, 'historical_data') and not flight_analyzer.historical_data.empty else 0}")
+    print(f"NEW: Dashboard available at /dashboard")
+    print(f"NEW: Flights list available at /flights_list")
     print("="*60 + "\n")
     
     app.run(debug=True, host='0.0.0.0', port=5000)
