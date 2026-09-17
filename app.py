@@ -1,4 +1,5 @@
 import os
+import logging
 import pandas as pd
 from flask import Flask, render_template, request, jsonify, send_from_directory, url_for, session, send_file
 from werkzeug.utils import secure_filename
@@ -14,6 +15,20 @@ import shutil
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta  # For dashboard date ranges
 import mysql.connector  # For dashboard database queries
+
+# ============================================================================
+# LOGGING SETUP
+# Configured here, before flight_analyzer_with_db is imported, so its
+# module-level logger('fdaps.database') picks up this file handler and every
+# database error (even ones caught and swallowed as a bool False) gets
+# written to app_errors.log with a full traceback.
+# ============================================================================
+logging.basicConfig(
+    filename='app_errors.log',
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(name)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # Try to import enhanced FlightAnalyzer with database support
 # Falls back to regular FlightAnalyzer if database version not available
@@ -1108,12 +1123,18 @@ def save_to_database():
                 'flight_id': flight_metadata.get('flight_id')
             })
         else:
-            return jsonify({'success': False, 'error': 'Database save operation returned False'}), 500
+            # NEW: pull the real reason from FlightAnalyzer instead of a generic message
+            detail = getattr(flight_analyzer, 'last_save_error', None) or 'Unknown error (check app_errors.log)'
+            logger.error(f"save_to_database returned False. Detail: {detail}")
+            logger.error(f"Flight metadata: {flight_metadata}")
+            return jsonify({'success': False, 'error': detail}), 500
             
     except Exception as e:
         print(f"❌ Error in save_to_database: {e}")
         import traceback
         traceback.print_exc()
+        logger.error(f"Exception in save_to_database route: {e}")
+        logger.error(traceback.format_exc())
         return jsonify({'success': False, 'error': str(e)}), 500
 
 

@@ -3,6 +3,8 @@ import numpy as np
 from sklearn.ensemble import IsolationForest
 import joblib
 import os
+import logging
+import traceback
 from datetime import datetime, date
 import mysql.connector
 from mysql.connector import Error, pooling
@@ -10,6 +12,10 @@ from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
+
+# Module logger. Configuration (file handler, level) is set once in app.py;
+# this just picks it up so every error here lands in the same log file.
+logger = logging.getLogger('fdaps.database')
 
 # Define the parameters for anomaly detection
 PARAMETERS_TO_ANALYZE = ['Fcp', 'Xcpl', 'Pedals', 'X_lat', 'X_long', 'PITCH', 'NZ', 'T1', 'T2']
@@ -54,6 +60,7 @@ class DatabaseManager:
     
     def __init__(self):
         self.connection_pool = None
+        self.last_error = None  # Holds the real exception message from the last failed operation
         self.initialize_pool()
     
     def initialize_pool(self):
@@ -216,7 +223,9 @@ class DatabaseManager:
         except Error as e:
             if connection:
                 connection.rollback()
+            self.last_error = f"get_or_create_flight: {e}"
             print(f"  ✗ Database error: {e}")
+            logger.error(f"get_or_create_flight failed: {e}\n{traceback.format_exc()}")
             return None
         finally:
             if cursor:
@@ -244,7 +253,9 @@ class DatabaseManager:
         except Error as e:
             if connection:
                 connection.rollback()
+            self.last_error = f"delete_flight_anomalies: {e}"
             print(f"  ✗ Error deleting anomalies: {e}")
+            logger.error(f"delete_flight_anomalies failed: {e}\n{traceback.format_exc()}")
         finally:
             if cursor:
                 cursor.close()
@@ -295,7 +306,9 @@ class DatabaseManager:
         except Error as e:
             if connection:
                 connection.rollback()
+            self.last_error = f"save_anomalies: {e}"
             print(f"  ✗ Error saving anomalies: {e}")
+            logger.error(f"save_anomalies failed: {e}\n{traceback.format_exc()}")
             return False
         finally:
             if cursor:
@@ -323,7 +336,9 @@ class DatabaseManager:
         except Error as e:
             if connection:
                 connection.rollback()
+            self.last_error = f"delete_flight_exceedances: {e}"
             print(f"  ✗ Error deleting exceedances: {e}")
+            logger.error(f"delete_flight_exceedances failed: {e}\n{traceback.format_exc()}")
         finally:
             if cursor:
                 cursor.close()
@@ -371,7 +386,9 @@ class DatabaseManager:
         except Error as e:
             if connection:
                 connection.rollback()
+            self.last_error = f"save_exceedances: {e}"
             print(f"  ✗ Error saving exceedances: {e}")
+            logger.error(f"save_exceedances failed: {e}\n{traceback.format_exc()}")
             return False
         finally:
             if cursor:
@@ -427,7 +444,9 @@ class DatabaseManager:
         except Error as e:
             if connection:
                 connection.rollback()
+            self.last_error = f"save_missed_checks: {e}"
             print(f"  ✗ Error saving missed checks: {e}")
+            logger.error(f"save_missed_checks failed: {e}\n{traceback.format_exc()}")
             return False
         finally:
             if cursor:
@@ -454,6 +473,7 @@ class FlightAnalyzer:
         self.trained_models = {}
         self.historical_data = pd.DataFrame()
         self.flight_counter = 0
+        self.last_save_error = None  # Holds the real reason the last _save_to_database call failed
         
         # Database integration
         self.enable_database = enable_database
@@ -943,7 +963,12 @@ class FlightAnalyzer:
             
             # Validate
             if not all([flight_date, pic, sic, fe]):
-                print("  ✗ Error: Missing required flight metadata")
+                missing = [name for name, val in [
+                    ('flight_date', flight_date), ('pic', pic), ('sic', sic), ('fe', fe)
+                ] if not val]
+                self.last_save_error = f"Missing required flight metadata: {', '.join(missing)}"
+                print(f"  ✗ Error: {self.last_save_error}")
+                logger.error(self.last_save_error)
                 return False
             
             print(f"  Flight Date: {flight_date}")
@@ -1007,7 +1032,10 @@ class FlightAnalyzer:
             )
             
             if not flight_id:
-                print("  ✗ Error: Could not get/create flight record")
+                detail = self.db_manager.last_error or "Unknown error (no exception captured)"
+                self.last_save_error = f"Could not create/update flight record: {detail}"
+                print(f"  ✗ Error: {self.last_save_error}")
+                logger.error(self.last_save_error)
                 return False
             
             # Delete existing anomalies, exceedances, and missed checks
@@ -1068,9 +1096,9 @@ class FlightAnalyzer:
                 return False
                 
         except Exception as e:
+            self.last_save_error = str(e)
             print(f"\n  ✗ Database error: {e}")
-            import traceback
-            traceback.print_exc()
+            logger.error(f"_save_to_database failed: {e}\n{traceback.format_exc()}")
             return False
     
     def _extract_anomalies_from_dataframe(self, flight_df):
