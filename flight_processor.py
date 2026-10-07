@@ -1,6 +1,11 @@
 """
 Flight Data Analysis and Processing System (FDAPS)
 CORRECTED VERSION - Matches actual database schema
+
+UPDATED: aircraft_id is now resolved dynamically from the call sign encoded
+in the filename (the segment before the first underscore), instead of a
+hardcoded AIRCRAFT_ID constant. See get_aircraft_id_by_call_sign() and
+FlightFileProcessor.process_file().
 """
 
 import os
@@ -40,7 +45,11 @@ load_dotenv()
 FOLDER_PATH = r"A:\Onedrive\RAF-61504\October"
 START_DATE = date(2025, 1, 1)
 END_DATE = date(2025, 12, 31)
-AIRCRAFT_ID = 2
+
+# REMOVED: hardcoded AIRCRAFT_ID constant. Every flight now gets its
+# aircraft_id looked up from the `aircrafts` table by the call sign encoded
+# in the filename (e.g. "RAF-66501_19-9-26_1" -> call sign "RAF-66501").
+# See DatabaseManager.get_aircraft_id_by_call_sign().
 
 # Exceedance parameters mapping
 EXCEEDANCE_PARAMS = {
@@ -132,6 +141,44 @@ class DatabaseManager:
         except Error as e:
             logger.error(f"Error getting connection from pool: {e}")
             raise
+
+    def get_aircraft_id_by_call_sign(self, call_sign: str) -> Optional[int]:
+        """
+        NEW: Look up the real aircraft_id from the aircrafts table by call_sign.
+        Returns None if the call sign doesn't exist in the table, so the
+        caller can skip the file with a clear warning instead of silently
+        saving a wrong aircraft_id.
+
+        NOTE: assumes the table is named `aircrafts` with columns `id` and
+        `call_sign`, matching the naming convention used by every other
+        table in this schema (flights, exceedances, crews, ...). If your
+        table is actually named `aircraft` (singular), change the query below.
+        """
+        connection = None
+        cursor = None
+        try:
+            connection = self.get_connection()
+            cursor = connection.cursor()
+            cursor.execute(
+                "SELECT id FROM aircrafts WHERE call_sign = %s",
+                (call_sign,)
+            )
+            result = cursor.fetchone()
+            if result:
+                return result[0]
+            logger.error(
+                f"No row in aircrafts table with call_sign = '{call_sign}'. "
+                f"Add it there first, or check for a typo in the filename."
+            )
+            return None
+        except Error as e:
+            logger.error(f"Error looking up aircraft_id for call_sign '{call_sign}': {e}")
+            return None
+        finally:
+            if cursor:
+                cursor.close()
+            if connection:
+                connection.close()
     
     def insert_or_update_flight(self, flight_data: Dict) -> Optional[int]:
         """
@@ -169,6 +216,7 @@ class DatabaseManager:
                         discrete_exceedances = %s,
                         anomalies = %s,
                         anomalies_percentage = %s,
+                        aircraft_id = %s,
                         updated_at = CURRENT_TIMESTAMP
                     WHERE id = %s
                 """
@@ -179,6 +227,7 @@ class DatabaseManager:
                     flight_data.get('discrete_exceedances', 0),
                     flight_data.get('anomalies', 0),
                     flight_data.get('anomalies_percentage', 0.0),
+                    flight_data['aircraft_id'],
                     flight_id
                 ))
                 logger.info(f"Updated flight ID {flight_id}")
@@ -417,7 +466,11 @@ class FlightDataExtractor:
             logger.debug(f"Error getting value from {cell_ref}: {e}")
             return 0 if value_type in ['int', 'float'] else None
     
-    def extract_flight_info(self, workbook, flight_date: date, sortie: int) -> Optional[Dict]:
+    def extract_flight_info(self, workbook, flight_date: date, sortie: int, aircraft_id: int) -> Optional[Dict]:
+        """
+        UPDATED: aircraft_id is now passed in (resolved from the filename's
+        call sign) instead of read from a hardcoded module-level constant.
+        """
         try:
             if 'Summary' not in workbook.sheetnames:
                 return None
@@ -443,7 +496,7 @@ class FlightDataExtractor:
             
             flight_data = {
                 'flight_date': flight_date,
-                'aircraft_id': AIRCRAFT_ID,
+                'aircraft_id': aircraft_id,
                 'PIC': pic,
                 'SIC': sic,
                 'FE': fe,
@@ -604,12 +657,25 @@ class FlightFileProcessor:
     def __init__(self, db_manager: DatabaseManager):
         self.db_manager = db_manager
         self.extractor = FlightDataExtractor()
+        # NEW: caches call_sign -> aircraft_id lookups so each distinct
+        # aircraft only hits the database once per run, not once per file.
+        self.aircraft_id_cache: Dict[str, int] = {}
     
-    def parse_filename(self, filename: str) -> Optional[Tuple[date, int]]:
+    def parse_filename(self, filename: str) -> Optional[Tuple[str, date, int]]:
+        """
+        UPDATED: now returns (call_sign, flight_date, sortie) instead of
+        just (flight_date, sortie). call_sign is parts[0], e.g.
+        "RAF-66501_19-9-26_1" -> call_sign "RAF-66501". Previously this
+        segment was parsed and then silently discarded.
+        """
         try:
             name_without_ext = filename.rsplit('.', 1)[0]
             parts = name_without_ext.split('_')
             if len(parts) < 3:
+                return None
+            
+            call_sign = parts[0].strip()
+            if not call_sign:
                 return None
             
             date_str = parts[1]
@@ -623,7 +689,7 @@ class FlightFileProcessor:
             
             flight_date = date(year, month, day)
             sortie = int(parts[2])
-            return (flight_date, sortie)
+            return (call_sign, flight_date, sortie)
         except (ValueError, IndexError) as e:
             logger.debug(f"Error parsing filename {filename}: {e}")
             return None
@@ -637,11 +703,25 @@ class FlightFileProcessor:
                 logger.warning(f"Could not parse filename: {file_path.name}")
                 return False
             
-            flight_date, sortie = parsed
+            call_sign, flight_date, sortie = parsed
             
             if not (START_DATE <= flight_date <= END_DATE):
                 logger.debug(f"File date {flight_date} outside range")
                 return False
+            
+            # NEW: resolve the real aircraft_id from the call sign, instead
+            # of a hardcoded constant. Cached so repeat call signs in the
+            # same run don't re-query the database.
+            aircraft_id = self.aircraft_id_cache.get(call_sign)
+            if aircraft_id is None:
+                aircraft_id = self.db_manager.get_aircraft_id_by_call_sign(call_sign)
+                if aircraft_id is None:
+                    logger.error(
+                        f"Skipping {file_path.name}: call sign '{call_sign}' "
+                        f"not found in aircrafts table."
+                    )
+                    return False
+                self.aircraft_id_cache[call_sign] = aircraft_id
             
             try:
                 workbook = load_workbook(file_path, read_only=True, data_only=True)
@@ -649,7 +729,7 @@ class FlightFileProcessor:
                 logger.error(f"Error loading workbook: {e}")
                 return False
             
-            flight_data = self.extractor.extract_flight_info(workbook, flight_date, sortie)
+            flight_data = self.extractor.extract_flight_info(workbook, flight_date, sortie, aircraft_id)
             if not flight_data:
                 workbook.close()
                 return False

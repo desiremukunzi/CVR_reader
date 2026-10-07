@@ -162,6 +162,36 @@ def get_db_connection():
     )
 
 
+def get_aircraft_id_by_call_sign(call_sign):
+    """
+    NEW: Resolve the real aircraft_id from the aircrafts table by call_sign,
+    instead of the hardcoded aircraft_id=3 default used throughout this file.
+    Returns None if call_sign is missing/UNK or not found in the table, so
+    callers can fall back to a literal default only as a last resort.
+    """
+    if not call_sign or call_sign == 'UNK':
+        return None
+    connection = None
+    cursor = None
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT id FROM aircrafts WHERE call_sign = %s", (call_sign,))
+        result = cursor.fetchone()
+        if result:
+            return result[0]
+        print(f"  ⚠️ No aircraft found in aircrafts table with call_sign='{call_sign}'")
+        return None
+    except Exception as e:
+        print(f"  ⚠️ Error looking up aircraft_id for call_sign '{call_sign}': {e}")
+        return None
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
+
 def get_date_range(filter_type, custom_start=None, custom_end=None):
     """
     Calculate start and end dates based on filter type.
@@ -504,6 +534,16 @@ def extract_flight_metadata_from_excel(excel_path, excel_filename):
         if len(parts) >= 3:
             # Extract call sign
             metadata['call_sign'] = parts[0]
+
+            # NEW: resolve the real aircraft_id from call sign instead of
+            # leaving the hardcoded default of 3 above.
+            resolved_aircraft_id = get_aircraft_id_by_call_sign(metadata['call_sign'])
+            if resolved_aircraft_id is not None:
+                metadata['aircraft_id'] = resolved_aircraft_id
+                print(f"  Extracted call sign: {metadata['call_sign']} -> aircraft_id {resolved_aircraft_id}")
+            else:
+                print(f"  ⚠️ Warning: call sign '{metadata['call_sign']}' not found in aircrafts table, "
+                      f"keeping default aircraft_id={metadata['aircraft_id']}")
             
             # Extract date: DD-MM-YY
             date_str = parts[1]
@@ -1096,7 +1136,9 @@ def save_to_database():
         
         # Ensure required fields have defaults
         flight_metadata.setdefault('sortie', 1)
-        flight_metadata.setdefault('aircraft_id', 3)
+        if not flight_metadata.get('aircraft_id'):
+            fallback_id = get_aircraft_id_by_call_sign(flight_metadata.get('call_sign'))
+            flight_metadata['aircraft_id'] = fallback_id if fallback_id is not None else 3
         
         # Save to database using FlightAnalyzer method (now includes CVR results and exceedances)
         success = flight_analyzer._save_to_database(
@@ -1199,7 +1241,12 @@ def analyze_flight_anomalies():
         if session_metadata:
             print("  Merging with session metadata (preserving manual entries)...")
             # Preserve manual entries from session, but use Excel data as base
-            for key in ['pic', 'sic', 'fe', 'sortie', 'aircraft_id', 'flight_date']:
+            # NOTE: 'aircraft_id' is deliberately NOT in this list. It is
+            # always re-derived from the filename's call sign by the fresh
+            # extraction above. A stale session value (e.g. a previous
+            # flight's aircraft_id=3) is "valid" by the check below and
+            # would silently clobber the correct value.
+            for key in ['pic', 'sic', 'fe', 'sortie', 'flight_date']:
                 if key in session_metadata and session_metadata[key] not in ['UNK', None, '']:
                     # Only override if session has valid data
                     if key == 'flight_date':
@@ -1208,6 +1255,12 @@ def analyze_flight_anomalies():
                             flight_metadata[key] = session_metadata[key]
                     else:
                         flight_metadata[key] = session_metadata[key]
+
+            # Carry over aircraft_id ONLY when the user explicitly set it via the form.
+            if session_metadata.get('aircraft_id_manual') and session_metadata.get('aircraft_id'):
+                flight_metadata['aircraft_id'] = session_metadata['aircraft_id']
+                flight_metadata['aircraft_id_manual'] = True
+                print(f"  Using manually overridden aircraft_id={flight_metadata['aircraft_id']}")
         
         # Update session with fresh metadata
         session['flight_metadata'] = flight_metadata
@@ -1225,7 +1278,7 @@ def analyze_flight_anomalies():
                 'sic': 'UNK',
                 'fe': 'UNK',
                 'sortie': 1,
-                'aircraft_id': 3,
+                'aircraft_id': 3,  # last-resort literal: PIC extraction failed entirely, nothing to look up
                 'call_sign': 'UNK'
             }
         else:
@@ -1420,6 +1473,10 @@ def index():
                 flight_metadata['sortie'] = int(request.form.get('sortie'))
             if request.form.get('aircraft_id'):
                 flight_metadata['aircraft_id'] = int(request.form.get('aircraft_id'))
+                # Flag this as an explicit user override. Without this flag,
+                # aircraft_id is always re-derived from the filename's call
+                # sign and must NOT be inherited from session (see merges below).
+                flight_metadata['aircraft_id_manual'] = True
             
             # Store in session
             session['flight_metadata'] = flight_metadata
@@ -1481,10 +1538,17 @@ def index():
                 os.path.basename(final_excel_output_path)
             )
             
-            # Preserve any form overrides from the initial extraction
-            for key in ['flight_date', 'pic', 'sic', 'fe', 'sortie', 'aircraft_id']:
+            # Preserve any form overrides from the initial extraction.
+            # 'aircraft_id' excluded on purpose: the updated file keeps the
+            # same base filename, so the re-extraction above already resolved
+            # it from the call sign. Only an explicit form override is kept.
+            for key in ['flight_date', 'pic', 'sic', 'fe', 'sortie']:
                 if key in flight_metadata and flight_metadata[key] != 'UNK':
                     flight_metadata_updated[key] = flight_metadata[key]
+
+            if flight_metadata.get('aircraft_id_manual') and flight_metadata.get('aircraft_id'):
+                flight_metadata_updated['aircraft_id'] = flight_metadata['aircraft_id']
+                flight_metadata_updated['aircraft_id_manual'] = True
             
             # Update session with the corrected metadata
             flight_metadata = flight_metadata_updated
