@@ -70,6 +70,13 @@
             const [fileRemovedMessage, setFileRemovedMessage] = React.useState('');
             const [downloadExcelUrl, setDownloadExcelUrl] = React.useState(null);
             const [analyzingFlight, setAnalyzingFlight] = React.useState(false);
+            const [savingToDb, setSavingToDb] = React.useState(false);
+            const [saveDbResult, setSaveDbResult] = React.useState(null);
+            // Review step: preview holds what the sheet reports, reviewRows
+            // holds the same rows with a per-row abnormal flag the user edits.
+            const [loadingPreview, setLoadingPreview] = React.useState(false);
+            const [preview, setPreview] = React.useState(null);
+            const [reviewRows, setReviewRows] = React.useState([]);
 
             const playSoundNotification = () => {
                 try {
@@ -201,6 +208,120 @@
                 }
             };
 
+            // Step 1 of 2: read the sheet and show what WOULD be saved.
+            // Nothing is written until the user confirms.
+            const handleReviewExceedances = async () => {
+                if (!excelFile) {
+                    setError('Please upload an Excel file first.');
+                    return;
+                }
+                setLoadingPreview(true);
+                setPreview(null);
+                setReviewRows([]);
+                setSaveDbResult(null);
+                setError(null);
+                try {
+                    const formData = new FormData();
+                    formData.append('excel_file', excelFile);
+                    const response = await fetch('/preview_summary_exceedances', {
+                        method: 'POST',
+                        body: formData,
+                    });
+                    const data = await response.json();
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.error || 'Could not read the Summary sheet');
+                    }
+                    setPreview(data);
+                    // Everything starts abnormal. The reviewer only downgrades.
+                    setReviewRows((data.exceedances || []).map(row => ({
+                        ...row,
+                        abnormal: row.abnormal !== false,
+                    })));
+                } catch (err) {
+                    console.error('Error previewing exceedances:', err);
+                    setError(`Failed to read exceedances: ${err.message}`);
+                } finally {
+                    setLoadingPreview(false);
+                }
+            };
+
+            const toggleAbnormal = (parameter) => {
+                setReviewRows(rows => rows.map(row =>
+                    row.parameter === parameter
+                        ? { ...row, abnormal: !row.abnormal }
+                        : row
+                ));
+            };
+
+            const setAllAbnormal = (value) => {
+                setReviewRows(rows => rows.map(row => ({ ...row, abnormal: value })));
+            };
+
+            // Edit an after-mission field on one row. Seeded from the sheet,
+            // overwritten by whatever the reviewer types.
+            const updateReviewField = (parameter, field, value) => {
+                setReviewRows(rows => rows.map(row =>
+                    row.parameter === parameter ? { ...row, [field]: value } : row
+                ));
+            };
+
+            // Copy one row's observer down to every row, for the common case
+            // where the same person reviewed the whole flight.
+            const applyObserverToAll = (value) => {
+                setReviewRows(rows => rows.map(row => ({ ...row, observed_by: value })));
+            };
+
+            const cancelReview = () => {
+                setPreview(null);
+                setReviewRows([]);
+            };
+
+            // Step 2 of 2: commit. Only the labels travel; the counts are
+            // re-read server-side from the same file.
+            const handleSaveSummaryToDb = async () => {
+                if (!excelFile) {
+                    setError('Please upload an Excel file first.');
+                    return;
+                }
+                setSavingToDb(true);
+                setError(null);
+                try {
+                    // Send the file directly so this works with no compliance run.
+                    const formData = new FormData();
+                    formData.append('excel_file', excelFile);
+                    // One entry per row: the flag plus the after-mission fields
+                    // as edited. Counts are NOT sent; the server re-reads them.
+                    formData.append('reviews', JSON.stringify(
+                        reviewRows.map(r => ({
+                            parameter: r.parameter,
+                            abnormal: r.abnormal,
+                            observed_by: r.observed_by || '',
+                            review_note: r.review_note || '',
+                        }))
+                    ));
+                    if (report) {
+                        formData.append('compliance_percent', report.compliance_percent);
+                        formData.append('not_complied_count', report.not_complied_count);
+                    }
+                    const response = await fetch('/save_summary_to_db', {
+                        method: 'POST',
+                        body: formData,
+                    });
+                    const data = await response.json();
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.error || 'Save failed');
+                    }
+                    setSaveDbResult(data);
+                    setPreview(null);
+                    setReviewRows([]);
+                } catch (err) {
+                    console.error('Error saving summary to database:', err);
+                    setError(`Failed to save to database: ${err.message}`);
+                } finally {
+                    setSavingToDb(false);
+                }
+            };
+
             const handleAnalyzeFlightAnomalies = async () => {
                 if (!report || !report.updated_excel_filename) {
                     setError('No compliance report available. Please generate a report first.');
@@ -291,6 +412,71 @@
                                             <button type="button" onClick={removeExcelFile} className="ml-4 text-red-500 hover:text-red-700 transition-colors">❌</button>
                                         </div>
                                     )}
+
+                                    {/* Save Summary sheet to the database, via a review
+                                        step. Works with or without a compliance report. */}
+                                    {excelFile && (
+                                        <div className="space-y-3">
+                                            <button
+                                                type="button"
+                                                onClick={handleReviewExceedances}
+                                                disabled={loadingPreview || savingToDb}
+                                                className={`w-full py-3 px-6 rounded-lg shadow-md text-base font-semibold text-white transition-all duration-200 flex items-center justify-center ${(loadingPreview || savingToDb) ? 'bg-teal-400 cursor-not-allowed' : 'bg-teal-600 hover:bg-teal-700 transform hover:scale-[1.01]'}`}
+                                            >
+                                                {loadingPreview ? (
+                                                    <>
+                                                        <div className="loader ease-linear rounded-full border-2 border-t-2 border-white h-5 w-5 mr-3"></div>
+                                                        Reading Summary sheet...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <span className="text-xl mr-2">💾</span>
+                                                        Review &amp; Save to Db
+                                                    </>
+                                                )}
+                                            </button>
+                                            <p className="text-xs text-center text-gray-500 italic">
+                                                Shows every exceedance for review before anything is written. Compliance figures are included only if a report has been generated.
+                                            </p>
+
+                                            {saveDbResult && (
+                                                <div className="bg-teal-50 border border-teal-300 rounded-lg p-4 text-sm">
+                                                    <p className="font-semibold text-teal-800 mb-2">
+                                                        ✅ Saved as flight ID {saveDbResult.flight_id}
+                                                    </p>
+                                                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-gray-700">
+                                                        <span>Aircraft:</span>
+                                                        <span className="font-medium">{saveDbResult.call_sign} (id {saveDbResult.aircraft_id})</span>
+                                                        <span>Date / Sortie:</span>
+                                                        <span className="font-medium">{saveDbResult.flight_date} / {saveDbResult.sortie}</span>
+                                                        <span>Crew:</span>
+                                                        <span className="font-medium">{saveDbResult.crew.pic} / {saveDbResult.crew.sic} / {saveDbResult.crew.fe}</span>
+                                                        <span>Exceedance rows:</span>
+                                                        <span className="font-medium">
+                                                            {saveDbResult.exceedances_saved}
+                                                            {typeof saveDbResult.abnormal_saved === 'number' && (
+                                                                <span className="text-gray-500"> ({saveDbResult.abnormal_saved} abnormal)</span>
+                                                            )}
+                                                        </span>
+                                                        <span>Continuous / Discrete:</span>
+                                                        <span className="font-medium">
+                                                            {saveDbResult.continuous_exceedances} / {saveDbResult.discrete_exceedances}
+                                                            {(saveDbResult.false_positives_saved || []).length > 0 && (
+                                                                <span className="text-gray-500"> (sheet reported {saveDbResult.sheet_continuous_total} / {saveDbResult.sheet_discrete_total})</span>
+                                                            )}
+                                                        </span>
+                                                        <span>Compliance:</span>
+                                                        <span className="font-medium">{saveDbResult.compliance_saved ? 'included' : 'not assessed'}</span>
+                                                    </div>
+                                                    {saveDbResult.warning && (
+                                                        <p className="mt-3 text-amber-700 bg-amber-50 border border-amber-300 rounded p-2">
+                                                            ⚠️ {saveDbResult.warning}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Audio Files Upload Section */}
@@ -325,6 +511,168 @@
 
                             {fileRemovedMessage && (
                                 <p className="text-sm text-green-600 text-center">{fileRemovedMessage}</p>
+                            )}
+
+                            {/* ---- Exceedance review step -------------------------------
+                                Shown after reading the Summary sheet and before anything
+                                is written. Every row defaults to Abnormal; the reviewer
+                                marks sensor false positives, then confirms. */}
+                            {preview && (
+                                <div className="bg-amber-50 border-2 border-amber-300 rounded-xl p-6 space-y-4">
+                                    <div className="flex items-start justify-between flex-wrap gap-3">
+                                        <div>
+                                            <h3 className="text-xl font-bold text-amber-900 flex items-center">
+                                                <span className="text-2xl mr-2">🔍</span>
+                                                Review exceedances before saving
+                                            </h3>
+                                            <p className="text-sm text-amber-800 mt-1">
+                                                {preview.call_sign} · {preview.flight_date} · sortie {preview.sortie} · crew {preview.crew.pic}/{preview.crew.sic}/{preview.crew.fe}
+                                            </p>
+                                        </div>
+                                        <div className="text-sm text-amber-900 bg-amber-100 rounded-lg px-3 py-2">
+                                            <strong>{reviewRows.filter(r => r.abnormal).length}</strong> abnormal
+                                            {' · '}
+                                            <strong>{reviewRows.filter(r => !r.abnormal).length}</strong> sensor false positive
+                                        </div>
+                                    </div>
+
+                                    {preview.previously_reviewed > 0 && (
+                                        <p className="text-blue-800 bg-blue-50 border border-blue-300 rounded p-2 text-sm">
+                                            ℹ️ This flight was reviewed before. {preview.previously_reviewed} row(s) are showing the review already saved in the database, not a blank form. Edits here replace it.
+                                        </p>
+                                    )}
+
+                                    {preview.warning && (
+                                        <p className="text-amber-800 bg-amber-100 border border-amber-400 rounded p-2 text-sm">
+                                            ⚠️ {preview.warning}
+                                        </p>
+                                    )}
+
+                                    {reviewRows.length === 0 ? (
+                                        <p className="text-sm text-gray-700 bg-white rounded-lg p-4 border border-amber-200">
+                                            No exceedances in this Summary sheet. Saving will record the flight with zero exceedances.
+                                        </p>
+                                    ) : (
+                                        <>
+                                            <div className="flex gap-2 text-xs">
+                                                <button type="button" onClick={() => setAllAbnormal(true)}
+                                                    className="px-3 py-1 rounded-full bg-red-100 text-red-800 hover:bg-red-200 font-medium transition">
+                                                    Mark all abnormal
+                                                </button>
+                                                <button type="button" onClick={() => setAllAbnormal(false)}
+                                                    className="px-3 py-1 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 font-medium transition">
+                                                    Mark all false positive
+                                                </button>
+                                            </div>
+
+                                            <div className="overflow-x-auto bg-white rounded-lg border border-amber-200">
+                                                <table className="min-w-full divide-y divide-gray-200 text-sm">
+                                                    <thead className="bg-amber-100">
+                                                        <tr>
+                                                            <th className="px-4 py-2 text-left text-xs font-semibold text-amber-900 uppercase">Parameter</th>
+                                                            <th className="px-4 py-2 text-left text-xs font-semibold text-amber-900 uppercase">In sheet</th>
+                                                            <th className="px-4 py-2 text-left text-xs font-semibold text-amber-900 uppercase">Type</th>
+                                                            <th className="px-4 py-2 text-right text-xs font-semibold text-amber-900 uppercase">Count</th>
+                                                            <th className="px-4 py-2 text-center text-xs font-semibold text-amber-900 uppercase">Classification</th>
+                                                            <th className="px-4 py-2 text-left text-xs font-semibold text-amber-900 uppercase">Observed by</th>
+                                                            <th className="px-4 py-2 text-left text-xs font-semibold text-amber-900 uppercase">After-mission review</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-gray-200">
+                                                        {reviewRows.map((row, index) => (
+                                                            <tr key={row.parameter + index}
+                                                                className={row.abnormal ? (index % 2 === 0 ? 'bg-white' : 'bg-gray-50') : 'bg-gray-100 text-gray-400'}>
+                                                                <td className="px-4 py-2 whitespace-nowrap align-top">
+                                                                    <div className="font-medium">{row.parameter}</div>
+                                                                    {row.description && (
+                                                                        <div className="text-xs text-gray-500">{row.description}</div>
+                                                                    )}
+                                                                </td>
+                                                                <td className="px-4 py-2 whitespace-nowrap text-gray-600 align-top">{row.sheet_name}</td>
+                                                                <td className="px-4 py-2 whitespace-nowrap text-gray-600 align-top">{row.block}</td>
+                                                                <td className="px-4 py-2 text-right font-semibold align-top">{row.count}</td>
+                                                                <td className="px-4 py-2 text-center align-top">
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => toggleAbnormal(row.parameter)}
+                                                                        className={`px-3 py-1 rounded-full text-xs font-semibold transition whitespace-nowrap ${row.abnormal ? 'bg-red-100 text-red-800 hover:bg-red-200' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'}`}
+                                                                    >
+                                                                        {row.abnormal ? 'Abnormal' : 'Sensor false positive'}
+                                                                    </button>
+                                                                </td>
+                                                                <td className="px-4 py-2 align-top">
+                                                                    <div className="flex items-center gap-1">
+                                                                        <input
+                                                                            type="text"
+                                                                            value={row.observed_by || ''}
+                                                                            maxLength={100}
+                                                                            onChange={(e) => updateReviewField(row.parameter, 'observed_by', e.target.value)}
+                                                                            placeholder="e.g. P6"
+                                                                            className="w-24 px-2 py-1 border border-gray-300 rounded text-sm focus:ring-teal-500 focus:border-teal-500"
+                                                                        />
+                                                                        {row.observed_by && (
+                                                                            <button
+                                                                                type="button"
+                                                                                title="Apply this observer to every row"
+                                                                                onClick={() => applyObserverToAll(row.observed_by)}
+                                                                                className="text-xs text-teal-700 hover:text-teal-900 px-1"
+                                                                            >
+                                                                                all
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
+                                                                </td>
+                                                                <td className="px-4 py-2 align-top">
+                                                                    <textarea
+                                                                        value={row.review_note || ''}
+                                                                        maxLength={16000}
+                                                                        rows={2}
+                                                                        onChange={(e) => updateReviewField(row.parameter, 'review_note', e.target.value)}
+                                                                        placeholder={row.abnormal ? 'Findings, action taken...' : 'Why this is a sensor fault...'}
+                                                                        className="w-56 px-2 py-1 border border-gray-300 rounded text-sm focus:ring-teal-500 focus:border-teal-500"
+                                                                    />
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <p className="text-xs text-gray-600 italic">
+                                                False positives are still saved, with abnormal = 0, so the record shows the sensor fired and that it was dismissed. They are excluded from the flight's continuous/discrete exceedance totals.
+                                            </p>
+                                        </>
+                                    )}
+
+                                    <div className="flex gap-3 pt-2">
+                                        <button
+                                            type="button"
+                                            onClick={handleSaveSummaryToDb}
+                                            disabled={savingToDb}
+                                            className={`flex-1 py-3 px-6 rounded-lg shadow-md text-base font-semibold text-white transition-all duration-200 flex items-center justify-center ${savingToDb ? 'bg-teal-400 cursor-not-allowed' : 'bg-teal-600 hover:bg-teal-700'}`}
+                                        >
+                                            {savingToDb ? (
+                                                <>
+                                                    <div className="loader ease-linear rounded-full border-2 border-t-2 border-white h-5 w-5 mr-3"></div>
+                                                    Saving to Database...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <span className="text-xl mr-2">💾</span>
+                                                    Confirm &amp; Save to Db
+                                                </>
+                                            )}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={cancelReview}
+                                            disabled={savingToDb}
+                                            className="px-6 py-3 rounded-lg border border-gray-400 text-gray-700 font-semibold hover:bg-gray-100 transition disabled:opacity-50"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
                             )}
 
                             {/* Form Section */}

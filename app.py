@@ -1,4 +1,5 @@
 import os
+import json
 import logging
 import pandas as pd
 from flask import Flask, render_template, request, jsonify, send_from_directory, url_for, session, send_file
@@ -922,6 +923,813 @@ def extract_exceedances_from_excel(excel_path):
         print(f"  ✗ Error extracting exceedances: {e}")
     
     return exceedances
+
+
+# ============================================================================
+# SAVE SUMMARY SHEET TO DATABASE  (BUR + CARE FDR)
+#
+# Both recorder formats lay the Summary sheet out identically:
+#   continuous : names in column A, counts in column B, from row 9, ends at TOTAL
+#   binary     : names in column G, counts in column H, from row 3
+# Only the NAMES and the number of binary rows differ (BUR uses the
+# MI_17V_5_name values, CARE uses the MI_17_1V_name values).
+#
+# So instead of hardcoding cell -> parameter maps (which breaks whenever the
+# row count changes, as it did when iHSaux/iHSmain left the BUR layout), the
+# name is read from the sheet and resolved against the `parameters` table.
+# Adding a new recorder format then becomes a data change, not a code change.
+# ============================================================================
+
+# Rows are scanned until this many consecutive blanks, so tall/wrapped rows
+# in the middle of a block don't truncate the scan.
+_BLANK_TOLERANCE = 3
+_MAX_SCAN_ROW = 60
+
+# ----------------------------------------------------------------------------
+# The after-mission review block in the Summary sheet.
+#
+# This is its OWN table below the exceedance tables, not extra columns on
+# them. Layout (from the template):
+#     row 20  header: EXCEEDANCES | COUNT | OBSERVED BY | AFTER MISSION REVIEW
+#     row 21+ one row per parameter that actually recorded an exceedance
+#
+# Its column A reuses the same parameter names as the blocks above, so rows
+# are matched back by name, not by position. Its COUNT column is read only
+# as a cross-check; the authoritative counts stay the ones in the continuous
+# and binary blocks.
+REVIEW_BLOCK_START_ROW = 21
+REVIEW_NAME_COL = 'A'
+REVIEW_COUNT_COL = 'B'
+REVIEW_OBSERVED_COL = 'C'
+REVIEW_NOTE_COL = 'D'
+
+# The template pre-draws empty bordered rows under the filled ones, so the
+# scan runs to a fixed bound rather than stopping at the first blank.
+REVIEW_BLOCK_MAX_ROW = 80
+
+# Words that mean "a new table starts here", so the scan never runs on into
+# whatever sits below the review block.
+_REVIEW_STOP_WORDS = ('TOTAL', 'EXCEEDANCES', 'PARAMETER', 'BINARY')
+
+# Guard rails matching the exceedances columns. Values longer than these are
+# rejected with a clear message rather than silently truncated: a clipped
+# after-mission note is worse than a refused save.
+# exceedances.observed_by is VARCHAR(100).
+MAX_OBSERVED_BY = 100
+# exceedances.after_mission_review is TEXT (65,535 BYTES). utf8mb4 uses up to
+# 4 bytes per character, so capping at 16,000 CHARACTERS can never overflow
+# the column even in the worst case, while being long enough that it will
+# not block a real after-mission write-up.
+MAX_REVIEW_NOTE = 16000
+
+_param_map_cache = None
+_param_detail_cache = None
+
+
+def _load_parameter_tables(force_reload=False):
+    """
+    Load both parameter lookups in one query:
+      name map    {lowercased name: canonical MI_17V_5_name}, covering BOTH
+                  name columns so a sheet in either convention resolves.
+      detail map  {canonical name: {'description': ..., 'discrete': ...}},
+                  used to label rows in the review table.
+    """
+    global _param_map_cache, _param_detail_cache
+    if _param_map_cache is not None and not force_reload:
+        return _param_map_cache, _param_detail_cache
+
+    name_map = {}
+    detail_map = {}
+    connection = None
+    cursor = None
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute(
+            "SELECT MI_17V_5_name, MI_17_1V_name, description, discrete FROM parameters"
+        )
+        for mi17v5, mi171v, description, discrete in cursor.fetchall():
+            if mi17v5 and str(mi17v5).strip():
+                name_map[str(mi17v5).strip().lower()] = mi17v5
+                detail_map[mi17v5] = {
+                    'description': description or '',
+                    'discrete': bool(discrete),
+                }
+            # Guard against the empty-string entry: '' would otherwise match
+            # every blank cell and silently map it to a real parameter.
+            if mi171v and str(mi171v).strip():
+                name_map[str(mi171v).strip().lower()] = mi17v5
+        _param_map_cache = name_map
+        _param_detail_cache = detail_map
+        print(f"  Loaded {len(name_map)} parameter name variants")
+    except Exception as e:
+        print(f"  ⚠️ Could not load parameter tables: {e}")
+        name_map, detail_map = {}, {}
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+    return name_map, detail_map
+
+
+def get_parameter_name_map(force_reload=False):
+    """Name -> canonical MI_17V_5_name. See _load_parameter_tables."""
+    return _load_parameter_tables(force_reload)[0]
+
+
+def get_parameter_details(force_reload=False):
+    """Canonical name -> {'description', 'discrete'}. See _load_parameter_tables."""
+    return _load_parameter_tables(force_reload)[1]
+
+
+def _to_count(value):
+    """Cell value -> non-negative int, treating blanks and '-' as 0."""
+    if value is None or value == '' or value == '-':
+        return 0
+    try:
+        return int(float(value))
+    except (ValueError, TypeError):
+        return 0
+
+
+def _scan_parameter_block(ws, name_col, count_col, start_row, name_map, block=''):
+    """
+    Walk one block of the Summary sheet, resolving each parameter name.
+
+    Returns (resolved, unmapped, total) where resolved is a list of
+    {'parameter', 'count', 'sheet_name', 'block', 'row'} for counts > 0,
+    unmapped is a list of sheet names with no row in `parameters`, and total
+    is the sum of every count in the block (including zeros and unmapped).
+
+    sheet_name/block/row are carried so the review screen can show each row
+    the way it appears in Excel, which is how the reviewer recognises it.
+
+    The after-mission fields are NOT read here: in these blocks columns C
+    and D hold "% of Total" and "Description". They come from the separate
+    review block below, merged in by parameter name.
+    """
+    resolved = []
+    unmapped = []
+    total = 0
+    blanks = 0
+    row = start_row
+
+    while row <= _MAX_SCAN_ROW and blanks < _BLANK_TOLERANCE:
+        raw_name = ws[f'{name_col}{row}'].value
+
+        if raw_name is None or str(raw_name).strip() == '':
+            blanks += 1
+            row += 1
+            continue
+        blanks = 0
+
+        name = str(raw_name).strip()
+        if name.upper().startswith('TOTAL'):
+            break
+
+        count = _to_count(ws[f'{count_col}{row}'].value)
+        total += count
+
+        canonical = name_map.get(name.lower())
+        if canonical is None:
+            unmapped.append(name)
+        elif count > 0:
+            resolved.append({
+                'parameter': canonical,
+                'count': count,
+                'sheet_name': name,
+                'block': block,
+                'row': row,
+                'observed_by': '',
+                'review_note': '',
+            })
+
+        row += 1
+
+    return resolved, unmapped, total
+
+
+def _scan_review_block(ws, name_map):
+    """
+    Read the after-mission review block (header row 20, data from row 21).
+
+    Returns {canonical parameter name: {'observed_by', 'review_note',
+    'sheet_count', 'row'}} for every row that names a parameter.
+
+    Matching is by NAME, not by position: the block lists only the parameters
+    that actually recorded an exceedance, in whatever order the template wrote
+    them. Pairing by row number would silently attach one parameter's review
+    note to another parameter's exceedance.
+
+    Only CONTINUOUS parameters are written here. Binary parameters never
+    appear, so they find no match and reach the review screen with both
+    fields blank for the reviewer to fill in. That needs no special case:
+    name-matching simply does not find them.
+
+    The block's own COUNT column is returned as sheet_count for cross-checking
+    only. The authoritative counts remain the ones in the blocks above.
+    """
+    found = {}
+    unmatched = []
+
+    for row in range(REVIEW_BLOCK_START_ROW, REVIEW_BLOCK_MAX_ROW + 1):
+        raw_name = ws[f'{REVIEW_NAME_COL}{row}'].value
+        if raw_name is None or str(raw_name).strip() == '':
+            # The template pre-draws empty rows, so a blank is not the end.
+            continue
+
+        name = str(raw_name).strip()
+        if name.upper().startswith(_REVIEW_STOP_WORDS):
+            # A new table header: stop rather than read whatever follows.
+            if row > REVIEW_BLOCK_START_ROW:
+                break
+            continue
+
+        canonical = name_map.get(name.lower())
+        if canonical is None:
+            unmatched.append(name)
+            continue
+
+        def cell_text(col):
+            raw = ws[f'{col}{row}'].value
+            return str(raw).strip() if raw is not None else ''
+
+        found[canonical] = {
+            'observed_by': cell_text(REVIEW_OBSERVED_COL),
+            'review_note': cell_text(REVIEW_NOTE_COL),
+            'sheet_count': _to_count(ws[f'{REVIEW_COUNT_COL}{row}'].value),
+            'row': row,
+        }
+
+    if unmatched:
+        print(f"  \u26a0\ufe0f Review block rows with unrecognised parameter names: "
+              f"{', '.join(unmatched)}")
+
+    return found
+
+
+def extract_summary_for_db(excel_path):
+    """
+    Read the Summary sheet of a BUR or CARE file.
+
+    Returns a dict with crew, exceedance rows, per-block totals, and any
+    parameter names that could not be resolved. Unmapped names are reported
+    rather than raised: exceedances.parameter_MI_17V_5_name is a foreign key,
+    so saving an unmapped name would fail the whole insert. Skipping it saves
+    what is valid and tells the user exactly what is missing.
+    """
+    result = {
+        'pic': None, 'sic': None, 'fe': None,
+        'exceedances': [],
+        'unmapped': [],
+        'continuous_total': 0,
+        'discrete_total': 0,
+    }
+
+    name_map = get_parameter_name_map()
+    if not name_map:
+        raise RuntimeError("Parameter name map is empty; cannot resolve any parameter")
+
+    def scan_with(current_map):
+        c_rows, c_unmapped, c_total = _scan_parameter_block(
+            ws, 'A', 'B', 9, current_map, block='continuous')
+        b_rows, b_unmapped, b_total = _scan_parameter_block(
+            ws, 'G', 'H', 3, current_map, block='discrete')
+        return c_rows, c_unmapped, c_total, b_rows, b_unmapped, b_total
+
+    wb = load_workbook(excel_path, read_only=True, keep_vba=False, data_only=True)
+    try:
+        if 'Summary' not in wb.sheetnames:
+            raise ValueError(f"No 'Summary' sheet in {os.path.basename(excel_path)}")
+
+        ws = wb['Summary']
+
+        def text(ref):
+            v = ws[ref].value
+            return str(v).strip() if v is not None and str(v).strip() else None
+
+        result['pic'] = text('B2')
+        result['sic'] = text('B3')
+        result['fe'] = text('B4')
+
+        (cont_rows, cont_unmapped, cont_total,
+         bin_rows, bin_unmapped, bin_total) = scan_with(name_map)
+
+        # The name map is cached per process. If anything failed to resolve,
+        # the cache may simply predate a row added to `parameters`, so reload
+        # once and rescan before reporting it as unmapped. This means editing
+        # the parameters table takes effect without restarting Flask.
+        if cont_unmapped or bin_unmapped:
+            print("  Unresolved names found, reloading parameter map...")
+            refreshed = get_parameter_name_map(force_reload=True)
+            if refreshed:
+                (cont_rows, cont_unmapped, cont_total,
+                 bin_rows, bin_unmapped, bin_total) = scan_with(refreshed)
+
+        # B18 holds a pre-computed continuous total. Prefer it when present,
+        # fall back to the summed block so a layout shift can't zero this out.
+        b18 = _to_count(ws['B18'].value)
+        result['continuous_total'] = b18 if b18 else cont_total
+        result['discrete_total'] = bin_total
+
+        result['exceedances'] = cont_rows + bin_rows
+        result['unmapped'] = cont_unmapped + bin_unmapped
+
+        # Merge in anything already written into the after-mission review
+        # block, matched by parameter name.
+        review_rows = _scan_review_block(ws, name_map)
+
+        # Every row starts flagged abnormal (a genuine exceedance). The
+        # reviewer only ever downgrades, never upgrades, so the default is
+        # the conservative one: an unreviewed exceedance counts as real.
+        details = get_parameter_details()
+        for row_data in result['exceedances']:
+            meta = details.get(row_data['parameter'], {})
+            row_data['abnormal'] = True
+            row_data['description'] = meta.get('description', '')
+
+            review = review_rows.get(row_data['parameter'])
+            if review:
+                row_data['observed_by'] = review['observed_by']
+                row_data['review_note'] = review['review_note']
+                # The review block repeats the count. If it disagrees with the
+                # block above, say so rather than picking one silently: it
+                # means the sheet was edited in one place and not the other.
+                if review['sheet_count'] and review['sheet_count'] != row_data['count']:
+                    result.setdefault('count_mismatches', []).append(
+                        f"{row_data['parameter']}: {row_data['count']} in the "
+                        f"exceedance table vs {review['sheet_count']} in the "
+                        f"review block (row {review['row']})"
+                    )
+
+        # Reviewed rows naming a parameter with no exceedance above are
+        # surfaced, not dropped: usually a stale row left in the template.
+        orphans = set(review_rows) - {e['parameter'] for e in result['exceedances']}
+        if orphans:
+            result['review_orphans'] = sorted(orphans)
+    finally:
+        wb.close()
+
+    print(f"  Summary: {len(result['exceedances'])} exceedance rows, "
+          f"continuous={result['continuous_total']}, discrete={result['discrete_total']}")
+    if result['unmapped']:
+        print(f"  ⚠️ Unmapped parameter names: {', '.join(result['unmapped'])}")
+
+    return result
+
+
+def parse_flight_filename(filename):
+    """
+    CALLSIGN_DD-MM-YY_SORTIE -> (call_sign, date, sortie).
+    Same convention for BUR and CARE. Returns (None, None, None) on failure.
+    """
+    try:
+        stem = os.path.splitext(os.path.basename(filename))[0]
+        parts = stem.split('_')
+        if len(parts) < 3:
+            return None, None, None
+
+        call_sign = parts[0].strip()
+        d, m, y = (int(x) for x in parts[1].split('-'))
+        if y < 100:
+            y += 2000
+        return call_sign, date(y, m, d), int(parts[2])
+    except (ValueError, IndexError):
+        return None, None, None
+
+
+class SummaryRequestError(Exception):
+    """Raised when a summary request cannot be resolved. Carries an HTTP status."""
+
+    def __init__(self, message, status=400):
+        super().__init__(message)
+        self.status = status
+
+
+def _resolve_summary_request():
+    """
+    Shared front half of the preview and save routes: locate the Excel file,
+    read the flight identity out of its filename, resolve the aircraft, and
+    extract the Summary sheet.
+
+    Both routes must read the workbook the SAME way. If preview and save
+    parsed independently, a reviewer could approve one set of numbers and
+    save another, which for a safety record is worse than no review at all.
+
+    Returns (context_dict, temp_path). temp_path is non-None only when this
+    request wrote an upload to disk and is responsible for cleaning it up.
+    """
+    temp_path = None
+
+    if 'excel_file' in request.files and request.files['excel_file'].filename:
+        upload = request.files['excel_file']
+        source_name = upload.filename
+        safe_name = secure_filename(source_name)
+        temp_path = os.path.join(app.config['UPLOAD_FOLDER'], safe_name)
+        upload.save(temp_path)
+        excel_path = temp_path
+    else:
+        payload = request.get_json(silent=True) or {}
+        source_name = payload.get('excel_filename') or request.form.get('excel_filename')
+        if not source_name:
+            raise SummaryRequestError('No Excel file provided')
+        candidate = os.path.join(app.config['COMPLIANCE_EXCEL_OUTPUT'], source_name)
+        if not os.path.exists(candidate):
+            candidate = os.path.join(app.config['UPLOAD_FOLDER'], source_name)
+        if not os.path.exists(candidate):
+            raise SummaryRequestError(f'File not found: {source_name}', 404)
+        excel_path = candidate
+
+    # secure_filename() is applied above for the on-disk name only; the
+    # ORIGINAL name is parsed here, because secure_filename can rewrite
+    # the call sign (it strips characters that appear in some call signs).
+    call_sign, flight_date, sortie = parse_flight_filename(source_name)
+    if not flight_date:
+        raise SummaryRequestError(
+            f"Could not read date/sortie from '{source_name}'. "
+            f"Expected CALLSIGN_DD-MM-YY_SORTIE."
+        )
+
+    aircraft_id = get_aircraft_id_by_call_sign(call_sign)
+    if aircraft_id is None:
+        raise SummaryRequestError(
+            f"Call sign '{call_sign}' is not in the aircrafts table. "
+            f"Add it before saving, so the flight is not filed "
+            f"against the wrong aircraft."
+        )
+
+    summary = extract_summary_for_db(excel_path)
+
+    missing_crew = [k.upper() for k in ('pic', 'sic', 'fe') if not summary[k]]
+    if missing_crew:
+        raise SummaryRequestError(
+            f"Summary sheet is missing crew code(s): "
+            f"{', '.join(missing_crew)} (cells B2/B3/B4)"
+        )
+
+    context = {
+        'source_name': source_name,
+        'excel_path': excel_path,
+        'call_sign': call_sign,
+        'flight_date': flight_date,
+        'sortie': sortie,
+        'aircraft_id': aircraft_id,
+        'summary': summary,
+    }
+    return context, temp_path
+
+
+def _cleanup_temp(temp_path):
+    """Remove only a file this request created; never a compliance output."""
+    if temp_path and os.path.exists(temp_path):
+        try:
+            os.remove(temp_path)
+        except OSError:
+            pass
+
+
+@app.route("/preview_summary_exceedances", methods=["POST"])
+def preview_summary_exceedances():
+    """
+    Read the Summary sheet and return what WOULD be saved, writing nothing.
+
+    This is the review step: the reviewer sees every exceedance the sheet
+    reports, each pre-flagged abnormal (genuine), and can mark individual
+    rows as sensor false positives before committing. Nothing touches the
+    database until /save_summary_to_db is called.
+    """
+    temp_path = None
+    try:
+        context, temp_path = _resolve_summary_request()
+        summary = context['summary']
+
+        print("\n" + "=" * 60)
+        print(f"PREVIEW SUMMARY: {context['source_name']}")
+        print(f"  {len(summary['exceedances'])} exceedance rows for review")
+        print("=" * 60)
+
+        # If this flight was reviewed before, show THAT, not a blank slate.
+        # Excel only ever seeds continuous parameters, and binary ones are
+        # reviewed solely in this app, so without reading back what was saved
+        # a second review would reset earlier work to empty.
+        already_saved = 0
+        if DATABASE_ENABLED and flight_analyzer.db_manager:
+            existing_flight_id = flight_analyzer.db_manager.find_flight_id(
+                flight_date=context['flight_date'],
+                pic=summary['pic'], sic=summary['sic'], fe=summary['fe'],
+                sortie=context['sortie'],
+            )
+            if existing_flight_id:
+                stored = flight_analyzer.db_manager.get_exceedance_reviews(existing_flight_id)
+                for row_data in summary['exceedances']:
+                    prior = stored.get(row_data['parameter'])
+                    if not prior:
+                        continue
+                    row_data['abnormal'] = prior['abnormal']
+                    # A stored value wins over the Excel seed: it is the later
+                    # and more deliberate of the two.
+                    if prior['observed_by']:
+                        row_data['observed_by'] = prior['observed_by']
+                    if prior['review_note']:
+                        row_data['review_note'] = prior['review_note']
+                    if (prior['observed_by'] or prior['review_note']
+                            or not prior['abnormal']):
+                        already_saved += 1
+                if already_saved:
+                    print(f"  Loaded previously saved review for {already_saved} row(s) "
+                          f"from flight {existing_flight_id}")
+
+        response = {
+            'success': True,
+            'excel_filename': context['source_name'],
+            'call_sign': context['call_sign'],
+            'aircraft_id': context['aircraft_id'],
+            'flight_date': context['flight_date'].strftime('%Y-%m-%d'),
+            'sortie': context['sortie'],
+            'crew': {
+                'pic': summary['pic'],
+                'sic': summary['sic'],
+                'fe': summary['fe'],
+            },
+            'exceedances': summary['exceedances'],
+            'continuous_total': summary['continuous_total'],
+            'discrete_total': summary['discrete_total'],
+            'previously_reviewed': already_saved,
+        }
+        notes = []
+        if summary['unmapped']:
+            notes.append(
+                f"{len(summary['unmapped'])} parameter(s) will be skipped, not in "
+                f"the parameters table: {', '.join(summary['unmapped'])}"
+            )
+            response['unmapped'] = summary['unmapped']
+        if summary.get('count_mismatches'):
+            notes.append(
+                "Counts disagree between the exceedance table and the review "
+                "block: " + "; ".join(summary['count_mismatches'])
+            )
+        if summary.get('review_orphans'):
+            notes.append(
+                "Review block rows with no matching exceedance (ignored): "
+                + ", ".join(summary['review_orphans'])
+            )
+        if notes:
+            response['warning'] = " | ".join(notes)
+
+        return jsonify(response)
+
+    except SummaryRequestError as e:
+        return jsonify({'success': False, 'error': str(e)}), e.status
+    except Exception as e:
+        import traceback
+        print(f"❌ Error in preview_summary_exceedances: {e}")
+        traceback.print_exc()
+        logger.error(f"preview_summary_exceedances failed: {e}")
+        logger.error(traceback.format_exc())
+        return jsonify({'success': False, 'error': str(e)}), 500
+    finally:
+        _cleanup_temp(temp_path)
+
+
+@app.route("/save_summary_to_db", methods=["POST"])
+def save_summary_to_db():
+    """
+    Save the Summary sheet (flight record + exceedances) to the database,
+    independent of the compliance workflow.
+
+    Accepts either a freshly uploaded file (multipart 'excel_file') or the
+    name of a file already produced by the compliance run ('excel_filename').
+    Compliance figures are optional: when no compliance report has been run
+    they are left NULL rather than written as zero, which would read as
+    "0% compliant" instead of "not assessed".
+
+    Review: the caller may send 'false_positives', a list of canonical
+    parameter names the reviewer judged to be sensor faults. Those rows are
+    still saved, with abnormal = 0, so the record shows the sensor fired and
+    that a human dismissed it. COUNTS come from the workbook, never from the
+    client: the reviewer labels rows, they do not get to restate the numbers.
+    """
+    temp_path = None
+    try:
+        context, temp_path = _resolve_summary_request()
+        summary = context['summary']
+        source_name = context['source_name']
+        call_sign = context['call_sign']
+        flight_date = context['flight_date']
+        sortie = context['sortie']
+        aircraft_id = context['aircraft_id']
+
+        print("\n" + "=" * 60)
+        print(f"SAVE SUMMARY TO DB: {source_name}")
+        print("=" * 60)
+
+        # ---- apply the reviewer's decisions ---------------------------------
+        # 'reviews' carries one entry per row: the abnormal flag plus the
+        # after-mission fields as edited on screen. 'false_positives' (a bare
+        # list of names) is still accepted so an older client keeps working.
+        #
+        # Only labels and notes travel from the client. COUNTS are re-read
+        # from the workbook above and never taken from the request.
+        def _field(name):
+            body = request.get_json(silent=True) or {}
+            if name in body:
+                return body.get(name)
+            raw = request.form.get(name)
+            if raw:
+                try:
+                    return json.loads(raw)
+                except (ValueError, TypeError):
+                    return None
+            return None
+
+        reviews_raw = _field('reviews')
+        fp_raw = _field('false_positives')
+
+        reviews_by_param = {}
+        if isinstance(reviews_raw, list):
+            for item in reviews_raw:
+                if isinstance(item, dict) and item.get('parameter'):
+                    reviews_by_param[str(item['parameter']).strip()] = item
+
+        false_positives = set()
+        if reviews_by_param:
+            false_positives = {
+                param for param, item in reviews_by_param.items()
+                if item.get('abnormal') is False
+            }
+        elif fp_raw:
+            false_positives = {str(p).strip() for p in fp_raw}
+
+        sheet_params = {e['parameter'] for e in summary['exceedances']}
+        unknown = (set(reviews_by_param) | false_positives) - sheet_params
+        if unknown:
+            # Names that aren't in this workbook mean the review screen and the
+            # file have drifted apart (a different file, or an edited sheet).
+            # Saving anyway would silently ignore the reviewer's decision.
+            return jsonify({
+                'success': False,
+                'error': (f"These parameters were reviewed but are not in this file's "
+                          f"Summary sheet: {', '.join(sorted(unknown))}. "
+                          f"Re-run the review against the current file.")
+            }), 400
+
+        def _clip_check(value, limit, label, param):
+            text = str(value).strip() if value is not None else ''
+            if len(text) > limit:
+                raise SummaryRequestError(
+                    f"{label} for '{param}' is {len(text)} characters; the column "
+                    f"holds {limit}. Shorten it rather than letting it be cut off."
+                )
+            return text
+
+        for row_data in summary['exceedances']:
+            item = reviews_by_param.get(row_data['parameter'], {})
+            row_data['abnormal'] = row_data['parameter'] not in false_positives
+            # Edited value wins; the sheet value seeded it and stands otherwise.
+            if 'observed_by' in item:
+                row_data['observed_by'] = _clip_check(
+                    item.get('observed_by'), MAX_OBSERVED_BY,
+                    'Observed by', row_data['parameter'])
+            if 'review_note' in item:
+                row_data['review_note'] = _clip_check(
+                    item.get('review_note'), MAX_REVIEW_NOTE,
+                    'After-mission review', row_data['parameter'])
+
+        # Flight-level totals count GENUINE exceedances only. A dismissed
+        # sensor fault is not an exceedance the crew flew, so including it
+        # would inflate every report built on these columns. The raw sheet
+        # totals are still returned below so the difference stays visible.
+        dismissed_continuous = sum(
+            e['count'] for e in summary['exceedances']
+            if not e['abnormal'] and e.get('block') == 'continuous'
+        )
+        dismissed_discrete = sum(
+            e['count'] for e in summary['exceedances']
+            if not e['abnormal'] and e.get('block') == 'discrete'
+        )
+        genuine_continuous = max(0, summary['continuous_total'] - dismissed_continuous)
+        genuine_discrete = max(0, summary['discrete_total'] - dismissed_discrete)
+
+        if false_positives:
+            print(f"  Reviewer dismissed {len(false_positives)} parameter(s) as "
+                  f"sensor false positives: {', '.join(sorted(false_positives))}")
+            print(f"  Totals: continuous {summary['continuous_total']} -> {genuine_continuous}, "
+                  f"discrete {summary['discrete_total']} -> {genuine_discrete}")
+
+        # ---- optional compliance -------------------------------------------
+        # Checked in three places, in order: multipart form fields (the button
+        # posts FormData, so request.get_json() is None for those requests),
+        # then a JSON body, then the session left by a compliance run.
+        # Left as None when absent, so the column stays NULL: "not assessed"
+        # and "0% compliant" must not look the same in the database.
+        def _num(raw, caster):
+            if raw is None or raw == '':
+                return None
+            try:
+                return caster(float(str(raw).replace('%', '').strip()))
+            except (ValueError, TypeError):
+                return None
+
+        payload = request.get_json(silent=True) or {}
+
+        compliance_percentage = _num(
+            request.form.get('compliance_percent', payload.get('compliance_percent')), float
+        )
+        checks_not_complied = _num(
+            request.form.get('not_complied_count', payload.get('not_complied_count')), int
+        )
+
+        if compliance_percentage is None:
+            cvr = session.get('cvr_results') or {}
+            compliance_percentage = _num(cvr.get('compliance_percent'), float)
+            checks_not_complied = _num(cvr.get('not_complied_count'), int)
+
+        # ---- write ----------------------------------------------------------
+        if not DATABASE_ENABLED or not flight_analyzer.db_manager:
+            return jsonify({'success': False,
+                            'error': 'Database integration is not enabled'}), 500
+
+        db = flight_analyzer.db_manager
+
+        # Shared with the anomaly-report save path on purpose: one writer for
+        # the flights table means a column added there cannot go stale here.
+        flight_id = db.get_or_create_flight(
+            flight_date=flight_date,
+            pic=summary['pic'],
+            sic=summary['sic'],
+            fe=summary['fe'],
+            sortie=sortie,
+            aircraft_id=aircraft_id,
+            compliance_percentage=compliance_percentage,
+            checks_not_complied=checks_not_complied,
+            continuous_exceedances=genuine_continuous,
+            discrete_exceedances=genuine_discrete,
+        )
+
+        if not flight_id:
+            detail = getattr(db, 'last_error', None) or 'Unknown error'
+            return jsonify({'success': False,
+                            'error': f'Could not create/update flight: {detail}'}), 500
+
+        db.delete_flight_exceedances(flight_id)
+        saved = db.save_exceedances(flight_id, summary['exceedances'])
+        if not saved:
+            detail = getattr(db, 'last_error', None) or 'Unknown error'
+            return jsonify({'success': False,
+                            'error': f'Flight {flight_id} saved, but exceedances failed: {detail}'}), 500
+
+        response = {
+            'success': True,
+            'flight_id': flight_id,
+            'call_sign': call_sign,
+            'aircraft_id': aircraft_id,
+            'flight_date': flight_date.strftime('%Y-%m-%d'),
+            'sortie': sortie,
+            'crew': {'pic': summary['pic'], 'sic': summary['sic'], 'fe': summary['fe']},
+            'exceedances_saved': len(summary['exceedances']),
+            'abnormal_saved': sum(1 for e in summary['exceedances'] if e['abnormal']),
+            'false_positives_saved': sorted(false_positives),
+            'reviewed_rows': sum(
+                1 for e in summary['exceedances']
+                if e.get('observed_by') or e.get('review_note')
+            ),
+            # What went into the flights table (genuine only) alongside what
+            # the sheet reported, so the reviewer can see their own effect.
+            'continuous_exceedances': genuine_continuous,
+            'discrete_exceedances': genuine_discrete,
+            'sheet_continuous_total': summary['continuous_total'],
+            'sheet_discrete_total': summary['discrete_total'],
+            'compliance_saved': compliance_percentage is not None,
+        }
+        if summary['unmapped']:
+            response['warning'] = (
+                f"{len(summary['unmapped'])} parameter(s) skipped, not in the "
+                f"parameters table: {', '.join(summary['unmapped'])}"
+            )
+            response['unmapped'] = summary['unmapped']
+
+        print(f"✓ Saved flight {flight_id}: {len(summary['exceedances'])} exceedances "
+              f"({response['abnormal_saved']} abnormal, "
+              f"{len(false_positives)} dismissed as sensor faults)")
+        return jsonify(response)
+
+    except SummaryRequestError as e:
+        return jsonify({'success': False, 'error': str(e)}), e.status
+    except Exception as e:
+        import traceback
+        print(f"❌ Error in save_summary_to_db: {e}")
+        traceback.print_exc()
+        logger.error(f"save_summary_to_db failed: {e}")
+        logger.error(traceback.format_exc())
+        return jsonify({'success': False, 'error': str(e)}), 500
+    finally:
+        # Only remove a file this request created; never a compliance output.
+        if temp_path and os.path.exists(temp_path):
+            try:
+                os.remove(temp_path)
+            except OSError:
+                pass
 
 
 # ============================================================================

@@ -118,61 +118,59 @@ class DatabaseManager:
                 flight_id = existing[0]
                 print(f"  ✓ Found existing flight ID: {flight_id}")
                 
-                # Update compliance_percentage and checks_not_complied if provided
-                # Update all fields if any are provided
-                if any([
-                    compliance_percentage is not None,
-                    checks_not_complied is not None,
-                    continuous_exceedances != 0,
-                    discrete_exceedances != 0,
-                    anomalies != 0,
-                    anomalies_percentage != 0.0
-                ]):
-                    update_parts = []
-                    update_values = []
-                    
+                # Update all fields if any are provided.
+                # aircraft_id is ALWAYS updated: an existing row may have been
+                # created earlier with a wrong/default aircraft_id, and without
+                # this the row keeps the stale value forever no matter how many
+                # times it is re-saved with the correct one.
+                update_parts = []
+                update_values = []
+
+                update_parts.append("aircraft_id = %s")
+                update_values.append(aircraft_id)
+
+                if compliance_percentage is not None:
+                    update_parts.append("compliance_percentage = %s")
+                    update_values.append(compliance_percentage)
+
+                if checks_not_complied is not None:
+                    update_parts.append("checks_not_complied = %s")
+                    update_values.append(checks_not_complied)
+
+                # Always update exceedances and anomalies (even if 0)
+                update_parts.append("continuous_exceedances = %s")
+                update_values.append(continuous_exceedances)
+
+                update_parts.append("discrete_exceedances = %s")
+                update_values.append(discrete_exceedances)
+
+                update_parts.append("anomalies = %s")
+                update_values.append(anomalies)
+
+                update_parts.append("anomalies_percentage = %s")
+                update_values.append(anomalies_percentage)
+
+                if update_parts:
+                    update_query = f"""
+                        UPDATE flights 
+                        SET {', '.join(update_parts)}
+                        WHERE id = %s
+                    """
+                    update_values.append(flight_id)
+                    cursor.execute(update_query, tuple(update_values))
+                    connection.commit()
+
+                    print(f"  ✓ Updated aircraft_id: {aircraft_id}")
                     if compliance_percentage is not None:
-                        update_parts.append("compliance_percentage = %s")
-                        update_values.append(compliance_percentage)
-                    
+                        print(f"  ✓ Updated compliance: {compliance_percentage}%")
                     if checks_not_complied is not None:
-                        update_parts.append("checks_not_complied = %s")
-                        update_values.append(checks_not_complied)
-                    
-                    # Always update exceedances and anomalies (even if 0)
-                    update_parts.append("continuous_exceedances = %s")
-                    update_values.append(continuous_exceedances)
-                    
-                    update_parts.append("discrete_exceedances = %s")
-                    update_values.append(discrete_exceedances)
-                    
-                    update_parts.append("anomalies = %s")
-                    update_values.append(anomalies)
-                    
-                    update_parts.append("anomalies_percentage = %s")
-                    update_values.append(anomalies_percentage)
-                    
-                    
-                    if update_parts:
-                        update_query = f"""
-                            UPDATE flights 
-                            SET {', '.join(update_parts)}
-                            WHERE id = %s
-                        """
-                        update_values.append(flight_id)
-                        cursor.execute(update_query, tuple(update_values))
-                        connection.commit()
-                        
-                        if compliance_percentage is not None:
-                            print(f"  ✓ Updated compliance: {compliance_percentage}%")
-                        if checks_not_complied is not None:
-                            print(f"  ✓ Updated checks not complied: {checks_not_complied}")
+                        print(f"  ✓ Updated checks not complied: {checks_not_complied}")
+
+                    print(f"  ✓ Updated continuous exceedances: {continuous_exceedances}")
+                    print(f"  ✓ Updated discrete exceedances: {discrete_exceedances}")
+                    print(f"  ✓ Updated anomalies: {anomalies}")
+                    print(f"  ✓ Updated anomalies percentage: {anomalies_percentage:.2f}%")
                 
-                        print(f"  ✓ Updated continuous exceedances: {continuous_exceedances}")
-                        print(f"  ✓ Updated discrete exceedances: {discrete_exceedances}")
-                        print(f"  ✓ Updated anomalies: {anomalies}")
-                        print(f"  ✓ Updated anomalies percentage: {anomalies_percentage:.2f}%")
-                    
                 return flight_id
             else:
                 # Create new flight record
@@ -316,6 +314,80 @@ class DatabaseManager:
             if connection:
                 connection.close()
     
+    def find_flight_id(self, flight_date, pic, sic, fe, sortie=1):
+        """
+        Look up a flight WITHOUT creating it. Used by the review preview so it
+        can show review text already stored for this flight; a preview must
+        never create a flights row as a side effect of looking.
+        """
+        connection = None
+        cursor = None
+        try:
+            connection = self.get_connection()
+            cursor = connection.cursor()
+            cursor.execute(
+                """
+                SELECT id FROM flights
+                WHERE flight_date = %s AND PIC = %s AND SIC = %s
+                  AND FE = %s AND sortie = %s
+                """,
+                (flight_date, pic, sic, fe, sortie)
+            )
+            row = cursor.fetchone()
+            return row[0] if row else None
+        except Error as e:
+            self.last_error = f"find_flight_id: {e}"
+            logger.error(f"find_flight_id failed: {e}")
+            return None
+        finally:
+            if cursor:
+                cursor.close()
+            if connection:
+                connection.close()
+
+    def get_exceedance_reviews(self, flight_id):
+        """
+        Read back the review fields already stored for a flight, as
+        {parameter: {'abnormal', 'observed_by', 'review_note'}}.
+
+        Two callers need this, both to avoid destroying review work:
+          - the preview, so re-reviewing a flight shows what was saved before
+            rather than resetting to blank;
+          - any save path that deletes and re-inserts a flight's exceedances
+            without carrying review data of its own.
+        """
+        reviews = {}
+        connection = None
+        cursor = None
+        try:
+            connection = self.get_connection()
+            cursor = connection.cursor()
+            cursor.execute(
+                """
+                SELECT parameter_MI_17V_5_name, abnormal, observed_by,
+                       after_mission_review
+                FROM exceedances
+                WHERE flight_id = %s
+                """,
+                (flight_id,)
+            )
+            for param, abnormal, observed_by, note in cursor.fetchall():
+                reviews[param] = {
+                    'abnormal': bool(abnormal),
+                    'observed_by': observed_by or '',
+                    'review_note': note or '',
+                }
+            return reviews
+        except Error as e:
+            self.last_error = f"get_exceedance_reviews: {e}"
+            logger.error(f"get_exceedance_reviews failed: {e}")
+            return {}
+        finally:
+            if cursor:
+                cursor.close()
+            if connection:
+                connection.close()
+
     def delete_flight_exceedances(self, flight_id):
         """Delete existing exceedances for a flight"""
         connection = None
@@ -351,7 +423,19 @@ class DatabaseManager:
         
         Args:
             flight_id: The flight ID from flights table
-            exceedances_list: List of dicts [{'parameter': 'IAS', 'count': 5}, ...]
+            exceedances_list: List of dicts
+                [{'parameter': 'IAS', 'count': 5, 'abnormal': True,
+                  'observed_by': 'P6', 'review_note': 'Pitot heat fault'}, ...]
+
+        'abnormal' marks whether the exceedance is genuine. It defaults to
+        True when absent, so any caller that does not know about the review
+        step still records exceedances as real rather than silently
+        dismissing them as sensor faults.
+
+        'observed_by' and 'review_note' map to the observed_by and
+        after_mission_review columns. Both default to NULL when absent or
+        blank, so "nobody reviewed this" stays distinguishable from
+        "reviewed, no comment".
         """
         if not exceedances_list:
             print("  ℹ No exceedances to save")
@@ -365,20 +449,32 @@ class DatabaseManager:
             cursor = connection.cursor()
             
             insert_query = """
-                INSERT INTO exceedances 
-                (flight_id, parameter_MI_17V_5_name, number_of_exceedances)
-                VALUES (%s, %s, %s)
+                INSERT INTO exceedances
+                (flight_id, parameter_MI_17V_5_name, number_of_exceedances, abnormal,
+                 observed_by, after_mission_review)
+                VALUES (%s, %s, %s, %s, %s, %s)
             """
-            
+
+            def _or_null(value):
+                # Blank stays NULL: "nobody reviewed this" must remain
+                # distinguishable from "reviewed, no comment".
+                text = str(value).strip() if value is not None else ''
+                return text or None
+
             exceedance_data = [
-                (flight_id, exc['parameter'], exc['count'])
+                (flight_id, exc['parameter'], exc['count'],
+                 1 if exc.get('abnormal', True) else 0,
+                 _or_null(exc.get('observed_by')),
+                 _or_null(exc.get('review_note')))
                 for exc in exceedances_list
             ]
             
             if exceedance_data:
                 cursor.executemany(insert_query, exceedance_data)
                 connection.commit()
-                print(f"  ✓ Saved {len(exceedance_data)} exceedance records")
+                dismissed = sum(1 for row in exceedance_data if row[3] == 0)
+                print(f"  ✓ Saved {len(exceedance_data)} exceedance records"
+                      + (f" ({dismissed} marked not abnormal)" if dismissed else ""))
                 return True
             
             return False
@@ -1038,6 +1134,28 @@ class FlightAnalyzer:
                 logger.error(self.last_save_error)
                 return False
             
+            # This path rebuilds a flight's exceedances by deleting and
+            # re-inserting them, but it carries NO review data: its
+            # exceedances_list holds only {'parameter', 'count'}. Without the
+            # step below, re-saving a flight here would silently wipe every
+            # abnormal flag, observer and after-mission note already recorded
+            # for it. Capture them first and carry them forward.
+            existing_reviews = self.db_manager.get_exceedance_reviews(flight_id)
+            if existing_reviews and exceedances_list:
+                carried = 0
+                for exc in exceedances_list:
+                    prior = existing_reviews.get(exc.get('parameter'))
+                    if not prior:
+                        continue
+                    # Only fill what this caller did not supply itself.
+                    exc.setdefault('abnormal', prior['abnormal'])
+                    exc.setdefault('observed_by', prior['observed_by'])
+                    exc.setdefault('review_note', prior['review_note'])
+                    if prior['observed_by'] or prior['review_note'] or not prior['abnormal']:
+                        carried += 1
+                if carried:
+                    print(f"  \u2139 Carried forward review data for {carried} exceedance(s)")
+
             # Delete existing anomalies, exceedances, and missed checks
             self.db_manager.delete_flight_anomalies(flight_id)
             self.db_manager.delete_flight_exceedances(flight_id)
